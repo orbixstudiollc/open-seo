@@ -13,8 +13,12 @@ per-prompt and per-topic breakdowns, movement against the prior period.
   competitor dedupe and paid-slot logic encode decisions worth preserving —
   particularly the case-insensitive dedupe that stops "Nike" and "nike" becoming
   two billed groups.
-- Read the existing Brand Lookup route so the new overview is consistent with it
-  rather than a second visual language.
+- Read the existing Brand Lookup route to understand its layout patterns and
+  data presentation.
+- Read `/DESIGN.md` at the repo root. **It is the visual authority for the new
+  overview** — tokens, type scale, spacing rhythm, card treatment. Where it
+  conflicts with the current daisyUI look of existing pages, DESIGN.md wins for
+  the new AI-visibility surfaces; do not restyle existing pages.
 
 ## 2. Build
 

@@ -42,3 +42,9 @@ rollups attach to resolved entities. Phase 6 depends on 5.
 - `pnpm run ci:check` must pass before any gate.
 - Ship each phase's data as MCP tools **in the same PR**. Agent access is
   OpenSEO's actual advantage here; deferring it guarantees it never happens.
+- **UI work follows `/DESIGN.md`** (Cursor-derived design language: warm-cream
+  canvas, single orange accent, hairline cards, editorial type). Read it before
+  writing any UI. It applies to all new AI-visibility surfaces (Phases 2, 3, 6,
+  7). Substitute the system-ui fallback stack where CursorGothic is referenced —
+  the font itself is not licensed to this project. Existing app pages are out of
+  scope unless a brief says otherwise.
