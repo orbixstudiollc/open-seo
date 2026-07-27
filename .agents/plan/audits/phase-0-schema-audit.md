@@ -11,7 +11,6 @@ I completed the Audit step and made no code changes. The worktree remains clean.
 - The brief says 14 application tables, but both [SQLite schema](src/db/app.schema.ts) and [Postgres schema](src/db/pg/app.schema.ts) currently define 13. Their structures match.
 - Repositories use one provider-aware schema barrel and one implementation for both databases. A parity test checks table sets, columns, primary keys, unique constraints, and foreign keys, but not ordinary indexes.
 - Cross-dialect conventions are:
-
   - Text UUIDs for logical entities and runs.
   - SQLite autoincrement/Postgres `serial` for high-volume observation rows.
   - SQLite integer booleans/Postgres native booleans.

@@ -34,16 +34,16 @@ This exact dedupe is also used to avoid duplicate paid comparison groups and con
 
 The visible examples in the brief all fail the Phase 3 outcome:
 
-| Input group | Current result |
-|---|---|
-| `SaaS` | Retained as a keyword/brand candidate |
-| `AI` | Retained as a keyword/brand candidate |
-| `Clay`, `Clay Global` | Two separate rows |
-| Four `Figma…` variants | Four separate rows |
-| `Lazarev`, `Lazarev.`, `Lazarev.agency` | Three rows; the latter two are classified as domains |
-| `Wavespace`, `Wavespace Digital Agency` | Two separate rows |
-| `Agency`, `Product design agency` | Retained as brands |
-| `Brix Agency` | Separate, which is appropriate unless evidence identifies an alias |
+| Input group                             | Current result                                                     |
+| --------------------------------------- | ------------------------------------------------------------------ |
+| `SaaS`                                  | Retained as a keyword/brand candidate                              |
+| `AI`                                    | Retained as a keyword/brand candidate                              |
+| `Clay`, `Clay Global`                   | Two separate rows                                                  |
+| Four `Figma…` variants                  | Four separate rows                                                 |
+| `Lazarev`, `Lazarev.`, `Lazarev.agency` | Three rows; the latter two are classified as domains               |
+| `Wavespace`, `Wavespace Digital Agency` | Two separate rows                                                  |
+| `Agency`, `Product design agency`       | Retained as brands                                                 |
+| `Brix Agency`                           | Separate, which is appropriate unless evidence identifies an alias |
 
 The heterogeneous sixteen-entry group should not simply become one entity. It appears to require at least:
 

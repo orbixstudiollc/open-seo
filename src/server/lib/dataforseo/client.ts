@@ -52,12 +52,50 @@ function meter<I, T>(
   ) => (input: I) => Promise<DataforseoApiResponse<T>>,
   defaultFeature?: CreditFeature,
 ): (input: I & { creditFeature?: CreditFeature }) => Promise<T> {
+  return async (input) =>
+    (
+      await meterDataforseoCall(
+        customer,
+        async () => pick(await loadDataforseoSections())(input),
+        input.creditFeature ?? defaultFeature,
+      )
+    ).data;
+}
+
+function meterDetailed<I, T>(
+  customer: BillingCustomerContext,
+  pick: (
+    sections: DataforseoSections,
+  ) => (input: I) => Promise<DataforseoApiResponse<T>>,
+  defaultFeature?: CreditFeature,
+): (
+  input: I & { creditFeature?: CreditFeature },
+) => Promise<MeteredDataforseoResult<T>> {
   return (input) =>
     meterDataforseoCall(
       customer,
       async () => pick(await loadDataforseoSections())(input),
       input.creditFeature ?? defaultFeature,
     );
+}
+
+type MeteredDataforseoResult<T> = {
+  data: T;
+  billing: DataforseoApiCallCost;
+  creditsConsumed: number;
+};
+
+export class DataforseoPostSpendTrackingError extends AppError {
+  constructor(
+    public readonly billing: DataforseoApiCallCost,
+    public readonly cause: unknown,
+  ) {
+    super(
+      "UPSTREAM_UNAVAILABLE",
+      "Provider call completed but usage billing could not be recorded",
+    );
+    this.name = "DataforseoPostSpendTrackingError";
+  }
 }
 
 export function createDataforseoClient(customer: BillingCustomerContext) {
@@ -130,6 +168,10 @@ export function createDataforseoClient(customer: BillingCustomerContext) {
         (s) => s.fetchLlmCrossAggregatedMetrics,
       ),
       llmResponse: meter(customer, (s) => s.fetchLlmResponse),
+      llmResponseWithBilling: meterDetailed(
+        customer,
+        (s) => s.fetchLlmResponse,
+      ),
     },
   } as const;
 }
@@ -138,12 +180,23 @@ async function meterDataforseoCall<T>(
   customer: BillingCustomerContext,
   execute: () => Promise<DataforseoApiResponse<T>>,
   creditFeature?: CreditFeature,
-): Promise<T> {
+): Promise<MeteredDataforseoResult<T>> {
   const isHostedMode = await isHostedServerAuthMode();
 
   if (!isHostedMode) {
-    const result = await execute();
-    return result.data;
+    try {
+      const result = await execute();
+      return {
+        data: result.data,
+        billing: result.billing,
+        creditsConsumed: 0,
+      };
+    } catch (error) {
+      if (error instanceof DataforseoChargedTaskError) {
+        error.creditsConsumed = 0;
+      }
+      throw error;
+    }
   }
 
   const billingCustomer = await getOrCreateOrganizationCustomer(customer);
@@ -165,26 +218,41 @@ async function meterDataforseoCall<T>(
       if (error.isInvalidField && error.billing.costUsd <= 0) {
         throw new AppError("VALIDATION_ERROR", error.message);
       }
-      await trackDataforseoCost({
-        customer,
-        customerId: billingCustomer.id,
-        billing: error.billing,
-        monthlyRemaining,
-        creditFeature,
-      });
+      try {
+        const spend = await trackDataforseoCost({
+          customer,
+          customerId: billingCustomer.id,
+          billing: error.billing,
+          monthlyRemaining,
+          creditFeature,
+        });
+        error.creditsConsumed = spend.totalCostCredits;
+      } catch (trackingError) {
+        throw new DataforseoPostSpendTrackingError(
+          error.billing,
+          trackingError,
+        );
+      }
     }
     throw error;
   }
 
-  await trackDataforseoCost({
-    customer,
-    customerId: billingCustomer.id,
-    billing: result.billing,
-    monthlyRemaining,
-    creditFeature,
-  });
-
-  return result.data;
+  try {
+    const spend = await trackDataforseoCost({
+      customer,
+      customerId: billingCustomer.id,
+      billing: result.billing,
+      monthlyRemaining,
+      creditFeature,
+    });
+    return {
+      data: result.data,
+      billing: result.billing,
+      creditsConsumed: spend.totalCostCredits,
+    };
+  } catch (trackingError) {
+    throw new DataforseoPostSpendTrackingError(result.billing, trackingError);
+  }
 }
 
 async function trackDataforseoCost(args: {
@@ -194,7 +262,7 @@ async function trackDataforseoCost(args: {
   monthlyRemaining: number;
   creditFeature?: CreditFeature;
 }) {
-  await trackUsageCreditSpend({
+  return trackUsageCreditSpend({
     customer: args.customer,
     customerId: args.customerId,
     creditFeature:

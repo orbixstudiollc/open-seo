@@ -26,6 +26,8 @@ export type DataforseoApiResponse<T> = {
  * metadata on the failed task.
  */
 export class DataforseoChargedTaskError extends AppError {
+  creditsConsumed: number | null = null;
+
   constructor(
     message: string,
     public readonly billing: DataforseoApiCallCost,

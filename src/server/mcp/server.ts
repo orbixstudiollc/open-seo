@@ -3,6 +3,10 @@ import { instrumentMcpToolHandler } from "@/server/mcp/instrumentation";
 import { getBacklinksOverviewTool } from "@/server/mcp/tools/get-backlinks-overview";
 import { getBacklinksProfileTool } from "@/server/mcp/tools/get-backlinks-profile";
 import { getAiVisibilityStateTool } from "@/server/mcp/tools/get-ai-visibility-state";
+import {
+  manageAiPromptTrackingTool,
+  runAiPromptSetTool,
+} from "@/server/mcp/tools/ai-prompt-tracking-tools";
 import { getDomainKeywordSuggestionsTool } from "@/server/mcp/tools/get-domain-keyword-suggestions";
 import { getDomainOverviewTool } from "@/server/mcp/tools/get-domain-overview";
 import { getRankTrackerTool } from "@/server/mcp/tools/get-rank-tracker";
@@ -153,6 +157,24 @@ export function registerOpenSeoMcpTools(server: McpServer) {
       getAiVisibilityStateTool.name,
       getAiVisibilityStateTool.config.outputSchema,
       getAiVisibilityStateTool.handler,
+    ),
+  );
+  server.registerTool(
+    manageAiPromptTrackingTool.name,
+    manageAiPromptTrackingTool.config,
+    instrumentMcpToolHandler(
+      manageAiPromptTrackingTool.name,
+      manageAiPromptTrackingTool.config.outputSchema,
+      manageAiPromptTrackingTool.handler,
+    ),
+  );
+  server.registerTool(
+    runAiPromptSetTool.name,
+    runAiPromptSetTool.config,
+    instrumentMcpToolHandler(
+      runAiPromptSetTool.name,
+      runAiPromptSetTool.config.outputSchema,
+      runAiPromptSetTool.handler,
     ),
   );
   server.registerTool(

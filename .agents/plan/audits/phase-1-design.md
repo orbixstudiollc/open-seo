@@ -10,11 +10,11 @@ selected LLM's token and feature charges** ([pricing](https://dataforseo.com/pri
 [calculation](https://dataforseo.com/help-center/how-the-price-for-using-llm-responses-endpoints-is-calculated)).
 The variable component means a call count is not presented as a dollar quote.
 
-| Default model scope | Calls/run | Calls/month | DataForSEO base fee only |
-| --- | ---: | ---: | ---: |
-| 1 prompt × 4 models | 4 | ~17 weekly | $0.0024/run |
-| 45 prompts × 4 models | 180 | ~780 weekly | $0.108/run; ~$0.47/month |
-| 500 prompts × 4 models | 2,000 | ~8,700 weekly | $1.20/run; rejected by default cap |
+| Default model scope    | Calls/run |   Calls/month |           DataForSEO base fee only |
+| ---------------------- | --------: | ------------: | ---------------------------------: |
+| 1 prompt × 4 models    |         4 |    ~17 weekly |                        $0.0024/run |
+| 45 prompts × 4 models  |       180 |   ~780 weekly |           $0.108/run; ~$0.47/month |
+| 500 prompts × 4 models |     2,000 | ~8,700 weekly | $1.20/run; rejected by default cap |
 
 The hard cap is therefore a project-wide **prompt/model-call budget per cadence
 window**, default 200. Daily, weekly, and monthly projects reset on UTC calendar
@@ -43,11 +43,13 @@ Provider cost remains separate from hosted credits because provider spend can
 succeed while Autumn tracking fails. Both dialect schemas and generated
 migrations land together.
 
-Admission creates a pending run only after reservation, with Workflow ID equal
-to run ID. A project can reserve multiple small runs in one window, but their
-sum cannot exceed the project cap; the existing partial unique index still
-allows only one active run per prompt set. Workflow-start failure marks the run
-failed. Stale active rows are reconciled exactly like rank tracking.
+Admission first claims the prompt set's active-run slot with a pending row, then
+reserves the project budget before creating a Workflow whose ID equals the run
+ID. A capped attempt becomes a terminal failed row without provider work. A
+project can reserve multiple small runs in one window, but their sum cannot
+exceed the project cap; the existing partial unique index still allows only one
+active run per prompt set. Workflow-start failure marks the run failed. Stale
+active rows are reconciled exactly like rank tracking.
 
 ## Execution, replay safety, and metering
 

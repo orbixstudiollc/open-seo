@@ -5,6 +5,7 @@ import {
   aiBrandMentions,
   aiBrands,
   aiCitations,
+  aiProjectRunSettings,
   aiPromptSetModels,
   aiPromptSets,
   aiPromptTagAssignments,
@@ -12,10 +13,13 @@ import {
   aiPromptTopics,
   aiRuns,
   aiTrackedPrompts,
+  projects,
 } from "@/db/schema";
 import { createAiVisibilityRepository } from "./createAiVisibilityRepository";
 
 export const AiVisibilityRepository = createAiVisibilityRepository(db, {
+  projects,
+  aiProjectRunSettings,
   aiPromptSets,
   aiPromptSetModels,
   aiPromptTopics,
