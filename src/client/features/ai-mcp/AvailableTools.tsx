@@ -102,6 +102,29 @@ const toolCategories: ToolCategory[] = [
     ],
   },
   {
+    label: "AI Visibility",
+    tools: [
+      {
+        name: "get_ai_visibility_state",
+        title: "Get AI visibility state",
+        description:
+          "Read prompt sets, runs, observations, and brand registry.",
+      },
+      {
+        name: "get_brand_resolution_state",
+        title: "Get brand resolution state",
+        description:
+          "Inspect canonical, suppressed, ambiguous, and unresolved brands.",
+      },
+      {
+        name: "manage_brand_resolution",
+        title: "Manage brand resolution",
+        description:
+          "Refresh rules or apply reversible merge, split, and review decisions.",
+      },
+    ],
+  },
+  {
     label: "Search Console",
     tools: [
       {
