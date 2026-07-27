@@ -55,10 +55,10 @@ Do not re-derive either.
 
 ## 5. Exit gate
 
-- [ ] On the same underlying data, "SaaS" and "AI" never appear as brands
-- [ ] `Clay` / `Clay Global` resolve to one row
-- [ ] Merge is reversible with no mention loss
-- [ ] `ci:check` green
+- [x] On the same underlying data, "SaaS" and "AI" never appear as brands
+- [x] `Clay` / `Clay Global` resolve to one row
+- [x] Merge is reversible with no mention loss
+- [x] `ci:check` green
 
 ## Why this position in the order
 
