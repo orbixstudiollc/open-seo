@@ -20,10 +20,11 @@ export function SamSetupGate({
           <div className="max-w-3xl space-y-1.5">
             <h2 className="text-xl font-semibold">Enable AI Features</h2>
             <div className="text-sm text-base-content/68">
-              SAM, OpenSEO's in-app AI agent, needs an OpenRouter API key.
-              Create a key on OpenRouter, set it as the{" "}
-              <code>OPENROUTER_API_KEY</code> environment variable, restart
-              OpenSEO, then confirm here.
+              SAM, OpenSEO's in-app AI agent, needs an AI provider. Either set{" "}
+              <code>OPENROUTER_API_KEY</code> to use OpenRouter, or set{" "}
+              <code>AI_BASE_URL</code>, <code>AI_API_KEY</code> and{" "}
+              <code>AI_MODEL</code> to point SAM at your own OpenAI-compatible
+              provider. Restart OpenSEO, then confirm here.
             </div>
             <div className="text-xs text-base-content/50">
               Step-by-step instructions for every deployment are in the{" "}
@@ -33,7 +34,8 @@ export function SamSetupGate({
               >
                 OpenRouter API key setup guide
               </Link>
-              .
+              . A custom provider needs no extra setup beyond those three
+              variables.
             </div>
           </div>
         </div>

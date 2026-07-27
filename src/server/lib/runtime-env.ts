@@ -41,6 +41,17 @@ export async function isHostedServerAuthMode(): Promise<boolean> {
   return isHostedAuthMode(await getOptionalEnvValue("AUTH_MODE"));
 }
 
+/**
+ * The raw env record, for callers that read several related keys at once and
+ * want the same source `getEnvValueSync` reads (process.env still wins there).
+ */
+export async function getWorkersEnvRecord(): Promise<Record<
+  string,
+  unknown
+> | null> {
+  return getWorkersEnv();
+}
+
 async function getWorkersEnv(): Promise<Record<string, unknown> | null> {
   if (!workersEnvPromise) {
     workersEnvPromise = loadWorkersEnv();

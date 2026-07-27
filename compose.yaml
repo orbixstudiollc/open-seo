@@ -17,6 +17,15 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-}
+      # Optional: AI provider for the in-app chat agents (SAM + onboarding).
+      # Either OpenRouter:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-}
+      # ...or your own OpenAI-compatible provider. AI_BASE_URL selects it, and
+      # AI_API_KEY + AI_MODEL are required alongside it.
+      - AI_BASE_URL=${AI_BASE_URL:-}
+      - AI_API_KEY=${AI_API_KEY:-}
+      - AI_MODEL=${AI_MODEL:-}
       - VITE_SHOW_DEVTOOLS=false
     ports:
       - "127.0.0.1:${PORT:-3001}:${PORT:-3001}"

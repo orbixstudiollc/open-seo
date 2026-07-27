@@ -9,7 +9,10 @@ import {
 import type { OnChatMessageOptions } from "@cloudflare/ai-chat";
 import { ProjectRepository } from "@/server/features/projects/repositories/ProjectRepository";
 import { buildOnboardingTools } from "@/server/features/onboarding/onboardingChatTools";
-import { getChatAgentModel } from "@/server/lib/openrouter";
+import {
+  buildChatAgentModel,
+  resolveChatProvider,
+} from "@/server/lib/chatProvider";
 import {
   openRouterCostUsd,
   staticAssistantResponse,
@@ -150,7 +153,11 @@ export class OnboardingChatAgent extends AIChatAgent {
       monthlyCreditsRemaining = monthlyRemaining;
     }
 
-    const model = await getChatAgentModel();
+    const provider = await resolveChatProvider();
+    if (!provider.ok) {
+      throw new Error(provider.reason);
+    }
+    const model = buildChatAgentModel(provider.config);
 
     const result = streamText({
       model,
