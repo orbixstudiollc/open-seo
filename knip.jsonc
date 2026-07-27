@@ -36,6 +36,12 @@
     "!badseo/**",
   ],
   "ignore": ["drizzle-prod.config.ts"],
+  "ignoreIssues": {
+    // This module is imported by the Prompt Explorer client. Its additional
+    // createServerFn exports are public Phase 1 API surface for tracked-run
+    // management even before a dashboard management UI consumes them.
+    "src/serverFunctions/ai-search.ts": ["exports"],
+  },
   // Disable Drizzle plugin - it tries to load drizzle.config.ts which imports cloudflare:workers
   "drizzle": false,
   "ignoreDependencies": [

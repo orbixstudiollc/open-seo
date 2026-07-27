@@ -225,22 +225,22 @@ Names are illustrative; the relational boundaries are the important part.
 
 ### `recommendations`
 
-| Field | Purpose |
-|---|---|
-| `id`, `project_id` | Project-owned work item. |
-| `category` | `off_page`, `on_page`, or `technical`. |
-| `rule_key`, `generator_version` | Stable generator identity and versioned behavior. |
-| `fingerprint` | Stable cross-regeneration identity; unique with `project_id`. |
-| `target_kind` | `site_page`, `external_url`, `domain`, or `community`. |
-| `target_url`, `target_hostname`, `target_label` | Sanitized concrete action destination. Off-page rows require a URL. |
-| `title`, `action`, `rationale` | Audit-time snapshot of what to do and why. |
-| `status` | `todo`, `done`, or `declined`; default `todo`. |
-| `priority_level`, `priority_score`, `score_version` | Display priority plus reproducible scoring version. |
-| `evidence_window_start`, `evidence_window_end`, `evidence_as_of` | Scope of the supporting observations. |
-| `occurrence_count`, `affected_page_count` | Technical/on-page scope with unambiguous semantics. |
+| Field                                                                           | Purpose                                                                     |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `id`, `project_id`                                                              | Project-owned work item.                                                    |
+| `category`                                                                      | `off_page`, `on_page`, or `technical`.                                      |
+| `rule_key`, `generator_version`                                                 | Stable generator identity and versioned behavior.                           |
+| `fingerprint`                                                                   | Stable cross-regeneration identity; unique with `project_id`.               |
+| `target_kind`                                                                   | `site_page`, `external_url`, `domain`, or `community`.                      |
+| `target_url`, `target_hostname`, `target_label`                                 | Sanitized concrete action destination. Off-page rows require a URL.         |
+| `title`, `action`, `rationale`                                                  | Audit-time snapshot of what to do and why.                                  |
+| `status`                                                                        | `todo`, `done`, or `declined`; default `todo`.                              |
+| `priority_level`, `priority_score`, `score_version`                             | Display priority plus reproducible scoring version.                         |
+| `evidence_window_start`, `evidence_window_end`, `evidence_as_of`                | Scope of the supporting observations.                                       |
+| `occurrence_count`, `affected_page_count`                                       | Technical/on-page scope with unambiguous semantics.                         |
 | `citation_count`, `answer_count`, `prompt_count`, `target_brand_citation_count` | Off-page evidence summary; the last value is zero for a generated gap item. |
-| `first_observed_at`, `last_observed_at` | Recency inputs shown to the user. |
-| `created_at`, `last_generated_at`, `updated_at`, `done_at`, `declined_at` | Workflow and regeneration history. |
+| `first_observed_at`, `last_observed_at`                                         | Recency inputs shown to the user.                                           |
+| `created_at`, `last_generated_at`, `updated_at`, `done_at`, `declined_at`       | Workflow and regeneration history.                                          |
 
 Relational IDs must not be stored as JSON arrays on this row.
 
@@ -298,11 +298,11 @@ three competitors in the last 30 days” reproducible instead of a black box.
 
 ## Required generation invariants
 
-| Recommendation category | Required evidence |
-|---|---|
-| On-page / technical | Latest completed project audit, at least one linked real `audit_issue`, validated rule details, and a stable target fingerprint. |
-| Off-page | Concrete sanitized external destination, at least one linked `ai_citation`, at least one resolved competitor association, a defined window, and zero target-brand citations in the same scope. |
-| All | Versioned rationale and score factors; regeneration updates evidence without resetting `done`/`declined`. |
+| Recommendation category | Required evidence                                                                                                                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| On-page / technical     | Latest completed project audit, at least one linked real `audit_issue`, validated rule details, and a stable target fingerprint.                                                               |
+| Off-page                | Concrete sanitized external destination, at least one linked `ai_citation`, at least one resolved competitor association, a defined window, and zero target-brand citations in the same scope. |
+| All                     | Versioned rationale and score factors; regeneration updates evidence without resetting `done`/`declined`.                                                                                      |
 
 ## Build-time risks to resolve after the audit gate
 

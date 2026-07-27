@@ -47,11 +47,11 @@ The default Docker Compose mapping binds the app to `127.0.0.1`, so a default in
 
 ### Explicit security exposure
 
-| Deployment shape | What the share recipient can reach |
-|---|---|
-| Default Compose, loopback only | The URL works only on the Docker host. Any local caller who can reach it is the local admin. It is not a remote share link. |
-| Whole `local_noauth` origin exposed by a tunnel, public port, or unauthenticated proxy | The recipient can access the intended report **and the complete local-admin app/MCP surface**. A report token does not reduce this ambient access. |
-| Whole origin protected by upstream authentication | The recipient must pass that upstream authentication. Once admitted, OpenSEO still treats every recipient as the same local admin. |
+| Deployment shape                                                                               | What the share recipient can reach                                                                                                                                                                                                                     |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Default Compose, loopback only                                                                 | The URL works only on the Docker host. Any local caller who can reach it is the local admin. It is not a remote share link.                                                                                                                            |
+| Whole `local_noauth` origin exposed by a tunnel, public port, or unauthenticated proxy         | The recipient can access the intended report **and the complete local-admin app/MCP surface**. A report token does not reduce this ambient access.                                                                                                     |
+| Whole origin protected by upstream authentication                                              | The recipient must pass that upstream authentication. Once admitted, OpenSEO still treats every recipient as the same local admin.                                                                                                                     |
 | Only `/share/*` is public; app server-function paths, `/agents/*`, and `/mcp` remain protected | A dedicated token-checked share route can expose only its report payload. This is the one viable `local_noauth` deployment shape for external anonymous sharing on the same installation. A separate share origin is safer and easier to reason about. |
 
 If the normal project dashboard were treated as a report URL, its direct server responses currently expose:

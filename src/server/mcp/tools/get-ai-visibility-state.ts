@@ -39,6 +39,7 @@ export const getAiVisibilityStateTool = {
         brands: z.array(looseObjectOutputSchema).optional(),
         aliases: z.array(looseObjectOutputSchema).optional(),
         runs: z.array(looseObjectOutputSchema).optional(),
+        settings: looseObjectOutputSchema.optional(),
         promptSet: looseObjectOutputSchema.optional(),
         run: looseObjectOutputSchema.optional(),
         answers: z.array(looseObjectOutputSchema).optional(),
@@ -127,10 +128,11 @@ export const getAiVisibilityStateTool = {
       });
     }
 
-    const [promptSets, registry, runs] = await Promise.all([
+    const [promptSets, registry, runs, settings] = await Promise.all([
       AiVisibilityRepository.getPromptSetsForProject(args.projectId),
       AiVisibilityRepository.getBrandRegistry(args.projectId),
       AiVisibilityRepository.getRunsForProject(args.projectId, 20),
+      AiVisibilityRepository.getOrCreateProjectRunSettings(args.projectId),
     ]);
     const text =
       promptSets.length === 0 &&
@@ -146,6 +148,7 @@ export const getAiVisibilityStateTool = {
         brands: registry.brands.slice(0, 100),
         aliases: registry.aliases.slice(0, 100),
         runs,
+        settings,
       },
     });
   }),
