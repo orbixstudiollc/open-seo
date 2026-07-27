@@ -21,7 +21,7 @@ off.
 3. **Build** — implement to the design, tests alongside.
 4. **Review** — adversarial pass: correctness, dual-dialect safety, cost exposure,
    error isolation.
-5. **Test & verify** — full suite green *plus* live verification against the
+5. **Test & verify** — full suite green _plus_ live verification against the
    running instance. Something observable must be shown to work.
 6. **Gate** — explicit go/no-go against the exit criteria in the brief.
 

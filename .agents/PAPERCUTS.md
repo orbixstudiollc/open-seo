@@ -20,3 +20,5 @@ data, or sensitive paths.
 ## Resolved
 
 Move fixed entries here, mark them checked, and append the resolving date or commit.
+
+- [x] `2026-07-27T14:03:51Z` — `codex` — The committed AI-visibility plan Markdown failed the repository-wide Prettier gate on a fresh checkout. Formatted the affected plan files during the Phase 0 build on 2026-07-27.
