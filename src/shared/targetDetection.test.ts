@@ -39,6 +39,16 @@ describe("detectTarget", () => {
     });
   });
 
+  it.each(["Lazarev.", "example.not-a-real-tld"])(
+    "treats invalid hostname %s as a keyword",
+    (input) => {
+      expect(detectTarget(input)).toEqual({
+        type: "keyword",
+        value: input,
+      });
+    },
+  );
+
   it("trims whitespace before classification", () => {
     expect(detectTarget("  example.com  ")).toEqual({
       type: "domain",
