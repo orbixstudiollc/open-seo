@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
   index,
   integer,
@@ -233,6 +234,70 @@ export const aiBrandAliases = pgTable(
     ),
     index("ai_brand_aliases_brand_idx").on(table.brandId),
   ],
+);
+
+export const aiBrandResolutionRules = pgTable(
+  "ai_brand_resolution_rules",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    normalizedName: text("normalized_name").notNull(),
+    state: text("state", {
+      enum: ["resolved", "suppressed", "needs_review", "unresolved"],
+    }).notNull(),
+    brandId: text("brand_id").references(() => aiBrands.id, {
+      onDelete: "set null",
+    }),
+    source: text("source", {
+      enum: ["manual", "registry", "generic", "ambiguous", "unresolved"],
+    }).notNull(),
+    ruleVersion: text("rule_version").notNull(),
+    confidence: real("confidence").notNull(),
+    createdBy: text("created_by"),
+    reason: text("reason"),
+    supersedesRuleId: text("supersedes_rule_id").references(
+      (): AnyPgColumn => aiBrandResolutionRules.id,
+      { onDelete: "set null" },
+    ),
+    createdAt: timestampColumn("created_at").notNull().default(isoNow),
+    supersededAt: timestampColumn("superseded_at"),
+  },
+  (table) => [
+    uniqueIndex("ai_brand_resolution_rules_active_name_idx")
+      .on(table.projectId, table.normalizedName)
+      .where(sql`${table.supersededAt} IS NULL`),
+    index("ai_brand_resolution_rules_project_state_idx").on(
+      table.projectId,
+      table.state,
+    ),
+    index("ai_brand_resolution_rules_brand_idx").on(table.brandId),
+  ],
+);
+
+export const aiBrandResolutionEvidence = pgTable(
+  "ai_brand_resolution_evidence",
+  {
+    id: text("id").primaryKey(),
+    ruleId: text("rule_id")
+      .notNull()
+      .references(() => aiBrandResolutionRules.id, { onDelete: "cascade" }),
+    kind: text("kind", {
+      enum: [
+        "primary_domain",
+        "verified_alias",
+        "canonical_name",
+        "generic_taxonomy",
+        "conflicting_signal",
+        "clustering_signal",
+        "manual_reason",
+      ],
+    }).notNull(),
+    value: text("value").notNull(),
+    createdAt: timestampColumn("created_at").notNull().default(isoNow),
+  },
+  (table) => [index("ai_brand_resolution_evidence_rule_idx").on(table.ruleId)],
 );
 
 export const aiRuns = pgTable(

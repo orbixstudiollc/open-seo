@@ -4,6 +4,7 @@ import { getBacklinksOverviewTool } from "@/server/mcp/tools/get-backlinks-overv
 import { getBacklinksProfileTool } from "@/server/mcp/tools/get-backlinks-profile";
 import { getAiVisibilityAnalyticsTool } from "@/server/mcp/tools/get-ai-visibility-analytics";
 import { getAiVisibilityStateTool } from "@/server/mcp/tools/get-ai-visibility-state";
+import { getBrandResolutionStateTool } from "@/server/mcp/tools/get-brand-resolution-state";
 import {
   manageAiPromptTrackingTool,
   runAiPromptSetTool,
@@ -15,6 +16,7 @@ import { getSerpResultsTool } from "@/server/mcp/tools/get-serp-results";
 import { createProjectTool } from "@/server/mcp/tools/create-project";
 import { listProjectsTool } from "@/server/mcp/tools/list-projects";
 import { listSavedKeywordsTool } from "@/server/mcp/tools/list-saved-keywords";
+import { manageBrandResolutionTool } from "@/server/mcp/tools/manage-brand-resolution";
 import {
   findSerpCompetitorsTool,
   getGoogleBusinessQuestionsTool,
@@ -158,6 +160,24 @@ export function registerOpenSeoMcpTools(server: McpServer) {
       getAiVisibilityStateTool.name,
       getAiVisibilityStateTool.config.outputSchema,
       getAiVisibilityStateTool.handler,
+    ),
+  );
+  server.registerTool(
+    getBrandResolutionStateTool.name,
+    getBrandResolutionStateTool.config,
+    instrumentMcpToolHandler(
+      getBrandResolutionStateTool.name,
+      getBrandResolutionStateTool.config.outputSchema,
+      getBrandResolutionStateTool.handler,
+    ),
+  );
+  server.registerTool(
+    manageBrandResolutionTool.name,
+    manageBrandResolutionTool.config,
+    instrumentMcpToolHandler(
+      manageBrandResolutionTool.name,
+      manageBrandResolutionTool.config.outputSchema,
+      manageBrandResolutionTool.handler,
     ),
   );
   server.registerTool(

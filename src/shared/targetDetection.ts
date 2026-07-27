@@ -1,4 +1,4 @@
-import { normalizeDomain } from "@/types/schemas/domain";
+import { isValidDomainHost, normalizeDomain } from "@/types/schemas/domain";
 
 type DetectedTarget = {
   type: "domain" | "keyword";
@@ -18,7 +18,7 @@ export function detectTarget(rawInput: string): DetectedTarget {
   if (looksLikeDomain) {
     try {
       const hostname = normalizeDomain(trimmed);
-      if (hostname.includes(".")) {
+      if (hostname.includes(".") && isValidDomainHost(hostname)) {
         return { type: "domain", value: hostname };
       }
     } catch {

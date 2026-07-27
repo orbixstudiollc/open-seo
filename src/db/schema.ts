@@ -89,6 +89,8 @@ export const {
   aiPromptTagAssignments,
   aiBrands,
   aiBrandAliases,
+  aiBrandResolutionRules,
+  aiBrandResolutionEvidence,
   aiRuns,
   aiAnswers,
   aiBrandMentions,

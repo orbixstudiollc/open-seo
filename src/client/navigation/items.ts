@@ -3,6 +3,7 @@ import {
   Bot,
   ClipboardCheck,
   Eye,
+  GitMerge,
   Globe,
   LayoutDashboard,
   Link2,
@@ -73,6 +74,11 @@ const projectNavItems = [
     label: "Prompt Explorer",
     icon: MessageSquare,
   },
+  {
+    to: "/p/$projectId/brand-resolution" as const,
+    label: "Brand Resolution",
+    icon: GitMerge,
+  },
 ] as const;
 
 const aiNavItem = linkOptions({
@@ -124,6 +130,7 @@ export function getProjectNavGroups(projectId: string) {
       items: [
         byPath("/p/$projectId/visibility"),
         byPath("/p/$projectId/search-performance"),
+        byPath("/p/$projectId/brand-resolution"),
         byPath("/p/$projectId/rank-tracking"),
         byPath("/p/$projectId/saved"),
         byPath("/p/$projectId/audit"),
