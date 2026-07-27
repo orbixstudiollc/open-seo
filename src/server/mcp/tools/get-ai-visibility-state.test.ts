@@ -94,6 +94,30 @@ describe("get_ai_visibility_state MCP tool", () => {
     });
   });
 
+  it("reports persisted state when only the brand registry has data", async () => {
+    mocks.getPromptSetsForProject.mockResolvedValue([]);
+    mocks.getBrandRegistry.mockResolvedValue({
+      brands: [{ id: "brand_1", name: "Acme" }],
+      aliases: [],
+    });
+    mocks.getRunsForProject.mockResolvedValue([]);
+    const { getAiVisibilityStateTool } =
+      await import("./get-ai-visibility-state");
+
+    const result = await getAiVisibilityStateTool.handler(
+      { projectId: "project_1" },
+      toolExtra,
+    );
+
+    const first = result.content?.[0];
+    expect(first?.type).toBe("text");
+    if (first?.type === "text") {
+      expect(first.text).toBe(
+        "AI visibility state: 0 prompt sets, 1 brands, 0 recent runs.",
+      );
+    }
+  });
+
   it("does not expose a run belonging to another project", async () => {
     mocks.getRunWithObservations.mockResolvedValue({
       run: { id: "run_other", projectId: "project_other" },

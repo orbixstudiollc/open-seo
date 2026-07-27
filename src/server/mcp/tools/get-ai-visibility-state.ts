@@ -133,7 +133,9 @@ export const getAiVisibilityStateTool = {
       AiVisibilityRepository.getRunsForProject(args.projectId, 20),
     ]);
     const text =
-      promptSets.length === 0 && runs.length === 0
+      promptSets.length === 0 &&
+      registry.brands.length === 0 &&
+      runs.length === 0
         ? "No persisted AI visibility state exists for this project yet."
         : `AI visibility state: ${promptSets.length} prompt sets, ${registry.brands.length} brands, ${runs.length} recent runs.`;
     return mcpResponse({
