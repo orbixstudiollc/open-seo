@@ -267,6 +267,13 @@
       "when": 1785160137792,
       "tag": "0037_uneven_wild_child",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1785169319141,
+      "tag": "0038_chemical_hellcat",
+      "breakpoints": true
     }
   ]
 }
