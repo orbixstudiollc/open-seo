@@ -15,6 +15,22 @@ import { projects } from "./app.schema";
 const isoNow = sql`to_char(now() AT TIME ZONE 'utc', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`;
 const timestampColumn = (name: string) => text(name);
 
+export const aiProjectRunSettings = pgTable("ai_project_run_settings", {
+  projectId: text("project_id")
+    .primaryKey()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  cadence: text("cadence", {
+    enum: ["daily", "weekly", "monthly", "manual"],
+  })
+    .notNull()
+    .default("weekly"),
+  answerCallCap: integer("answer_call_cap").notNull().default(200),
+  windowStartedAt: timestampColumn("window_started_at"),
+  callsReserved: integer("calls_reserved").notNull().default(0),
+  createdAt: timestampColumn("created_at").notNull().default(isoNow),
+  updatedAt: timestampColumn("updated_at").notNull().default(isoNow),
+});
+
 export const aiPromptSets = pgTable(
   "ai_prompt_sets",
   {
@@ -32,6 +48,17 @@ export const aiPromptSets = pgTable(
     isActive: boolean("is_active").notNull().default(true),
     lastRunAt: timestampColumn("last_run_at"),
     nextRunAt: timestampColumn("next_run_at"),
+    lastSkipReason: text("last_skip_reason", {
+      enum: [
+        "run_cap_reached",
+        "no_prompts",
+        "payment_required",
+        "already_running",
+        "archived",
+        "workflow_start_failed",
+      ],
+    }),
+    lastSkippedAt: timestampColumn("last_skipped_at"),
     createdAt: timestampColumn("created_at").notNull().default(isoNow),
     updatedAt: timestampColumn("updated_at").notNull().default(isoNow),
     archivedAt: timestampColumn("archived_at"),
@@ -296,6 +323,10 @@ export const aiRuns = pgTable(
     answersExpected: integer("answers_expected").notNull().default(0),
     answersSucceeded: integer("answers_succeeded").notNull().default(0),
     answersFailed: integer("answers_failed").notNull().default(0),
+    reservedAnswerCalls: integer("reserved_answer_calls").notNull().default(0),
+    reservationWindowStartedAt: timestampColumn(
+      "reservation_window_started_at",
+    ),
     providerCostUsd: real("provider_cost_usd"),
     creditsConsumed: integer("credits_consumed"),
     errorMessage: text("error_message"),
@@ -323,7 +354,11 @@ export const aiAnswers = pgTable(
     promptText: text("prompt_text").notNull(),
     model: text("model").notNull(),
     modelName: text("model_name"),
-    status: text("status", { enum: ["success", "error"] }).notNull(),
+    status: text("status", {
+      enum: ["pending", "running", "success", "error"],
+    })
+      .notNull()
+      .default("pending"),
     responseText: text("response_text"),
     errorCode: text("error_code"),
     errorMessage: text("error_message"),
@@ -332,7 +367,12 @@ export const aiAnswers = pgTable(
     observedAt: timestampColumn("observed_at").notNull().default(isoNow),
     outputTokens: integer("output_tokens"),
     webSearch: boolean("web_search"),
+    fromCache: boolean("from_cache").notNull().default(false),
+    billingPath: text("billing_path"),
     providerCostUsd: real("provider_cost_usd"),
+    creditsConsumed: integer("credits_consumed"),
+    attemptStartedAt: timestampColumn("attempt_started_at"),
+    completedAt: timestampColumn("completed_at"),
   },
   (table) => [
     uniqueIndex("ai_answers_run_prompt_model_idx").on(

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d23b6639-521f-4a95-b32a-28f36cdcdfcb",
+  "id": "78e57dc2-c7ec-401f-b42a-eb91426292ce",
   "prevId": "4a09e778-fc4a-48b7-8b75-4ea0897234f1",
   "tables": {
     "backlink_snapshots": {
@@ -1374,7 +1374,8 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'pending'"
         },
         "response_text": {
           "name": "response_text",
@@ -1433,9 +1434,45 @@
           "notNull": false,
           "autoincrement": false
         },
+        "from_cache": {
+          "name": "from_cache",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "billing_path": {
+          "name": "billing_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "provider_cost_usd": {
           "name": "provider_cost_usd",
           "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "credits_consumed": {
+          "name": "credits_consumed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "attempt_started_at": {
+          "name": "attempt_started_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1702,241 +1739,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "ai_brand_resolution_evidence": {
-      "name": "ai_brand_resolution_evidence",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "rule_id": {
-          "name": "rule_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "kind": {
-          "name": "kind",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "value": {
-          "name": "value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(current_timestamp)"
-        }
-      },
-      "indexes": {
-        "ai_brand_resolution_evidence_rule_idx": {
-          "name": "ai_brand_resolution_evidence_rule_idx",
-          "columns": [
-            "rule_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "ai_brand_resolution_evidence_rule_id_ai_brand_resolution_rules_id_fk": {
-          "name": "ai_brand_resolution_evidence_rule_id_ai_brand_resolution_rules_id_fk",
-          "tableFrom": "ai_brand_resolution_evidence",
-          "tableTo": "ai_brand_resolution_rules",
-          "columnsFrom": [
-            "rule_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "ai_brand_resolution_rules": {
-      "name": "ai_brand_resolution_rules",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "project_id": {
-          "name": "project_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "normalized_name": {
-          "name": "normalized_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "brand_id": {
-          "name": "brand_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "source": {
-          "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "rule_version": {
-          "name": "rule_version",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "confidence": {
-          "name": "confidence",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "supersedes_rule_id": {
-          "name": "supersedes_rule_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(current_timestamp)"
-        },
-        "superseded_at": {
-          "name": "superseded_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "ai_brand_resolution_rules_active_name_idx": {
-          "name": "ai_brand_resolution_rules_active_name_idx",
-          "columns": [
-            "project_id",
-            "normalized_name"
-          ],
-          "isUnique": true,
-          "where": "\"ai_brand_resolution_rules\".\"superseded_at\" IS NULL"
-        },
-        "ai_brand_resolution_rules_project_state_idx": {
-          "name": "ai_brand_resolution_rules_project_state_idx",
-          "columns": [
-            "project_id",
-            "state"
-          ],
-          "isUnique": false
-        },
-        "ai_brand_resolution_rules_brand_idx": {
-          "name": "ai_brand_resolution_rules_brand_idx",
-          "columns": [
-            "brand_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "ai_brand_resolution_rules_project_id_projects_id_fk": {
-          "name": "ai_brand_resolution_rules_project_id_projects_id_fk",
-          "tableFrom": "ai_brand_resolution_rules",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "ai_brand_resolution_rules_brand_id_ai_brands_id_fk": {
-          "name": "ai_brand_resolution_rules_brand_id_ai_brands_id_fk",
-          "tableFrom": "ai_brand_resolution_rules",
-          "tableTo": "ai_brands",
-          "columnsFrom": [
-            "brand_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "ai_brand_resolution_rules_supersedes_rule_id_ai_brand_resolution_rules_id_fk": {
-          "name": "ai_brand_resolution_rules_supersedes_rule_id_ai_brand_resolution_rules_id_fk",
-          "tableFrom": "ai_brand_resolution_rules",
-          "tableTo": "ai_brand_resolution_rules",
-          "columnsFrom": [
-            "supersedes_rule_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "ai_brands": {
       "name": "ai_brands",
       "columns": {
@@ -2135,6 +1937,84 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "ai_project_run_settings": {
+      "name": "ai_project_run_settings",
+      "columns": {
+        "project_id": {
+          "name": "project_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cadence": {
+          "name": "cadence",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'weekly'"
+        },
+        "answer_call_cap": {
+          "name": "answer_call_cap",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 200
+        },
+        "window_started_at": {
+          "name": "window_started_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "calls_reserved": {
+          "name": "calls_reserved",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ai_project_run_settings_project_id_projects_id_fk": {
+          "name": "ai_project_run_settings_project_id_projects_id_fk",
+          "tableFrom": "ai_project_run_settings",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "ai_prompt_set_models": {
       "name": "ai_prompt_set_models",
       "columns": {
@@ -2246,6 +2126,20 @@
         },
         "next_run_at": {
           "name": "next_run_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_skip_reason": {
+          "name": "last_skip_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_skipped_at": {
+          "name": "last_skipped_at",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -2635,6 +2529,21 @@
           "notNull": true,
           "autoincrement": false,
           "default": 0
+        },
+        "reserved_answer_calls": {
+          "name": "reserved_answer_calls",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "reservation_window_started_at": {
+          "name": "reservation_window_started_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "provider_cost_usd": {
           "name": "provider_cost_usd",

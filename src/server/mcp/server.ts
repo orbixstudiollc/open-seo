@@ -2,8 +2,13 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { instrumentMcpToolHandler } from "@/server/mcp/instrumentation";
 import { getBacklinksOverviewTool } from "@/server/mcp/tools/get-backlinks-overview";
 import { getBacklinksProfileTool } from "@/server/mcp/tools/get-backlinks-profile";
+import { getAiVisibilityAnalyticsTool } from "@/server/mcp/tools/get-ai-visibility-analytics";
 import { getAiVisibilityStateTool } from "@/server/mcp/tools/get-ai-visibility-state";
 import { getBrandResolutionStateTool } from "@/server/mcp/tools/get-brand-resolution-state";
+import {
+  manageAiPromptTrackingTool,
+  runAiPromptSetTool,
+} from "@/server/mcp/tools/ai-prompt-tracking-tools";
 import { getDomainKeywordSuggestionsTool } from "@/server/mcp/tools/get-domain-keyword-suggestions";
 import { getDomainOverviewTool } from "@/server/mcp/tools/get-domain-overview";
 import { getRankTrackerTool } from "@/server/mcp/tools/get-rank-tracker";
@@ -173,6 +178,33 @@ export function registerOpenSeoMcpTools(server: McpServer) {
       manageBrandResolutionTool.name,
       manageBrandResolutionTool.config.outputSchema,
       manageBrandResolutionTool.handler,
+    ),
+  );
+  server.registerTool(
+    getAiVisibilityAnalyticsTool.name,
+    getAiVisibilityAnalyticsTool.config,
+    instrumentMcpToolHandler(
+      getAiVisibilityAnalyticsTool.name,
+      getAiVisibilityAnalyticsTool.config.outputSchema,
+      getAiVisibilityAnalyticsTool.handler,
+    ),
+  );
+  server.registerTool(
+    manageAiPromptTrackingTool.name,
+    manageAiPromptTrackingTool.config,
+    instrumentMcpToolHandler(
+      manageAiPromptTrackingTool.name,
+      manageAiPromptTrackingTool.config.outputSchema,
+      manageAiPromptTrackingTool.handler,
+    ),
+  );
+  server.registerTool(
+    runAiPromptSetTool.name,
+    runAiPromptSetTool.config,
+    instrumentMcpToolHandler(
+      runAiPromptSetTool.name,
+      runAiPromptSetTool.config.outputSchema,
+      runAiPromptSetTool.handler,
     ),
   );
   server.registerTool(

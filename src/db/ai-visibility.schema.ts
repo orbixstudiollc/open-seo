@@ -11,6 +11,26 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { projects } from "./app.schema";
 
+export const aiProjectRunSettings = sqliteTable("ai_project_run_settings", {
+  projectId: text("project_id")
+    .primaryKey()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  cadence: text("cadence", {
+    enum: ["daily", "weekly", "monthly", "manual"],
+  })
+    .notNull()
+    .default("weekly"),
+  answerCallCap: integer("answer_call_cap").notNull().default(200),
+  windowStartedAt: text("window_started_at"),
+  callsReserved: integer("calls_reserved").notNull().default(0),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`(current_timestamp)`),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(current_timestamp)`),
+});
+
 export const aiPromptSets = sqliteTable(
   "ai_prompt_sets",
   {
@@ -28,6 +48,17 @@ export const aiPromptSets = sqliteTable(
     isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
     lastRunAt: text("last_run_at"),
     nextRunAt: text("next_run_at"),
+    lastSkipReason: text("last_skip_reason", {
+      enum: [
+        "run_cap_reached",
+        "no_prompts",
+        "payment_required",
+        "already_running",
+        "archived",
+        "workflow_start_failed",
+      ],
+    }),
+    lastSkippedAt: text("last_skipped_at"),
     createdAt: text("created_at")
       .notNull()
       .default(sql`(current_timestamp)`),
@@ -324,6 +355,8 @@ export const aiRuns = sqliteTable(
     answersExpected: integer("answers_expected").notNull().default(0),
     answersSucceeded: integer("answers_succeeded").notNull().default(0),
     answersFailed: integer("answers_failed").notNull().default(0),
+    reservedAnswerCalls: integer("reserved_answer_calls").notNull().default(0),
+    reservationWindowStartedAt: text("reservation_window_started_at"),
     providerCostUsd: real("provider_cost_usd"),
     creditsConsumed: integer("credits_consumed"),
     errorMessage: text("error_message"),
@@ -353,7 +386,11 @@ export const aiAnswers = sqliteTable(
     promptText: text("prompt_text").notNull(),
     model: text("model").notNull(),
     modelName: text("model_name"),
-    status: text("status", { enum: ["success", "error"] }).notNull(),
+    status: text("status", {
+      enum: ["pending", "running", "success", "error"],
+    })
+      .notNull()
+      .default("pending"),
     responseText: text("response_text"),
     errorCode: text("error_code"),
     errorMessage: text("error_message"),
@@ -364,7 +401,14 @@ export const aiAnswers = sqliteTable(
       .default(sql`(current_timestamp)`),
     outputTokens: integer("output_tokens"),
     webSearch: integer("web_search", { mode: "boolean" }),
+    fromCache: integer("from_cache", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    billingPath: text("billing_path"),
     providerCostUsd: real("provider_cost_usd"),
+    creditsConsumed: integer("credits_consumed"),
+    attemptStartedAt: text("attempt_started_at"),
+    completedAt: text("completed_at"),
   },
   (table) => [
     uniqueIndex("ai_answers_run_prompt_model_idx").on(

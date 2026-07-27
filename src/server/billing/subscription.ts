@@ -206,20 +206,10 @@ export async function trackUsageCreditSpend(args: {
   costUsd: number;
   monthlyRemaining: number;
   properties?: Record<string, unknown>;
-}): Promise<void> {
-  const totalCostUsd = roundUsdForBilling(args.costUsd * SEO_DATA_COST_MARKUP);
-  const totalCostCredits = Math.ceil(
-    totalCostUsd * AUTUMN_SEO_DATA_CREDITS_PER_USD,
-  );
-  if (totalCostCredits <= 0) return;
-
-  // Clamp at 0: Autumn balances can read negative after an overdraft, and a
-  // negative monthly reading here would inflate the topup deduction.
-  const monthlyDeduct = Math.min(
-    Math.max(args.monthlyRemaining, 0),
-    totalCostCredits,
-  );
-  const topupDeduct = totalCostCredits - monthlyDeduct;
+}): Promise<UsageCreditSpendResult> {
+  const spend = calculateUsageCreditSpend(args.costUsd, args.monthlyRemaining);
+  const { totalCostUsd, totalCostCredits, monthlyDeduct, topupDeduct } = spend;
+  if (totalCostCredits <= 0) return spend;
 
   const properties = {
     currency: "USD",
@@ -272,4 +262,38 @@ export async function trackUsageCreditSpend(args: {
       cost_usd: totalCostUsd,
     },
   });
+
+  return spend;
+}
+
+type UsageCreditSpendResult = {
+  totalCostUsd: number;
+  totalCostCredits: number;
+  monthlyDeduct: number;
+  topupDeduct: number;
+};
+
+function calculateUsageCreditSpend(
+  costUsd: number,
+  monthlyRemaining: number,
+): UsageCreditSpendResult {
+  const totalCostUsd = roundUsdForBilling(costUsd * SEO_DATA_COST_MARKUP);
+  const totalCostCredits = Math.ceil(
+    totalCostUsd * AUTUMN_SEO_DATA_CREDITS_PER_USD,
+  );
+
+  // Clamp at 0: Autumn balances can read negative after an overdraft, and a
+  // negative monthly reading here would inflate the topup deduction.
+  const monthlyDeduct = Math.min(
+    Math.max(monthlyRemaining, 0),
+    totalCostCredits,
+  );
+  const topupDeduct = totalCostCredits - monthlyDeduct;
+
+  return {
+    totalCostUsd,
+    totalCostCredits,
+    monthlyDeduct,
+    topupDeduct,
+  };
 }

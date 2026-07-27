@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   getPromptSetsForProject: vi.fn(),
   getBrandRegistry: vi.fn(),
   getRunsForProject: vi.fn(),
+  getOrCreateProjectRunSettings: vi.fn(),
   getPromptSetDefinition: vi.fn(),
   getRunWithObservations: vi.fn(),
 }));
@@ -24,6 +25,7 @@ vi.mock(
       getPromptSetsForProject: mocks.getPromptSetsForProject,
       getBrandRegistry: mocks.getBrandRegistry,
       getRunsForProject: mocks.getRunsForProject,
+      getOrCreateProjectRunSettings: mocks.getOrCreateProjectRunSettings,
       getPromptSetDefinition: mocks.getPromptSetDefinition,
       getRunWithObservations: mocks.getRunWithObservations,
     },
@@ -64,6 +66,12 @@ describe("get_ai_visibility_state MCP tool", () => {
       locationCode: 2840,
       languageCode: "en",
     });
+    mocks.getOrCreateProjectRunSettings.mockResolvedValue({
+      projectId: "project_1",
+      cadence: "weekly",
+      answerCallCap: 200,
+      callsReserved: 0,
+    });
   });
 
   it("returns project-scoped persisted state without spending credits", async () => {
@@ -90,6 +98,7 @@ describe("get_ai_visibility_state MCP tool", () => {
       brands: [{ id: "brand_1" }],
       aliases: [{ id: "alias_1" }],
       runs: [{ id: "run_1" }],
+      settings: { cadence: "weekly", answerCallCap: 200 },
       meta: { projectId: "project_1" },
     });
   });

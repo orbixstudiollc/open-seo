@@ -2,6 +2,7 @@ import {
   Bookmark,
   Bot,
   ClipboardCheck,
+  Eye,
   GitMerge,
   Globe,
   LayoutDashboard,
@@ -57,6 +58,11 @@ const projectNavItems = [
     to: "/p/$projectId/audit" as const,
     label: "Site Audit",
     icon: ClipboardCheck,
+  },
+  {
+    to: "/p/$projectId/visibility" as const,
+    label: "AI Visibility",
+    icon: Eye,
   },
   {
     to: "/p/$projectId/brand-lookup" as const,
@@ -122,6 +128,7 @@ export function getProjectNavGroups(projectId: string) {
     {
       label: "My Site",
       items: [
+        byPath("/p/$projectId/visibility"),
         byPath("/p/$projectId/search-performance"),
         byPath("/p/$projectId/brand-resolution"),
         byPath("/p/$projectId/rank-tracking"),
