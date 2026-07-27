@@ -267,6 +267,13 @@
       "when": 1785160137792,
       "tag": "0037_uneven_wild_child",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1785169287948,
+      "tag": "0038_amazing_grim_reaper",
+      "breakpoints": true
     }
   ]
 }

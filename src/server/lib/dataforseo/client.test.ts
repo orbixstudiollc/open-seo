@@ -99,6 +99,7 @@ import {
 } from "@/server/lib/dataforseo/client";
 import { DataforseoChargedTaskError } from "@/server/lib/dataforseo/envelope";
 import { fetchBacklinksSummary } from "@/server/lib/dataforseo/backlinks";
+import { fetchLlmResponse } from "@/server/lib/dataforseo/ai";
 
 const billingCustomer = {
   organizationId: "org_123",
@@ -346,6 +347,66 @@ describe("meterDataforseoCall with split balances", () => {
     );
     expect(topupCall![0].properties?.balanceFeatureId).toBe(
       AUTUMN_SEO_DATA_TOPUP_BALANCE_FEATURE_ID,
+    );
+  });
+});
+
+describe("detailed LLM response metering", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const input = {
+    modelSlug: "chat_gpt" as const,
+    modelName: "gpt-5",
+    userPrompt: "Which tool?",
+  };
+
+  it("returns the DataForSEO billing envelope in self-hosted mode", async () => {
+    isHostedServerAuthModeMock.mockResolvedValue(false);
+    vi.mocked(fetchLlmResponse).mockResolvedValue({
+      data: { model_name: "gpt-5", items: [] },
+      billing: {
+        path: ["v3", "ai_optimization", "chat_gpt", "llm_responses", "live"],
+        costUsd: 0.01234,
+      },
+    });
+
+    const result =
+      await createDataforseoClient(
+        billingCustomer,
+      ).aiSearch.llmResponseWithBilling(input);
+
+    expect(result).toEqual({
+      data: { model_name: "gpt-5", items: [] },
+      billing: {
+        path: ["v3", "ai_optimization", "chat_gpt", "llm_responses", "live"],
+        costUsd: 0.01234,
+      },
+      creditsConsumed: 0,
+    });
+    expect(trackMock).not.toHaveBeenCalled();
+  });
+
+  it("returns hosted credits consumed alongside provider cost", async () => {
+    setupHostedMode();
+    mockBalances(5_000, 0);
+    vi.mocked(fetchLlmResponse).mockResolvedValue({
+      data: { model_name: "gpt-5", items: [] },
+      billing: {
+        path: ["v3", "ai_optimization", "chat_gpt", "llm_responses", "live"],
+        costUsd: 0.05,
+      },
+    });
+
+    const result =
+      await createDataforseoClient(
+        billingCustomer,
+      ).aiSearch.llmResponseWithBilling(input);
+
+    expect(result.billing.costUsd).toBe(0.05);
+    expect(result.creditsConsumed).toBe(
+      Math.ceil(0.05 * SEO_DATA_COST_MARKUP * AUTUMN_SEO_DATA_CREDITS_PER_USD),
     );
   });
 });

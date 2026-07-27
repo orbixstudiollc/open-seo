@@ -34,7 +34,7 @@ const PROMPT_RESPONSE_TTL_SECONDS = 7 * 24 * 60 * 60;
  * tokens against this budget — at 1024 ChatGPT regularly burns the whole
  * budget on reasoning and returns a near-empty visible message.
  */
-const PROMPT_RESPONSE_MAX_TOKENS = 4096;
+export const PROMPT_RESPONSE_MAX_TOKENS = 4096;
 
 type DataforseoClient = ReturnType<typeof createDataforseoClient>;
 
@@ -126,17 +126,18 @@ async function runModel(
 // Each value must be a member of ACCEPTED_LLM_MODEL_NAMES in dataforseo/ai.ts,
 // which mirrors DataForSEO's llm_responses/models catalog. DataForSEO dropped
 // the Claude Sonnet 4.0 family, so we target the 4.5 alias (latest dated 4.5).
-const MODEL_NAMES: Record<PromptExplorerModel, string> = {
-  chat_gpt: "gpt-5",
-  claude: "claude-sonnet-4-5",
-  gemini: "gemini-2.5-pro",
-  perplexity: "sonar-reasoning-pro",
-};
+export const PROMPT_EXPLORER_MODEL_NAMES: Record<PromptExplorerModel, string> =
+  {
+    chat_gpt: "gpt-5",
+    claude: "claude-sonnet-4-5",
+    gemini: "gemini-2.5-pro",
+    perplexity: "sonar-reasoning-pro",
+  };
 
 function fetchModelResponse(args: RunModelArgs): Promise<LlmResponseResult> {
   return args.dataforseo.aiSearch.llmResponse({
     modelSlug: args.model,
-    modelName: MODEL_NAMES[args.model],
+    modelName: PROMPT_EXPLORER_MODEL_NAMES[args.model],
     userPrompt: args.input.prompt,
     webSearch: args.input.webSearch,
     webSearchCountryCode: args.input.webSearchCountryCode,
@@ -194,7 +195,7 @@ function reapplyHighlightBrand(
   };
 }
 
-function extractText(response: LlmResponseResult): string {
+export function extractText(response: LlmResponseResult): string {
   const textParts: string[] = [];
   for (const item of response.items ?? []) {
     if (item.type !== "message") continue;

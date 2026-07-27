@@ -5,17 +5,23 @@ import {
   desc,
   eq,
   inArray,
+  isNull,
   isNotNull,
   lt,
+  lte,
+  or,
+  sql,
   type InferInsertModel,
 } from "drizzle-orm";
 import type { db as providerDb } from "@/db";
+import { projects } from "@/db/app.schema";
 import {
   aiAnswers,
   aiBrandAliases,
   aiBrandMentions,
   aiBrands,
   aiCitations,
+  aiProjectRunSettings,
   aiPromptSetModels,
   aiPromptSets,
   aiPromptTagAssignments,
@@ -30,6 +36,8 @@ import {
 } from "@/shared/ai-visibility";
 
 const tables = {
+  projects,
+  aiProjectRunSettings,
   aiPromptSets,
   aiPromptSetModels,
   aiPromptTopics,
@@ -49,6 +57,8 @@ export type AiVisibilityRepositoryTables = typeof tables;
 
 type PromptSetInsert = InferInsertModel<typeof aiPromptSets>;
 type PromptSetRecord = typeof aiPromptSets.$inferSelect;
+type ProjectRunSettingsInsert = InferInsertModel<typeof aiProjectRunSettings>;
+type ProjectRunSettingsRecord = typeof aiProjectRunSettings.$inferSelect;
 type TopicInsert = InferInsertModel<typeof aiPromptTopics>;
 type TopicRecord = typeof aiPromptTopics.$inferSelect;
 type TrackedPromptInsert = InferInsertModel<typeof aiTrackedPrompts>;
@@ -75,14 +85,55 @@ type CitationInsert = Omit<
 type CitationRecord = typeof aiCitations.$inferSelect;
 
 type AiVisibilityRepositoryContract = {
+  getOrCreateProjectRunSettings: (
+    projectId: string,
+  ) => Promise<ProjectRunSettingsRecord>;
+  updateProjectRunSettings: (
+    projectId: string,
+    values: Partial<ProjectRunSettingsInsert>,
+  ) => Promise<ProjectRunSettingsRecord>;
+  reserveProjectAnswerCalls: (values: {
+    projectId: string;
+    calls: number;
+    windowStartedAt: string;
+    now: string;
+  }) => Promise<{
+    reserved: boolean;
+    settings: ProjectRunSettingsRecord;
+  }>;
   createPromptSet: (values: PromptSetInsert) => Promise<PromptSetRecord>;
+  updatePromptSet: (
+    promptSetId: string,
+    projectId: string,
+    values: Partial<PromptSetInsert>,
+  ) => Promise<PromptSetRecord | null>;
   addPromptSetModels: (promptSetId: string, models: string[]) => Promise<void>;
+  replacePromptSetModels: (
+    promptSetId: string,
+    models: string[],
+  ) => Promise<void>;
   createTopic: (values: TopicInsert) => Promise<TopicRecord>;
+  updateTopic: (
+    topicId: string,
+    promptSetId: string,
+    values: Partial<TopicInsert>,
+  ) => Promise<TopicRecord | null>;
   createTrackedPrompt: (
     values: TrackedPromptInsert,
   ) => Promise<TrackedPromptRecord>;
+  updateTrackedPrompt: (
+    trackedPromptId: string,
+    promptSetId: string,
+    values: Partial<TrackedPromptInsert>,
+  ) => Promise<TrackedPromptRecord | null>;
   createTag: (values: TagInsert) => Promise<TagRecord>;
+  updateTag: (
+    tagId: string,
+    promptSetId: string,
+    values: Partial<TagInsert>,
+  ) => Promise<TagRecord | null>;
   assignTag: (trackedPromptId: string, tagId: string) => Promise<void>;
+  unassignTag: (trackedPromptId: string, tagId: string) => Promise<void>;
   createBrand: (values: BrandInsert) => Promise<BrandRecord>;
   createBrandAlias: (values: BrandAliasInsert) => Promise<BrandAliasRecord>;
   getPromptSetsForProject: (projectId: string) => Promise<PromptSetRecord[]>;
@@ -94,6 +145,22 @@ type AiVisibilityRepositoryContract = {
     tags: TagRecord[];
     assignments: Array<{ trackedPromptId: string; tagId: string }>;
   } | null>;
+  getRunnablePromptSetDefinition: (promptSetId: string) => Promise<{
+    promptSet: PromptSetRecord;
+    models: (typeof aiPromptSetModels.$inferSelect)[];
+    prompts: TrackedPromptRecord[];
+  } | null>;
+  getDuePromptSetsWithOrganization: (
+    nowIso: string,
+    limit?: number,
+  ) => Promise<
+    Array<
+      PromptSetRecord & {
+        organizationId: string;
+        projectCadence: "daily" | "weekly" | "monthly" | "manual" | null;
+      }
+    >
+  >;
   getBrandRegistry: (projectId: string) => Promise<{
     brands: BrandRecord[];
     aliases: BrandAliasRecord[];
@@ -112,7 +179,25 @@ type AiVisibilityRepositoryContract = {
     startedAt?: string;
   }) => Promise<boolean>;
   updateRun: (runId: string, values: Partial<RunInsert>) => Promise<void>;
+  getRunById: (runId: string) => Promise<RunRecord | null>;
+  getActiveRunForPromptSet: (promptSetId: string) => Promise<RunRecord | null>;
   createAnswer: (values: AnswerInsert) => Promise<AnswerRecord>;
+  createAnswerPlaceholders: (values: AnswerInsert[]) => Promise<void>;
+  claimPendingAnswer: (
+    answerId: string,
+    runId: string,
+    attemptStartedAt: string,
+  ) => Promise<boolean>;
+  completeRunningAnswer: (
+    answerId: string,
+    runId: string,
+    values: Partial<AnswerInsert>,
+  ) => Promise<boolean>;
+  getAnswerById: (
+    answerId: string,
+    runId: string,
+  ) => Promise<AnswerRecord | null>;
+  getAnswersForRun: (runId: string) => Promise<AnswerRecord[]>;
   insertBrandMentions: (values: BrandMentionInsert[]) => Promise<void>;
   insertCitations: (values: CitationInsert[]) => Promise<void>;
   getRunWithObservations: (runId: string) => Promise<{
@@ -145,6 +230,91 @@ export function createAiVisibilityRepository(
   database: AiVisibilityRepositoryDatabase,
   schema: AiVisibilityRepositoryTables = tables,
 ): AiVisibilityRepositoryContract {
+  async function getOrCreateProjectRunSettings(projectId: string) {
+    await database
+      .insert(schema.aiProjectRunSettings)
+      .values({ projectId })
+      .onConflictDoNothing({ target: schema.aiProjectRunSettings.projectId });
+    const [row] = await database
+      .select()
+      .from(schema.aiProjectRunSettings)
+      .where(eq(schema.aiProjectRunSettings.projectId, projectId))
+      .limit(1);
+    if (!row) throw new Error("Failed to resolve AI project run settings");
+    return row;
+  }
+
+  async function updateProjectRunSettings(
+    projectId: string,
+    values: Partial<ProjectRunSettingsInsert>,
+  ) {
+    await getOrCreateProjectRunSettings(projectId);
+    const [row] = await database
+      .update(schema.aiProjectRunSettings)
+      .set(values)
+      .where(eq(schema.aiProjectRunSettings.projectId, projectId))
+      .returning();
+    if (!row) throw new Error("Failed to update AI project run settings");
+    return row;
+  }
+
+  async function reserveProjectAnswerCalls(values: {
+    projectId: string;
+    calls: number;
+    windowStartedAt: string;
+    now: string;
+  }) {
+    const existing = await getOrCreateProjectRunSettings(values.projectId);
+    if (!Number.isSafeInteger(values.calls) || values.calls <= 0) {
+      return { reserved: false, settings: existing };
+    }
+
+    const windowExpired = or(
+      isNull(schema.aiProjectRunSettings.windowStartedAt),
+      lt(schema.aiProjectRunSettings.windowStartedAt, values.windowStartedAt),
+    );
+    const withinCurrentWindowCap = lte(
+      sql`${schema.aiProjectRunSettings.callsReserved} + ${values.calls}`,
+      schema.aiProjectRunSettings.answerCallCap,
+    );
+    const runFitsCap = lte(
+      sql`${values.calls}`,
+      schema.aiProjectRunSettings.answerCallCap,
+    );
+
+    const [reserved] = await database
+      .update(schema.aiProjectRunSettings)
+      .set({
+        windowStartedAt: sql`CASE
+          WHEN ${schema.aiProjectRunSettings.windowStartedAt} IS NULL
+            OR ${schema.aiProjectRunSettings.windowStartedAt} < ${values.windowStartedAt}
+          THEN ${values.windowStartedAt}
+          ELSE ${schema.aiProjectRunSettings.windowStartedAt}
+        END`,
+        callsReserved: sql`CASE
+          WHEN ${schema.aiProjectRunSettings.windowStartedAt} IS NULL
+            OR ${schema.aiProjectRunSettings.windowStartedAt} < ${values.windowStartedAt}
+          THEN ${values.calls}
+          ELSE ${schema.aiProjectRunSettings.callsReserved} + ${values.calls}
+        END`,
+        updatedAt: values.now,
+      })
+      .where(
+        and(
+          eq(schema.aiProjectRunSettings.projectId, values.projectId),
+          runFitsCap,
+          or(windowExpired, withinCurrentWindowCap),
+        ),
+      )
+      .returning();
+
+    if (reserved) return { reserved: true, settings: reserved };
+    return {
+      reserved: false,
+      settings: await getOrCreateProjectRunSettings(values.projectId),
+    };
+  }
+
   async function createPromptSet(values: PromptSetInsert) {
     const [row] = await database
       .insert(schema.aiPromptSets)
@@ -152,6 +322,24 @@ export function createAiVisibilityRepository(
       .returning();
     if (!row) throw new Error("Failed to create AI prompt set");
     return row;
+  }
+
+  async function updatePromptSet(
+    promptSetId: string,
+    projectId: string,
+    values: Partial<PromptSetInsert>,
+  ) {
+    const [row] = await database
+      .update(schema.aiPromptSets)
+      .set(values)
+      .where(
+        and(
+          eq(schema.aiPromptSets.id, promptSetId),
+          eq(schema.aiPromptSets.projectId, projectId),
+        ),
+      )
+      .returning();
+    return row ?? null;
   }
 
   async function addPromptSetModels(promptSetId: string, models: string[]) {
@@ -170,6 +358,19 @@ export function createAiVisibilityRepository(
       });
   }
 
+  async function replacePromptSetModels(promptSetId: string, models: string[]) {
+    const validatedModels = Array.from(
+      new Set(models.map((model) => aiVisibilityModelSchema.parse(model))),
+    );
+    if (validatedModels.length === 0) {
+      throw new Error("A prompt set must enable at least one model");
+    }
+    await database
+      .delete(schema.aiPromptSetModels)
+      .where(eq(schema.aiPromptSetModels.promptSetId, promptSetId));
+    await addPromptSetModels(promptSetId, validatedModels);
+  }
+
   async function createTopic(values: TopicInsert) {
     const [row] = await database
       .insert(schema.aiPromptTopics)
@@ -177,6 +378,24 @@ export function createAiVisibilityRepository(
       .returning();
     if (!row) throw new Error("Failed to create AI prompt topic");
     return row;
+  }
+
+  async function updateTopic(
+    topicId: string,
+    promptSetId: string,
+    values: Partial<TopicInsert>,
+  ) {
+    const [row] = await database
+      .update(schema.aiPromptTopics)
+      .set(values)
+      .where(
+        and(
+          eq(schema.aiPromptTopics.id, topicId),
+          eq(schema.aiPromptTopics.promptSetId, promptSetId),
+        ),
+      )
+      .returning();
+    return row ?? null;
   }
 
   async function createTrackedPrompt(values: TrackedPromptInsert) {
@@ -188,6 +407,24 @@ export function createAiVisibilityRepository(
     return row;
   }
 
+  async function updateTrackedPrompt(
+    trackedPromptId: string,
+    promptSetId: string,
+    values: Partial<TrackedPromptInsert>,
+  ) {
+    const [row] = await database
+      .update(schema.aiTrackedPrompts)
+      .set(values)
+      .where(
+        and(
+          eq(schema.aiTrackedPrompts.id, trackedPromptId),
+          eq(schema.aiTrackedPrompts.promptSetId, promptSetId),
+        ),
+      )
+      .returning();
+    return row ?? null;
+  }
+
   async function createTag(values: TagInsert) {
     const [row] = await database
       .insert(schema.aiPromptTags)
@@ -195,6 +432,24 @@ export function createAiVisibilityRepository(
       .returning();
     if (!row) throw new Error("Failed to create AI prompt tag");
     return row;
+  }
+
+  async function updateTag(
+    tagId: string,
+    promptSetId: string,
+    values: Partial<TagInsert>,
+  ) {
+    const [row] = await database
+      .update(schema.aiPromptTags)
+      .set(values)
+      .where(
+        and(
+          eq(schema.aiPromptTags.id, tagId),
+          eq(schema.aiPromptTags.promptSetId, promptSetId),
+        ),
+      )
+      .returning();
+    return row ?? null;
   }
 
   async function assignTag(trackedPromptId: string, tagId: string) {
@@ -207,6 +462,17 @@ export function createAiVisibilityRepository(
           schema.aiPromptTagAssignments.tagId,
         ],
       });
+  }
+
+  async function unassignTag(trackedPromptId: string, tagId: string) {
+    await database
+      .delete(schema.aiPromptTagAssignments)
+      .where(
+        and(
+          eq(schema.aiPromptTagAssignments.trackedPromptId, trackedPromptId),
+          eq(schema.aiPromptTagAssignments.tagId, tagId),
+        ),
+      );
   }
 
   async function createBrand(values: BrandInsert) {
@@ -301,6 +567,63 @@ export function createAiVisibilityRepository(
     return { promptSet, models, topics, prompts, tags, assignments };
   }
 
+  async function getRunnablePromptSetDefinition(promptSetId: string) {
+    const definition = await getPromptSetDefinition(promptSetId);
+    if (
+      !definition ||
+      !definition.promptSet.isActive ||
+      definition.promptSet.archivedAt
+    ) {
+      return null;
+    }
+    return {
+      promptSet: definition.promptSet,
+      models: definition.models,
+      prompts: definition.prompts.filter((prompt) => !prompt.archivedAt),
+    };
+  }
+
+  async function getDuePromptSetsWithOrganization(nowIso: string, limit = 50) {
+    const rows = await database
+      .select({
+        promptSet: schema.aiPromptSets,
+        organizationId: schema.projects.organizationId,
+        projectCadence: schema.aiProjectRunSettings.cadence,
+      })
+      .from(schema.aiPromptSets)
+      .innerJoin(
+        schema.projects,
+        eq(schema.aiPromptSets.projectId, schema.projects.id),
+      )
+      .leftJoin(
+        schema.aiProjectRunSettings,
+        eq(
+          schema.aiPromptSets.projectId,
+          schema.aiProjectRunSettings.projectId,
+        ),
+      )
+      .where(
+        and(
+          eq(schema.aiPromptSets.isActive, true),
+          isNull(schema.aiPromptSets.archivedAt),
+          isNull(schema.projects.archivedAt),
+          isNotNull(schema.aiPromptSets.nextRunAt),
+          lte(schema.aiPromptSets.nextRunAt, nowIso),
+        ),
+      )
+      .orderBy(
+        asc(schema.aiPromptSets.nextRunAt),
+        asc(schema.aiPromptSets.createdAt),
+      )
+      .limit(Math.min(Math.max(limit, 1), 50));
+
+    return rows.map((row) => ({
+      ...row.promptSet,
+      organizationId: row.organizationId,
+      projectCadence: row.projectCadence,
+    }));
+  }
+
   async function getBrandRegistry(projectId: string) {
     const [brands, aliases] = await Promise.all([
       database
@@ -350,6 +673,29 @@ export function createAiVisibilityRepository(
       .where(eq(schema.aiRuns.id, runId));
   }
 
+  async function getRunById(runId: string) {
+    const [row] = await database
+      .select()
+      .from(schema.aiRuns)
+      .where(eq(schema.aiRuns.id, runId))
+      .limit(1);
+    return row ?? null;
+  }
+
+  async function getActiveRunForPromptSet(promptSetId: string) {
+    const [row] = await database
+      .select()
+      .from(schema.aiRuns)
+      .where(
+        and(
+          eq(schema.aiRuns.promptSetId, promptSetId),
+          inArray(schema.aiRuns.status, ["pending", "running"]),
+        ),
+      )
+      .limit(1);
+    return row ?? null;
+  }
+
   async function createAnswer(values: AnswerInsert) {
     const model = aiVisibilityModelSchema.parse(values.model);
     await database
@@ -376,6 +722,91 @@ export function createAiVisibilityRepository(
       .limit(1);
     if (!row) throw new Error("Failed to create AI answer");
     return row;
+  }
+
+  async function createAnswerPlaceholders(values: AnswerInsert[]) {
+    for (let i = 0; i < values.length; i += OBSERVATION_INSERT_SIZE) {
+      const chunk = values
+        .slice(i, i + OBSERVATION_INSERT_SIZE)
+        .map((value) => ({
+          ...value,
+          model: aiVisibilityModelSchema.parse(value.model),
+        }));
+      if (chunk.length === 0) continue;
+      await database
+        .insert(schema.aiAnswers)
+        .values(chunk)
+        .onConflictDoNothing({
+          target: [
+            schema.aiAnswers.runId,
+            schema.aiAnswers.trackedPromptId,
+            schema.aiAnswers.model,
+          ],
+        });
+    }
+  }
+
+  async function claimPendingAnswer(
+    answerId: string,
+    runId: string,
+    attemptStartedAt: string,
+  ) {
+    const claimed = await database
+      .update(schema.aiAnswers)
+      .set({ status: "running", attemptStartedAt })
+      .where(
+        and(
+          eq(schema.aiAnswers.id, answerId),
+          eq(schema.aiAnswers.runId, runId),
+          eq(schema.aiAnswers.status, "pending"),
+        ),
+      )
+      .returning({ id: schema.aiAnswers.id });
+    return claimed.length > 0;
+  }
+
+  async function completeRunningAnswer(
+    answerId: string,
+    runId: string,
+    values: Partial<AnswerInsert>,
+  ) {
+    const completed = await database
+      .update(schema.aiAnswers)
+      .set(values)
+      .where(
+        and(
+          eq(schema.aiAnswers.id, answerId),
+          eq(schema.aiAnswers.runId, runId),
+          eq(schema.aiAnswers.status, "running"),
+        ),
+      )
+      .returning({ id: schema.aiAnswers.id });
+    return completed.length > 0;
+  }
+
+  async function getAnswerById(answerId: string, runId: string) {
+    const [row] = await database
+      .select()
+      .from(schema.aiAnswers)
+      .where(
+        and(
+          eq(schema.aiAnswers.id, answerId),
+          eq(schema.aiAnswers.runId, runId),
+        ),
+      )
+      .limit(1);
+    return row ?? null;
+  }
+
+  async function getAnswersForRun(runId: string) {
+    return database
+      .select()
+      .from(schema.aiAnswers)
+      .where(eq(schema.aiAnswers.runId, runId))
+      .orderBy(
+        asc(schema.aiAnswers.trackedPromptId),
+        asc(schema.aiAnswers.model),
+      );
   }
 
   async function insertBrandMentions(values: BrandMentionInsert[]) {
@@ -498,21 +929,39 @@ export function createAiVisibilityRepository(
   }
 
   return {
+    getOrCreateProjectRunSettings,
+    updateProjectRunSettings,
+    reserveProjectAnswerCalls,
     createPromptSet,
+    updatePromptSet,
     addPromptSetModels,
+    replacePromptSetModels,
     createTopic,
+    updateTopic,
     createTrackedPrompt,
+    updateTrackedPrompt,
     createTag,
+    updateTag,
     assignTag,
+    unassignTag,
     createBrand,
     createBrandAlias,
     getPromptSetsForProject,
     getPromptSetDefinition,
+    getRunnablePromptSetDefinition,
+    getDuePromptSetsWithOrganization,
     getBrandRegistry,
     getRunsForProject,
     tryCreateRun,
     updateRun,
+    getRunById,
+    getActiveRunForPromptSet,
     createAnswer,
+    createAnswerPlaceholders,
+    claimPendingAnswer,
+    completeRunningAnswer,
+    getAnswerById,
+    getAnswersForRun,
     insertBrandMentions,
     insertCitations,
     getRunWithObservations,

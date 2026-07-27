@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  aiRunCadenceSchema,
+  AI_TRACKED_RUN_DEFAULT_CALL_CAP,
+  AI_TRACKED_RUN_MAX_CALL_CAP,
+} from "@/shared/ai-visibility";
 
 /**
  * Input + output schemas for the AI Search feature (Brand Lookup + Prompt
@@ -245,6 +250,119 @@ export const promptExplorerResultSchema = z.object({
 });
 
 export type PromptExplorerResult = z.infer<typeof promptExplorerResultSchema>;
+
+// ---------------------------------------------------------------------------
+// Tracked prompt sets
+// ---------------------------------------------------------------------------
+
+const trackedEntityNameSchema = z.string().trim().min(1).max(120);
+const trackedEntityIdSchema = z.string().min(1);
+
+export const aiProjectRunSettingsInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  cadence: aiRunCadenceSchema.default("weekly"),
+  answerCallCap: z
+    .number()
+    .int()
+    .min(1)
+    .max(AI_TRACKED_RUN_MAX_CALL_CAP)
+    .default(AI_TRACKED_RUN_DEFAULT_CALL_CAP),
+});
+
+export const createAiPromptSetInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  name: trackedEntityNameSchema,
+  models: z
+    .array(promptExplorerModelSchema)
+    .min(1)
+    .max(PROMPT_EXPLORER_MODELS.length)
+    .default([...PROMPT_EXPLORER_MODELS]),
+});
+
+export const updateAiPromptSetInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  name: trackedEntityNameSchema.optional(),
+  models: z
+    .array(promptExplorerModelSchema)
+    .min(1)
+    .max(PROMPT_EXPLORER_MODELS.length)
+    .optional(),
+  isActive: z.boolean().optional(),
+});
+
+export const archiveAiPromptSetInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+});
+
+export const createAiPromptTopicInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  name: trackedEntityNameSchema,
+});
+
+export const updateAiPromptTopicInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  topicId: trackedEntityIdSchema,
+  name: trackedEntityNameSchema.optional(),
+  archived: z.boolean().optional(),
+});
+
+export const createAiTrackedPromptInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  topicId: trackedEntityIdSchema.nullable().optional(),
+  prompt: z.string().trim().min(1).max(PROMPT_EXPLORER_MAX_PROMPT_LENGTH),
+  sortOrder: z.number().int().min(0).max(100_000).default(0),
+});
+
+export const updateAiTrackedPromptInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  trackedPromptId: trackedEntityIdSchema,
+  topicId: trackedEntityIdSchema.nullable().optional(),
+  prompt: z
+    .string()
+    .trim()
+    .min(1)
+    .max(PROMPT_EXPLORER_MAX_PROMPT_LENGTH)
+    .optional(),
+  sortOrder: z.number().int().min(0).max(100_000).optional(),
+  archived: z.boolean().optional(),
+});
+
+export const createAiPromptTagInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  name: trackedEntityNameSchema,
+});
+
+export const updateAiPromptTagInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  tagId: trackedEntityIdSchema,
+  name: trackedEntityNameSchema.optional(),
+  archived: z.boolean().optional(),
+});
+
+export const assignAiPromptTagInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+  trackedPromptId: trackedEntityIdSchema,
+  tagId: trackedEntityIdSchema,
+  assigned: z.boolean().default(true),
+});
+
+export const runAiPromptSetInputSchema = z.object({
+  projectId: trackedEntityIdSchema,
+  promptSetId: trackedEntityIdSchema,
+});
+
+export type AiProjectRunSettingsInput = z.infer<
+  typeof aiProjectRunSettingsInputSchema
+>;
 
 // ---------------------------------------------------------------------------
 // URL search params

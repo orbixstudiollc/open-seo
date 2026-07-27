@@ -42,6 +42,18 @@ export type AnalyticsBrandRow = {
 
 const RUN_ID_BATCH_SIZE = 80;
 const TERMINAL_RUN_STATUSES = ["completed", "partial", "failed"] as const;
+// Phase 1 introduced durable pending/running answer placeholders. Analytics
+// reads only terminal answers: an in-flight tuple is not an observation.
+const TERMINAL_ANSWER_STATUSES = ["success", "error"] as const;
+type TerminalAnswerStatus = (typeof TERMINAL_ANSWER_STATUSES)[number];
+
+function isTerminalObservation<Row extends { answerStatus: string }>(
+  row: Row,
+): row is Row & { answerStatus: TerminalAnswerStatus } {
+  return (TERMINAL_ANSWER_STATUSES as readonly string[]).includes(
+    row.answerStatus,
+  );
+}
 
 async function getRunsWithAnswers(projectId: string) {
   return db
@@ -94,8 +106,14 @@ async function getObservations(runIds: string[]) {
           eq(aiPromptTopics.id, aiTrackedPrompts.topicId),
         )
         .leftJoin(aiBrandMentions, eq(aiBrandMentions.answerId, aiAnswers.id))
-        .where(inArray(aiRuns.id, ids))
-        .orderBy(asc(aiRuns.startedAt), asc(aiAnswers.id))),
+        .where(
+          and(
+            inArray(aiRuns.id, ids),
+            inArray(aiAnswers.status, [...TERMINAL_ANSWER_STATUSES]),
+          ),
+        )
+        .orderBy(asc(aiRuns.startedAt), asc(aiAnswers.id))
+      ).filter(isTerminalObservation),
     );
   }
   return rows;
