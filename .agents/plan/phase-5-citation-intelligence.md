@@ -9,7 +9,7 @@ analysis that turns measurement into targets: **which domains cite your
 competitors but never you.**
 
 The audit found the asymmetry this addresses — `orbix.studio` is the #10 most
-cited domain at 19.6%, while the Orbix *brand* appears in 3% of answers. The site
+cited domain at 19.6%, while the Orbix _brand_ appears in 3% of answers. The site
 is read and quoted; the brand is not recommended. Only source-level data exposes
 that gap.
 

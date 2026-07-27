@@ -54,12 +54,12 @@ Adversarial cost review specifically:
 
 Volume is `prompts × platforms × frequency` and compounds silently.
 
-| Configuration | Calls/run | Monthly |
-|---|---|---|
-| 45 prompts × 2 platforms, weekly | 90 | ~390 |
-| 45 prompts × 2 platforms, daily | 90 | ~2,700 |
-| 45 prompts × 6 platforms, daily | 270 | ~8,100 |
+| Configuration                    | Calls/run | Monthly |
+| -------------------------------- | --------- | ------- |
+| 45 prompts × 2 platforms, weekly | 90        | ~390    |
+| 45 prompts × 2 platforms, daily  | 90        | ~2,700  |
+| 45 prompts × 6 platforms, daily  | 270       | ~8,100  |
 
 **Confirm current DataForSEO per-call LLM pricing before setting a default.** The
 figure drives the budget and has not been verified. Ship cadence control and the
-cap in *this* phase, not later.
+cap in _this_ phase, not later.
