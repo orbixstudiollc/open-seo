@@ -220,13 +220,17 @@ runRepositoryContract("sqlite", async () => {
   await sqliteClient.execute(
     "CREATE TABLE projects (id text PRIMARY KEY NOT NULL)",
   );
-  const [migrationPath] = globSync("drizzle/*.sql")
-    .filter((path) =>
-      readFileSync(path, "utf8").includes("CREATE TABLE `ai_prompt_sets`"),
-    )
-    .toSorted();
-  if (!migrationPath) throw new Error("AI visibility SQLite migration missing");
-  await sqliteClient.executeMultiple(readFileSync(migrationPath, "utf8"));
+  const migrations = globSync("drizzle/*.sql").toSorted();
+  const initialMigrationIndex = migrations.findIndex((path) =>
+    readFileSync(path, "utf8").includes("CREATE TABLE `ai_prompt_sets`"),
+  );
+  if (initialMigrationIndex < 0) {
+    throw new Error("AI visibility SQLite migration missing");
+  }
+  for (const path of migrations.slice(initialMigrationIndex)) {
+    const sql = readFileSync(path, "utf8");
+    if (sql.includes("ai_")) await sqliteClient.executeMultiple(sql);
+  }
   await sqliteClient.execute({
     sql: "INSERT INTO projects (id) VALUES (?)",
     args: ["sqlite-project"],
