@@ -99,6 +99,48 @@ body {
   overflow: hidden;
 }
 
+/* DESIGN.md-scoped tokens for the tracked AI Visibility overview. Existing
+   application surfaces intentionally keep the standard OpenSEO theme. */
+.ai-visibility-page {
+  --visibility-canvas: #f7f7f4;
+  --visibility-canvas-soft: #fafaf7;
+  --visibility-surface: #ffffff;
+  --visibility-ink: #26251e;
+  --visibility-body: #5a5852;
+  --visibility-muted: #807d72;
+  --visibility-hairline: #e6e5e0;
+  --visibility-hairline-strong: #cfcdc4;
+  --visibility-accent: #f54e00;
+  --visibility-accent-active: #d04200;
+  background: var(--visibility-canvas);
+  color: var(--visibility-ink);
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+html[data-theme="openseo-dark"] .ai-visibility-page {
+  --visibility-canvas: #171713;
+  --visibility-canvas-soft: #1b1a17;
+  --visibility-surface: #211f1b;
+  --visibility-ink: #f1efe7;
+  --visibility-body: #c8c4b8;
+  --visibility-muted: #9d998d;
+  --visibility-hairline: #36342e;
+  --visibility-hairline-strong: #4b4840;
+  --visibility-accent: #f54e00;
+  --visibility-accent-active: #d04200;
+}
+
+.ai-visibility-card {
+  border: 1px solid var(--visibility-hairline);
+  border-radius: 12px;
+  background: var(--visibility-surface);
+}
+
+.ai-visibility-display {
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
 /* Prevent Safari mobile from zooming on input focus (requires 16px minimum) */
 input,
 textarea,
