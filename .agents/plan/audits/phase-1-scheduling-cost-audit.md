@@ -39,7 +39,6 @@ A tracked run therefore needs run-level status plus one durable answer/status ro
 
 - `createDataforseoClient` wraps every paid endpoint, including `llmResponse`, in [client.ts](src/server/lib/dataforseo/client.ts:124).
 - In hosted mode, each individual call:
-
   1. Ensures an Autumn customer exists.
   2. Checks that the combined monthly/top-up balance is greater than zero.
   3. Calls DataForSEO.

@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { instrumentMcpToolHandler } from "@/server/mcp/instrumentation";
 import { getBacklinksOverviewTool } from "@/server/mcp/tools/get-backlinks-overview";
 import { getBacklinksProfileTool } from "@/server/mcp/tools/get-backlinks-profile";
+import { getAiVisibilityAnalyticsTool } from "@/server/mcp/tools/get-ai-visibility-analytics";
 import { getAiVisibilityStateTool } from "@/server/mcp/tools/get-ai-visibility-state";
 import { getDomainKeywordSuggestionsTool } from "@/server/mcp/tools/get-domain-keyword-suggestions";
 import { getDomainOverviewTool } from "@/server/mcp/tools/get-domain-overview";
@@ -153,6 +154,15 @@ export function registerOpenSeoMcpTools(server: McpServer) {
       getAiVisibilityStateTool.name,
       getAiVisibilityStateTool.config.outputSchema,
       getAiVisibilityStateTool.handler,
+    ),
+  );
+  server.registerTool(
+    getAiVisibilityAnalyticsTool.name,
+    getAiVisibilityAnalyticsTool.config,
+    instrumentMcpToolHandler(
+      getAiVisibilityAnalyticsTool.name,
+      getAiVisibilityAnalyticsTool.config.outputSchema,
+      getAiVisibilityAnalyticsTool.handler,
     ),
   );
   server.registerTool(
