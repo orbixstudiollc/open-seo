@@ -1,7 +1,4 @@
-import {
-  isValidDomainHost,
-  normalizeDomain,
-} from "@/types/schemas/domain";
+import { isValidDomainHost, normalizeDomain } from "@/types/schemas/domain";
 
 type DetectedTarget = {
   type: "domain" | "keyword";

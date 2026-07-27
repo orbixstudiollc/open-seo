@@ -89,8 +89,8 @@ describe("brand resolution reversible persistence", () => {
     service = createBrandResolutionService(repository);
   });
 
-  afterAll(async () => {
-    await client.close();
+  afterAll(() => {
+    client.close();
   });
 
   it("resolves the gate corpus and merge-split round-trips with zero mention loss", async () => {
@@ -116,14 +116,16 @@ describe("brand resolution reversible persistence", () => {
     });
     expect(byName.get("clay")?.decision.brandId).toBe("clay-brand");
     expect(byName.get("clay global")?.decision.brandId).toBe("clay-brand");
-    expect(refreshed.state.canonicalBrands).toEqual([
-      expect.objectContaining({
-        brand: expect.objectContaining({ id: "clay-brand", name: "Clay" }),
-        normalizedNames: ["clay", "clay global"],
-        rawNames: ["Clay", "Clay Global"],
-        mentionCount: 3,
-      }),
-    ]);
+    expect(refreshed.state.canonicalBrands).toHaveLength(1);
+    expect(refreshed.state.canonicalBrands[0]).toMatchObject({
+      normalizedNames: ["clay", "clay global"],
+      rawNames: ["Clay", "Clay Global"],
+      mentionCount: 3,
+    });
+    expect(refreshed.state.canonicalBrands[0]?.brand).toMatchObject({
+      id: "clay-brand",
+      name: "Clay",
+    });
 
     await service.applyManualAction(
       {

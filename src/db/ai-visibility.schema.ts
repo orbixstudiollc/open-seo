@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- normalized AI visibility tables stay in one dialect schema for parity review. */
 import { sql } from "drizzle-orm";
 import {
   type AnySQLiteColumn,

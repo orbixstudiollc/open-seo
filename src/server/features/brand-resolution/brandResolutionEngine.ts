@@ -57,7 +57,7 @@ export type ResolutionCandidate = {
   rawNames: string[];
 };
 
-export type MergeSuggestion = {
+type MergeSuggestion = {
   id: string;
   sourceNormalizedName: string;
   targetBrandId: string;
