@@ -310,12 +310,17 @@ samp,
   color: var(--app-on-primary);
 }
 
-.btn-primary:hover,
-.btn-primary:active,
-.btn-primary.btn-active {
+.btn-primary:not(:disabled):hover,
+.btn-primary:not(:disabled):active,
+.btn-primary:not(:disabled).btn-active {
   border-color: var(--app-primary-active);
   background: var(--app-primary-active);
   color: #ffffff;
+}
+
+.btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .btn:not(

@@ -1,20 +1,26 @@
+import { Link } from "@tanstack/react-router";
 import type {
   VisibilityLeaderboardSort,
   VisibilityBreakdown,
   VisibilityOverview,
 } from "@/types/schemas/ai-visibility-analytics";
 import { formatAiModelLabel } from "@/shared/aiVisibilityLabels";
+import { TrackedPromptRunButton } from "./TrackedPromptRunButton";
 
 export function VisibilityBreakdownCard({
   title,
   description,
   rows,
   limit,
+  projectId,
+  promptActions = false,
 }: {
   title: string;
   description: string;
   rows: VisibilityBreakdown[];
   limit?: number;
+  projectId?: string;
+  promptActions?: boolean;
 }) {
   const visibleRows = limit ? rows.slice(0, limit) : rows;
   return (
@@ -28,7 +34,12 @@ export function VisibilityBreakdownCard({
       {visibleRows.length > 0 ? (
         <ul className="divide-y divide-[var(--app-hairline)]">
           {visibleRows.map((row) => (
-            <BreakdownRow key={row.key} row={row} />
+            <BreakdownRow
+              key={row.key}
+              row={row}
+              projectId={projectId}
+              promptActions={promptActions}
+            />
           ))}
         </ul>
       ) : (
@@ -40,15 +51,35 @@ export function VisibilityBreakdownCard({
   );
 }
 
-function BreakdownRow({ row }: { row: VisibilityBreakdown }) {
+function BreakdownRow({
+  row,
+  projectId,
+  promptActions,
+}: {
+  row: VisibilityBreakdown;
+  projectId?: string;
+  promptActions: boolean;
+}) {
   const pct = row.metric.visibilityPct;
   return (
     <li className="px-5 py-3.5">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium" title={row.label}>
-            {row.label}
-          </p>
+          {promptActions && projectId ? (
+            <Link
+              to="/p/$projectId/visibility/answers"
+              params={{ projectId }}
+              search={{ promptId: row.trackedPromptId ?? row.key }}
+              className="block truncate text-sm font-medium underline decoration-[var(--app-hairline-strong)] underline-offset-2"
+              title={row.label}
+            >
+              {row.label}
+            </Link>
+          ) : (
+            <p className="truncate text-sm font-medium" title={row.label}>
+              {row.label}
+            </p>
+          )}
           <p className="mt-0.5 truncate text-xs text-[var(--app-muted)]">
             {row.detail ? `${row.detail} · ` : ""}
             {row.metric.mentionedAnswers} of {row.metric.successfulAnswers}{" "}
@@ -58,9 +89,23 @@ function BreakdownRow({ row }: { row: VisibilityBreakdown }) {
               : ""}
           </p>
         </div>
-        <span className="shrink-0 text-sm font-semibold tabular-nums">
-          {pct == null ? "—" : formatPercent(pct)}
-        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="text-sm font-semibold tabular-nums">
+            {pct == null ? "—" : formatPercent(pct)}
+          </span>
+          {promptActions &&
+          projectId &&
+          row.promptSetId &&
+          row.trackedPromptId ? (
+            <TrackedPromptRunButton
+              compact
+              projectId={projectId}
+              promptSetId={row.promptSetId}
+              trackedPromptId={row.trackedPromptId}
+              modelCount={0}
+            />
+          ) : null}
+        </div>
       </div>
       <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--app-hairline)]">
         <div
@@ -76,10 +121,14 @@ export function ShareOfVoiceCard({
   shareOfVoice,
   primaryBrandName,
   onSortChange,
+  projectId,
+  windowDays,
 }: {
   shareOfVoice: VisibilityOverview["shareOfVoice"];
   primaryBrandName: string | null;
   onSortChange: (sort: VisibilityLeaderboardSort) => void;
+  projectId: string;
+  windowDays: 7 | 30 | 90;
 }) {
   return (
     <section className="ai-visibility-card overflow-hidden">
@@ -115,9 +164,16 @@ export function ShareOfVoiceCard({
             {shareOfVoice.entries.map((entry) => (
               <li key={entry.brandId} className="px-5 py-3.5">
                 <div className="flex items-center gap-2">
-                  <span className="min-w-0 truncate text-sm font-medium">
+                  <Link
+                    to="/p/$projectId/visibility/brands/$brandId"
+                    params={{ projectId, brandId: entry.brandId }}
+                    search={{
+                      days: windowDays === 30 ? undefined : windowDays,
+                    }}
+                    className="min-w-0 truncate text-sm font-medium underline decoration-[var(--app-hairline-strong)] underline-offset-2"
+                  >
                     {entry.label}
-                  </span>
+                  </Link>
                   {entry.isTarget ? (
                     <span className="rounded-full bg-[var(--app-ink)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--app-canvas)]">
                       You

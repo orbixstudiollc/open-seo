@@ -143,7 +143,9 @@ function parseRuns(rows: AnalyticsRunRow[]): ParsedRun[] {
   });
 }
 
-function normalizeAnswers(rows: AnalyticsObservationRow[]): StoredAnswer[] {
+export function normalizeAnswers(
+  rows: AnalyticsObservationRow[],
+): StoredAnswer[] {
   const byId = new Map<string, StoredAnswer>();
   for (const row of rows) {
     const runStartedAt = parseStoredTimestamp(row.runStartedAt);
@@ -154,10 +156,13 @@ function normalizeAnswers(rows: AnalyticsObservationRow[]): StoredAnswer[] {
         id: row.answerId,
         runId: row.runId,
         runStartedAt,
+        promptSetId: row.promptSetId ?? null,
         trackedPromptId: row.trackedPromptId,
         promptText: row.promptText,
         model: row.model,
         modelName: row.modelName,
+        responseText: row.responseText ?? null,
+        observedAt: row.answerObservedAt ?? row.runStartedAt,
         status: row.answerStatus,
         topicId: row.topicId,
         topicName: row.topicName,
@@ -312,7 +317,7 @@ function earliestRunDate(runs: ParsedRun[]): Date | null {
   return earliest;
 }
 
-function parseStoredTimestamp(value: string): Date | null {
+export function parseStoredTimestamp(value: string): Date | null {
   const isoLike = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/u.test(value)
     ? `${value.replace(" ", "T")}Z`
     : value;

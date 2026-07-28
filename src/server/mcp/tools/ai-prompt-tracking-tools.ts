@@ -20,6 +20,7 @@ import {
   PROMPT_EXPLORER_MODELS,
   promptExplorerModelSchema,
   runAiPromptSetInputSchema,
+  runAiTrackedPromptInputSchema,
   updateAiPromptSetInputSchema,
   updateAiPromptTagInputSchema,
   updateAiPromptTopicInputSchema,
@@ -206,6 +207,49 @@ export const runAiPromptSetTool = {
       text: result.ok
         ? `Started AI tracked run ${result.runId}.`
         : `AI tracked run was not started: ${result.reason}.`,
+      meta: {
+        ...buildProjectMeta(context, args.projectId),
+        runId: result.ok ? result.runId : undefined,
+      },
+      structuredContent: { result },
+    });
+  }),
+};
+
+const runPromptInputSchema = {
+  ...runInputSchema,
+  trackedPromptId: z.string().min(1),
+} as const;
+
+type RunPromptArgs = z.infer<z.ZodObject<typeof runPromptInputSchema>>;
+
+export const runAiTrackedPromptTool = {
+  name: "run_ai_tracked_prompt",
+  config: {
+    title: "Run one tracked AI prompt",
+    description:
+      "Run one tracked prompt across the prompt set's enabled models. This performs paid DataForSEO LLM calls and uses the same atomic project call budget and replay-safe Workflow tuples as full and scheduled runs.",
+    inputSchema: runPromptInputSchema,
+    outputSchema: {
+      result: looseObjectOutputSchema,
+      ...optionalMetaOutputSchema,
+    },
+    annotations: {
+      readOnlyHint: false,
+      openWorldHint: true,
+      destructiveHint: false,
+    },
+  },
+  handler: withMcpProjectAuth(async (args: RunPromptArgs, context) => {
+    const input = runAiTrackedPromptInputSchema.parse(args);
+    const result = await AiVisibilityService.runTrackedPrompt({
+      ...input,
+      billingCustomer: context.billing,
+    });
+    return mcpResponse({
+      text: result.ok
+        ? `Started one-prompt AI tracked run ${result.runId}.`
+        : `AI tracked prompt was not run: ${result.reason}.`,
       meta: {
         ...buildProjectMeta(context, args.projectId),
         runId: result.ok ? result.runId : undefined,

@@ -51,6 +51,8 @@ export type VisibilityBreakdown = {
   key: string;
   label: string;
   detail: string | null;
+  promptSetId?: string | null;
+  trackedPromptId?: string | null;
   metric: VisibilityMetric;
 };
 

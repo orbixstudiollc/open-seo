@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { AlertCircle, ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import { useState } from "react";
 import { getStandardErrorMessage } from "@/client/lib/error-messages";
@@ -43,6 +44,7 @@ export function VisibilityOverviewPage({
   if (setupQuery.isPending) {
     return (
       <VisibilityOverviewLoading
+        projectId={projectId}
         windowDays={windowDays}
         onWindowChange={onWindowChange}
       />
@@ -53,7 +55,11 @@ export function VisibilityOverviewPage({
     return (
       <PageFrame
         header={
-          <OverviewHeader windowDays={windowDays} onChange={onWindowChange} />
+          <OverviewHeader
+            projectId={projectId}
+            windowDays={windowDays}
+            onChange={onWindowChange}
+          />
         }
       >
         <div
@@ -124,6 +130,7 @@ function ConfiguredVisibilityOverview({
   if (query.isPending) {
     return (
       <VisibilityOverviewLoading
+        projectId={projectId}
         windowDays={windowDays}
         onWindowChange={onWindowChange}
       />
@@ -134,7 +141,11 @@ function ConfiguredVisibilityOverview({
     return (
       <PageFrame
         header={
-          <OverviewHeader windowDays={windowDays} onChange={onWindowChange} />
+          <OverviewHeader
+            projectId={projectId}
+            windowDays={windowDays}
+            onChange={onWindowChange}
+          />
         }
       >
         <div
@@ -155,7 +166,11 @@ function ConfiguredVisibilityOverview({
   return (
     <PageFrame
       header={
-        <OverviewHeader windowDays={windowDays} onChange={onWindowChange} />
+        <OverviewHeader
+          projectId={projectId}
+          windowDays={windowDays}
+          onChange={onWindowChange}
+        />
       }
     >
       <HeadlineSection overview={overview} />
@@ -182,11 +197,15 @@ function ConfiguredVisibilityOverview({
           title="By prompt"
           description="Answer-level visibility for every tracked prompt."
           rows={overview.prompts}
+          projectId={projectId}
+          promptActions
         />
         <ShareOfVoiceCard
           shareOfVoice={overview.shareOfVoice}
           primaryBrandName={overview.primaryBrand?.name ?? null}
           onSortChange={setLeaderboardSort}
+          projectId={projectId}
+          windowDays={windowDays}
         />
       </div>
     </PageFrame>
@@ -211,9 +230,11 @@ function PageFrame({
 }
 
 function OverviewHeader({
+  projectId,
   windowDays,
   onChange,
 }: {
+  projectId: string;
   windowDays: VisibilityWindow;
   onChange: (window: VisibilityWindow) => void;
 }) {
@@ -252,6 +273,13 @@ function OverviewHeader({
           </button>
         ))}
       </div>
+      <Link
+        to="/p/$projectId/visibility/answers"
+        params={{ projectId }}
+        className="btn btn-sm self-start sm:self-auto"
+      >
+        Read stored answers
+      </Link>
     </header>
   );
 }
@@ -351,16 +379,22 @@ function DeltaLabel({ overview }: { overview: VisibilityOverview }) {
 }
 
 function VisibilityOverviewLoading({
+  projectId,
   windowDays,
   onWindowChange,
 }: {
+  projectId: string;
   windowDays: VisibilityWindow;
   onWindowChange: (window: VisibilityWindow) => void;
 }) {
   return (
     <PageFrame
       header={
-        <OverviewHeader windowDays={windowDays} onChange={onWindowChange} />
+        <OverviewHeader
+          projectId={projectId}
+          windowDays={windowDays}
+          onChange={onWindowChange}
+        />
       }
     >
       <div className="grid gap-4 lg:grid-cols-2" aria-busy>
