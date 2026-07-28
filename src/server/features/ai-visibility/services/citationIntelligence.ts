@@ -10,6 +10,7 @@ import type {
 import type {
   CitationDomainRollup,
   CitationIntelligenceOverview,
+  CitationRecommendationGap,
   CitationUrlRollup,
   CompetitorSourceGap,
 } from "@/types/schemas/citation-intelligence";
@@ -36,6 +37,7 @@ type BuildCitationIntelligenceArgs = {
 };
 
 type StoredCitation = CitationSourceKey & {
+  id: number;
   title: string | null;
 };
 
@@ -43,6 +45,10 @@ type StoredAnswer = {
   id: string;
   runStartedAt: Date;
   status: "success" | "error";
+  trackedPromptId: string;
+  promptText: string;
+  model: string;
+  observedAt: Date;
   citations: StoredCitation[];
   mentionedBrandIds: Set<string>;
 };
@@ -173,7 +179,7 @@ function normalizeAnswers(args: BuildCitationIntelligenceArgs): StoredAnswer[] {
     const source = deriveCitationSourceKey(row.url);
     if (!source) continue;
     const rows = citationsByAnswer.get(row.answerId) ?? [];
-    rows.push({ ...source, title: row.title });
+    rows.push({ ...source, id: row.id, title: row.title });
     citationsByAnswer.set(row.answerId, rows);
   }
   const mentionsByAnswer = new Map<string, Set<string>>();
@@ -185,12 +191,17 @@ function normalizeAnswers(args: BuildCitationIntelligenceArgs): StoredAnswer[] {
   }
   return args.answers.flatMap((row) => {
     const runStartedAt = parseStoredTimestamp(row.runStartedAt);
-    return runStartedAt
+    const observedAt = parseStoredTimestamp(row.observedAt);
+    return runStartedAt && observedAt
       ? [
           {
             id: row.id,
             runStartedAt,
             status: row.status,
+            trackedPromptId: row.trackedPromptId,
+            promptText: row.promptText,
+            model: row.model,
+            observedAt,
             citations: citationsByAnswer.get(row.id) ?? [],
             mentionedBrandIds:
               mentionsByAnswer.get(row.id) ?? new Set<string>(),
@@ -198,6 +209,209 @@ function normalizeAnswers(args: BuildCitationIntelligenceArgs): StoredAnswer[] {
         ]
       : [];
   });
+}
+
+export async function getCitationRecommendationGaps(input: {
+  projectId: string;
+  windowDays: VisibilityWindow;
+  asOf?: Date;
+}): Promise<CitationRecommendationGap[]> {
+  const { AiCitationIntelligenceRepository } =
+    await import("@/server/features/ai-visibility/repositories/AiCitationIntelligenceRepository");
+  const asOf = input.asOf ?? new Date();
+  const windowStart = new Date(asOf.getTime() - input.windowDays * DAY_MS);
+  const [runs, brands, classifications] = await Promise.all([
+    AiCitationIntelligenceRepository.getRunsWithAnswers(input.projectId),
+    AiCitationIntelligenceRepository.getBrands(input.projectId),
+    AiCitationIntelligenceRepository.getClassifications(input.projectId),
+  ]);
+  const relevantRunIds = runs
+    .filter((run) =>
+      isWithin(parseStoredTimestamp(run.startedAt), windowStart, asOf),
+    )
+    .map((run) => run.id);
+  const answers =
+    await AiCitationIntelligenceRepository.getAnswers(relevantRunIds);
+  const answerIds = answers.map((answer) => answer.id);
+  const [citations, mentions] = await Promise.all([
+    AiCitationIntelligenceRepository.getCitations(answerIds),
+    AiCitationIntelligenceRepository.getMentions(answerIds),
+  ]);
+
+  return buildCitationRecommendationGaps({
+    asOf,
+    windowDays: input.windowDays,
+    runs,
+    answers,
+    citations,
+    mentions,
+    brands,
+    classifications,
+  });
+}
+
+type GapTargetAggregate = {
+  citation: StoredCitation;
+  answerIds: Set<string>;
+  promptIds: Set<string>;
+  competitors: Map<string, CitationIntelligenceBrandRow>;
+  evidence: CitationRecommendationGap["evidence"];
+  observedAt: Date[];
+  models: Map<string, Set<string>>;
+};
+
+export function buildCitationRecommendationGaps(
+  args: BuildCitationIntelligenceArgs,
+): CitationRecommendationGap[] {
+  const asOf = validDate(args.asOf);
+  const windowStart = new Date(asOf.getTime() - args.windowDays * DAY_MS);
+  const activeBrands = dedupeActiveBrands(args.brands);
+  const primaryBrand = activeBrands.find((brand) => brand.isPrimary) ?? null;
+  if (!primaryBrand) return [];
+  const competitors = activeBrands.filter((brand) => !brand.isPrimary);
+  const competitorById = new Map(competitors.map((brand) => [brand.id, brand]));
+  const answers = normalizeAnswers(args)
+    .filter((answer) => isWithin(answer.runStartedAt, windowStart, asOf))
+    .filter((answer) => answer.status === "success");
+  const domainAggregates = aggregateDomains(answers);
+  const trackedBrandDomains = new Set(
+    activeBrands.flatMap((brand) => {
+      const domain = deriveBrandDomainKey(brand.domain);
+      return domain ? [domain] : [];
+    }),
+  );
+  const classificationByDomain = new Map(
+    [...domainAggregates.entries()].map(([domain, aggregate]) => [
+      domain,
+      classifyCitationDomain({
+        domain,
+        hostnames: sortedHostnames(aggregate.hostnameCounts),
+        classifications: args.classifications,
+        trackedBrandDomains,
+      }),
+    ]),
+  );
+  const primaryCitedDomains = new Set<string>();
+  const targets = new Map<string, GapTargetAggregate>();
+
+  for (const answer of answers) {
+    if (answer.mentionedBrandIds.has(primaryBrand.id)) {
+      for (const citation of answer.citations) {
+        primaryCitedDomains.add(citation.domain);
+      }
+    }
+    const competitorIds = [...answer.mentionedBrandIds].filter((brandId) =>
+      competitorById.has(brandId),
+    );
+    if (competitorIds.length === 0) continue;
+    for (const citation of answer.citations) {
+      const target = targets.get(citation.url) ?? {
+        citation,
+        answerIds: new Set<string>(),
+        promptIds: new Set<string>(),
+        competitors: new Map<string, CitationIntelligenceBrandRow>(),
+        evidence: [],
+        observedAt: [],
+        models: new Map<string, Set<string>>(),
+      };
+      target.answerIds.add(answer.id);
+      target.promptIds.add(answer.trackedPromptId);
+      target.observedAt.push(answer.observedAt);
+      const modelAnswers = target.models.get(answer.model) ?? new Set<string>();
+      modelAnswers.add(answer.id);
+      target.models.set(answer.model, modelAnswers);
+      if (!target.citation.title && citation.title) target.citation = citation;
+      for (const competitorId of competitorIds) {
+        const competitor = competitorById.get(competitorId);
+        if (!competitor) continue;
+        target.competitors.set(competitor.id, competitor);
+        target.evidence.push({
+          citationId: citation.id,
+          answerId: answer.id,
+          competitorBrandId: competitor.id,
+          competitorBrandName: competitor.name,
+          sourceUrl: citation.url,
+          sourceHostname: citation.hostname,
+          sourceTitle: citation.title,
+          promptText: answer.promptText,
+          model: answer.model,
+          observedAt: answer.observedAt.toISOString(),
+        });
+      }
+      targets.set(citation.url, target);
+    }
+  }
+
+  return [...targets.values()]
+    .filter(
+      (target) =>
+        !primaryCitedDomains.has(target.citation.domain) &&
+        target.evidence.length > 0,
+    )
+    .map((target) => {
+      const observed = target.observedAt.toSorted(
+        (a, b) => a.getTime() - b.getTime(),
+      );
+      return {
+        targetUrl: target.citation.url,
+        targetHostname: target.citation.hostname,
+        targetDomain: target.citation.domain,
+        targetTitle: target.citation.title,
+        targetCommunity: deriveCommunity(target.citation),
+        classification: classificationByDomain.get(target.citation.domain) ?? {
+          domainType: "unknown" as const,
+          method: "unclassified" as const,
+          matchScope: null,
+          ruleVersion: null,
+          confidence: null,
+        },
+        competitorBrands: [...target.competitors.values()]
+          .map((brand) => ({ id: brand.id, name: brand.name }))
+          .toSorted((a, b) => a.name.localeCompare(b.name)),
+        citationCount: new Set(
+          target.evidence.map((evidence) => evidence.citationId),
+        ).size,
+        answerCount: target.answerIds.size,
+        promptCount: target.promptIds.size,
+        targetBrandCitationCount: 0 as const,
+        firstObservedAt: observed[0].toISOString(),
+        lastObservedAt: observed.at(-1)!.toISOString(),
+        evidenceWindowStart: windowStart.toISOString(),
+        evidenceWindowEnd: asOf.toISOString(),
+        modelDistribution: [...target.models.entries()]
+          .map(([model, modelAnswerIds]) => ({
+            model,
+            answers: modelAnswerIds.size,
+          }))
+          .toSorted(
+            (a, b) => b.answers - a.answers || a.model.localeCompare(b.model),
+          ),
+        evidence: target.evidence.toSorted(
+          (a, b) =>
+            a.observedAt.localeCompare(b.observedAt) ||
+            a.citationId - b.citationId ||
+            a.competitorBrandName.localeCompare(b.competitorBrandName),
+        ),
+      };
+    })
+    .toSorted(
+      (a, b) =>
+        b.answerCount - a.answerCount ||
+        b.citationCount - a.citationCount ||
+        b.competitorBrands.length - a.competitorBrands.length ||
+        a.targetUrl.localeCompare(b.targetUrl),
+    );
+}
+
+function deriveCommunity(citation: StoredCitation): string | null {
+  if (citation.domain !== "reddit.com") return null;
+  const match = new URL(citation.url).pathname.match(/^\/r\/([^/]+)/iu);
+  if (!match?.[1]) return null;
+  try {
+    return `r/${decodeURIComponent(match[1])}`;
+  } catch {
+    return `r/${match[1]}`;
+  }
 }
 
 function aggregateDomains(

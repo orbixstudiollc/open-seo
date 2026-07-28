@@ -41,6 +41,7 @@ import { Route as ProjectPProjectIdSettingsRouteImport } from './routes/_project
 import { Route as ProjectPProjectIdSearchPerformanceRouteImport } from './routes/_project/p/$projectId/search-performance'
 import { Route as ProjectPProjectIdSavedRouteImport } from './routes/_project/p/$projectId/saved'
 import { Route as ProjectPProjectIdSamRouteImport } from './routes/_project/p/$projectId/sam'
+import { Route as ProjectPProjectIdRecommendationsRouteImport } from './routes/_project/p/$projectId/recommendations'
 import { Route as ProjectPProjectIdRankTrackingRouteImport } from './routes/_project/p/$projectId/rank-tracking'
 import { Route as ProjectPProjectIdPromptExplorerRouteImport } from './routes/_project/p/$projectId/prompt-explorer'
 import { Route as ProjectPProjectIdKeywordsRouteImport } from './routes/_project/p/$projectId/keywords'
@@ -218,6 +219,12 @@ const ProjectPProjectIdSamRoute = ProjectPProjectIdSamRouteImport.update({
   path: '/sam',
   getParentRoute: () => ProjectPProjectIdRouteRoute,
 } as any)
+const ProjectPProjectIdRecommendationsRoute =
+  ProjectPProjectIdRecommendationsRouteImport.update({
+    id: '/recommendations',
+    path: '/recommendations',
+    getParentRoute: () => ProjectPProjectIdRouteRoute,
+  } as any)
 const ProjectPProjectIdRankTrackingRoute =
   ProjectPProjectIdRankTrackingRouteImport.update({
     id: '/rank-tracking',
@@ -326,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/p/$projectId/keywords': typeof ProjectPProjectIdKeywordsRoute
   '/p/$projectId/prompt-explorer': typeof ProjectPProjectIdPromptExplorerRoute
   '/p/$projectId/rank-tracking': typeof ProjectPProjectIdRankTrackingRouteWithChildren
+  '/p/$projectId/recommendations': typeof ProjectPProjectIdRecommendationsRoute
   '/p/$projectId/sam': typeof ProjectPProjectIdSamRoute
   '/p/$projectId/saved': typeof ProjectPProjectIdSavedRoute
   '/p/$projectId/search-performance': typeof ProjectPProjectIdSearchPerformanceRoute
@@ -366,6 +374,7 @@ export interface FileRoutesByTo {
   '/p/$projectId/domain': typeof ProjectPProjectIdDomainRoute
   '/p/$projectId/keywords': typeof ProjectPProjectIdKeywordsRoute
   '/p/$projectId/prompt-explorer': typeof ProjectPProjectIdPromptExplorerRoute
+  '/p/$projectId/recommendations': typeof ProjectPProjectIdRecommendationsRoute
   '/p/$projectId/sam': typeof ProjectPProjectIdSamRoute
   '/p/$projectId/saved': typeof ProjectPProjectIdSavedRoute
   '/p/$projectId/search-performance': typeof ProjectPProjectIdSearchPerformanceRoute
@@ -414,6 +423,7 @@ export interface FileRoutesById {
   '/_project/p/$projectId/keywords': typeof ProjectPProjectIdKeywordsRoute
   '/_project/p/$projectId/prompt-explorer': typeof ProjectPProjectIdPromptExplorerRoute
   '/_project/p/$projectId/rank-tracking': typeof ProjectPProjectIdRankTrackingRouteWithChildren
+  '/_project/p/$projectId/recommendations': typeof ProjectPProjectIdRecommendationsRoute
   '/_project/p/$projectId/sam': typeof ProjectPProjectIdSamRoute
   '/_project/p/$projectId/saved': typeof ProjectPProjectIdSavedRoute
   '/_project/p/$projectId/search-performance': typeof ProjectPProjectIdSearchPerformanceRoute
@@ -459,6 +469,7 @@ export interface FileRouteTypes {
     | '/p/$projectId/keywords'
     | '/p/$projectId/prompt-explorer'
     | '/p/$projectId/rank-tracking'
+    | '/p/$projectId/recommendations'
     | '/p/$projectId/sam'
     | '/p/$projectId/saved'
     | '/p/$projectId/search-performance'
@@ -499,6 +510,7 @@ export interface FileRouteTypes {
     | '/p/$projectId/domain'
     | '/p/$projectId/keywords'
     | '/p/$projectId/prompt-explorer'
+    | '/p/$projectId/recommendations'
     | '/p/$projectId/sam'
     | '/p/$projectId/saved'
     | '/p/$projectId/search-performance'
@@ -546,6 +558,7 @@ export interface FileRouteTypes {
     | '/_project/p/$projectId/keywords'
     | '/_project/p/$projectId/prompt-explorer'
     | '/_project/p/$projectId/rank-tracking'
+    | '/_project/p/$projectId/recommendations'
     | '/_project/p/$projectId/sam'
     | '/_project/p/$projectId/saved'
     | '/_project/p/$projectId/search-performance'
@@ -799,6 +812,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectPProjectIdSamRouteImport
       parentRoute: typeof ProjectPProjectIdRouteRoute
     }
+    '/_project/p/$projectId/recommendations': {
+      id: '/_project/p/$projectId/recommendations'
+      path: '/recommendations'
+      fullPath: '/p/$projectId/recommendations'
+      preLoaderRoute: typeof ProjectPProjectIdRecommendationsRouteImport
+      parentRoute: typeof ProjectPProjectIdRouteRoute
+    }
     '/_project/p/$projectId/rank-tracking': {
       id: '/_project/p/$projectId/rank-tracking'
       path: '/rank-tracking'
@@ -964,6 +984,7 @@ interface ProjectPProjectIdRouteRouteChildren {
   ProjectPProjectIdKeywordsRoute: typeof ProjectPProjectIdKeywordsRoute
   ProjectPProjectIdPromptExplorerRoute: typeof ProjectPProjectIdPromptExplorerRoute
   ProjectPProjectIdRankTrackingRoute: typeof ProjectPProjectIdRankTrackingRouteWithChildren
+  ProjectPProjectIdRecommendationsRoute: typeof ProjectPProjectIdRecommendationsRoute
   ProjectPProjectIdSamRoute: typeof ProjectPProjectIdSamRoute
   ProjectPProjectIdSavedRoute: typeof ProjectPProjectIdSavedRoute
   ProjectPProjectIdSearchPerformanceRoute: typeof ProjectPProjectIdSearchPerformanceRoute
@@ -985,6 +1006,8 @@ const ProjectPProjectIdRouteRouteChildren: ProjectPProjectIdRouteRouteChildren =
     ProjectPProjectIdPromptExplorerRoute: ProjectPProjectIdPromptExplorerRoute,
     ProjectPProjectIdRankTrackingRoute:
       ProjectPProjectIdRankTrackingRouteWithChildren,
+    ProjectPProjectIdRecommendationsRoute:
+      ProjectPProjectIdRecommendationsRoute,
     ProjectPProjectIdSamRoute: ProjectPProjectIdSamRoute,
     ProjectPProjectIdSavedRoute: ProjectPProjectIdSavedRoute,
     ProjectPProjectIdSearchPerformanceRoute:

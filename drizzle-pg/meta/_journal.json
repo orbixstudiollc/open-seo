@@ -134,6 +134,13 @@
       "when": 1785220816578,
       "tag": "0018_rainy_sugar_man",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1785222051063,
+      "tag": "0019_pale_smiling_tiger",
+      "breakpoints": true
     }
   ]
 }
