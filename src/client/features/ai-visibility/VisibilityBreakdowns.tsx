@@ -1,4 +1,5 @@
 import type {
+  VisibilityLeaderboardSort,
   VisibilityBreakdown,
   VisibilityOverview,
 } from "@/types/schemas/ai-visibility-analytics";
@@ -74,17 +75,39 @@ function BreakdownRow({ row }: { row: VisibilityBreakdown }) {
 export function ShareOfVoiceCard({
   shareOfVoice,
   primaryBrandName,
+  onSortChange,
 }: {
   shareOfVoice: VisibilityOverview["shareOfVoice"];
   primaryBrandName: string | null;
+  onSortChange: (sort: VisibilityLeaderboardSort) => void;
 }) {
   return (
     <section className="ai-visibility-card overflow-hidden">
-      <div className="border-b border-[var(--visibility-hairline)] px-5 py-4">
-        <h2 className="text-base font-semibold">Share of Voice</h2>
-        <p className="mt-0.5 text-[13px] text-[var(--visibility-muted)]">
-          Mention volume among registered brands—not answer visibility.
-        </p>
+      <div className="flex flex-col gap-3 border-b border-[var(--visibility-hairline)] px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-base font-semibold">Brand leaderboard</h2>
+          <p className="mt-0.5 text-[13px] text-[var(--visibility-muted)]">
+            Mention volume, estimated sentiment, and first-mention position.
+          </p>
+        </div>
+        {shareOfVoice ? (
+          <label className="flex items-center gap-2 text-xs text-[var(--visibility-muted)]">
+            Sort by
+            <select
+              aria-label="Sort brand leaderboard"
+              className="h-9 rounded-md border border-[var(--visibility-hairline-strong)] bg-[var(--visibility-surface)] px-2 text-xs font-medium text-[var(--visibility-ink)]"
+              value={shareOfVoice.sortBy}
+              onChange={(event) => {
+                const sort = leaderboardSort(event.target.value);
+                if (sort) onSortChange(sort);
+              }}
+            >
+              <option value="mentions">Mentions</option>
+              <option value="sentiment">Sentiment estimate</option>
+              <option value="position">Average position</option>
+            </select>
+          </label>
+        ) : null}
       </div>
       {shareOfVoice ? (
         <>
@@ -107,6 +130,20 @@ export function ShareOfVoiceCard({
                     {entry.sharePct == null
                       ? "—"
                       : formatPercent(entry.sharePct)}
+                  </span>
+                </div>
+                <div className="mt-1.5 flex gap-3 text-[11px] tabular-nums text-[var(--visibility-muted)]">
+                  <span>
+                    Sentiment estimate{" "}
+                    {entry.sentimentEstimate == null
+                      ? "—"
+                      : formatSentimentEstimate(entry.sentimentEstimate)}
+                  </span>
+                  <span>
+                    Avg. position{" "}
+                    {entry.averagePosition == null
+                      ? "—"
+                      : `#${entry.averagePosition.toLocaleString(undefined, { maximumFractionDigits: 1 })}`}
                   </span>
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--visibility-hairline)]">
@@ -143,4 +180,18 @@ export function ShareOfVoiceCard({
 
 function formatPercent(value: number): string {
   return `${value.toLocaleString(undefined, { maximumFractionDigits: 1 })}%`;
+}
+
+function formatSentimentEstimate(value: number): string {
+  const formatted = value.toLocaleString(undefined, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  return value > 0 ? `+${formatted}` : formatted;
+}
+
+function leaderboardSort(value: string): VisibilityLeaderboardSort | null {
+  return value === "mentions" || value === "sentiment" || value === "position"
+    ? value
+    : null;
 }

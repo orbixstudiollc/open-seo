@@ -15,7 +15,7 @@ const DEFAULT_CHAT_AGENT_MODEL = "minimax/minimax-m3";
  * `custom` is any OpenAI-compatible gateway — a self-hosted LiteLLM/vLLM/Ollama,
  * or another vendor — selected by setting AI_BASE_URL.
  */
-type ChatProviderConfig =
+export type ChatProviderConfig =
   | { kind: "openrouter"; apiKey: string; modelId: string }
   | { kind: "custom"; apiKey: string; modelId: string; baseURL: string };
 
@@ -108,6 +108,30 @@ export function buildChatAgentModel(
   return createOpenRouter({ apiKey: config.apiKey })(config.modelId, {
     usage: { include: true },
     reasoning: { effort: "medium" },
+    provider: {
+      order: ["together", "atlas-cloud/fp8"],
+      zdr: true,
+      allow_fallbacks: true,
+    },
+  });
+}
+
+/**
+ * Builds the same configured provider for bounded structured scoring calls.
+ * Scoring keeps OpenRouter usage metadata and ZDR routing, but does not request
+ * a reasoning channel because only the validated object is retained.
+ */
+export function buildMentionScoringModel(
+  config: ChatProviderConfig,
+): LanguageModelV3 {
+  if (config.kind === "custom") {
+    return createOpenRouter({
+      apiKey: config.apiKey,
+      baseURL: config.baseURL,
+    })(config.modelId);
+  }
+  return createOpenRouter({ apiKey: config.apiKey })(config.modelId, {
+    usage: { include: true },
     provider: {
       order: ["together", "atlas-cloud/fp8"],
       zdr: true,

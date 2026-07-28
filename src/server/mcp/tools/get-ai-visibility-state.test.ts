@@ -149,4 +149,49 @@ describe("get_ai_visibility_state MCP tool", () => {
       expect(first.text).toContain("not found");
     }
   });
+
+  it("exposes bounded mention scoring outcomes and their separate costs", async () => {
+    mocks.getRunWithObservations.mockResolvedValue({
+      run: { id: "run_1", projectId: "project_1", status: "completed" },
+      answers: [
+        {
+          id: "answer_1",
+          responseText: "Acme is excellent.",
+          status: "success",
+        },
+      ],
+      mentions: [
+        {
+          id: 1,
+          answerId: "answer_1",
+          rawName: "Acme",
+          sentiment: "positive",
+          position: 1,
+          scoringStatus: "scored",
+        },
+      ],
+      scoringAttempts: [
+        {
+          id: "score_1",
+          answerId: "answer_1",
+          status: "success",
+          costUsd: 0.003,
+          costBasis: "actual",
+        },
+      ],
+      citations: [],
+    });
+    const { getAiVisibilityStateTool } =
+      await import("./get-ai-visibility-state");
+
+    const result = await getAiVisibilityStateTool.handler(
+      { projectId: "project_1", runId: "run_1" },
+      toolExtra,
+    );
+
+    expect(result.structuredContent).toMatchObject({
+      mentions: [{ sentiment: "positive", position: 1 }],
+      scoringAttempts: [{ id: "score_1", costUsd: 0.003, costBasis: "actual" }],
+    });
+  });
 });

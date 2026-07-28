@@ -29,6 +29,8 @@ export type AnalyticsObservationRow = {
   topicName: string | null;
   mentionBrandId: string | null;
   mentionCount: number | null;
+  mentionSentiment?: "positive" | "neutral" | "negative" | null;
+  mentionPosition?: number | null;
 };
 
 export type AnalyticsBrandRow = {
@@ -79,40 +81,43 @@ async function getObservations(runIds: string[]) {
     const ids = runIds.slice(index, index + RUN_ID_BATCH_SIZE);
     if (ids.length === 0) continue;
     rows.push(
-      ...(await db
-        .select({
-          runId: aiRuns.id,
-          runStartedAt: aiRuns.startedAt,
-          answersExpected: aiRuns.answersExpected,
-          answerId: aiAnswers.id,
-          trackedPromptId: aiAnswers.trackedPromptId,
-          promptText: aiAnswers.promptText,
-          model: aiAnswers.model,
-          modelName: aiAnswers.modelName,
-          answerStatus: aiAnswers.status,
-          topicId: aiPromptTopics.id,
-          topicName: aiPromptTopics.name,
-          mentionBrandId: aiBrandMentions.brandId,
-          mentionCount: aiBrandMentions.mentionCount,
-        })
-        .from(aiRuns)
-        .innerJoin(aiAnswers, eq(aiAnswers.runId, aiRuns.id))
-        .leftJoin(
-          aiTrackedPrompts,
-          eq(aiTrackedPrompts.id, aiAnswers.trackedPromptId),
-        )
-        .leftJoin(
-          aiPromptTopics,
-          eq(aiPromptTopics.id, aiTrackedPrompts.topicId),
-        )
-        .leftJoin(aiBrandMentions, eq(aiBrandMentions.answerId, aiAnswers.id))
-        .where(
-          and(
-            inArray(aiRuns.id, ids),
-            inArray(aiAnswers.status, [...TERMINAL_ANSWER_STATUSES]),
-          ),
-        )
-        .orderBy(asc(aiRuns.startedAt), asc(aiAnswers.id))
+      ...(
+        await db
+          .select({
+            runId: aiRuns.id,
+            runStartedAt: aiRuns.startedAt,
+            answersExpected: aiRuns.answersExpected,
+            answerId: aiAnswers.id,
+            trackedPromptId: aiAnswers.trackedPromptId,
+            promptText: aiAnswers.promptText,
+            model: aiAnswers.model,
+            modelName: aiAnswers.modelName,
+            answerStatus: aiAnswers.status,
+            topicId: aiPromptTopics.id,
+            topicName: aiPromptTopics.name,
+            mentionBrandId: aiBrandMentions.brandId,
+            mentionCount: aiBrandMentions.mentionCount,
+            mentionSentiment: aiBrandMentions.sentiment,
+            mentionPosition: aiBrandMentions.position,
+          })
+          .from(aiRuns)
+          .innerJoin(aiAnswers, eq(aiAnswers.runId, aiRuns.id))
+          .leftJoin(
+            aiTrackedPrompts,
+            eq(aiTrackedPrompts.id, aiAnswers.trackedPromptId),
+          )
+          .leftJoin(
+            aiPromptTopics,
+            eq(aiPromptTopics.id, aiTrackedPrompts.topicId),
+          )
+          .leftJoin(aiBrandMentions, eq(aiBrandMentions.answerId, aiAnswers.id))
+          .where(
+            and(
+              inArray(aiRuns.id, ids),
+              inArray(aiAnswers.status, [...TERMINAL_ANSWER_STATUSES]),
+            ),
+          )
+          .orderBy(asc(aiRuns.startedAt), asc(aiAnswers.id))
       ).filter(isTerminalObservation),
     );
   }

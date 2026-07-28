@@ -267,6 +267,7 @@ describe("buildVisibilityOverview", () => {
     expect(result.successfulModels).toEqual(["chat_gpt", "claude"]);
     expect(result.shareOfVoice).toEqual({
       platforms: ["chat_gpt", "claude"],
+      sortBy: "mentions",
       entries: [
         {
           brandId: PRIMARY_ID,
@@ -274,6 +275,9 @@ describe("buildVisibilityOverview", () => {
           isTarget: true,
           mentions: 2,
           sharePct: 100,
+          sentimentEstimate: null,
+          averagePosition: null,
+          scoredAnswers: 0,
         },
         {
           brandId: COMPETITOR_ID,
@@ -281,6 +285,9 @@ describe("buildVisibilityOverview", () => {
           isTarget: false,
           mentions: 0,
           sharePct: 0,
+          sentimentEstimate: null,
+          averagePosition: null,
+          scoredAnswers: 0,
         },
       ],
     });

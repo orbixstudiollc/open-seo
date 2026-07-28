@@ -16,8 +16,10 @@
     "src/db/index.ts",
     "src/db/schema.ts",
     "src/db/app.schema.ts",
+    "src/db/ai-visibility.schema.ts",
     "src/db/better-auth-schema.ts",
     "src/db/pg/schema.ts",
+    "src/db/pg/ai-visibility.schema.ts",
     // Standalone CLI/dev scripts, invoked via package.json scripts
     "scripts/**",
     // DataForSEO section barrel — consumed via the dynamic import in
