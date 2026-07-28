@@ -6,6 +6,7 @@ import {
   GitMerge,
   Globe,
   LayoutDashboard,
+  LibraryBig,
   Link2,
   MessageSquare,
   Search,
@@ -63,6 +64,11 @@ const projectNavItems = [
     to: "/p/$projectId/visibility" as const,
     label: "AI Visibility",
     icon: Eye,
+  },
+  {
+    to: "/p/$projectId/citations" as const,
+    label: "Citation Intelligence",
+    icon: LibraryBig,
   },
   {
     to: "/p/$projectId/brand-lookup" as const,
@@ -129,6 +135,7 @@ export function getProjectNavGroups(projectId: string) {
       label: "My Site",
       items: [
         byPath("/p/$projectId/visibility"),
+        byPath("/p/$projectId/citations"),
         byPath("/p/$projectId/search-performance"),
         byPath("/p/$projectId/brand-resolution"),
         byPath("/p/$projectId/rank-tracking"),

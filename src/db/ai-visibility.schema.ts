@@ -332,6 +332,54 @@ export const aiBrandResolutionEvidence = sqliteTable(
   (table) => [index("ai_brand_resolution_evidence_rule_idx").on(table.ruleId)],
 );
 
+export const aiDomainClassifications = sqliteTable(
+  "ai_domain_classifications",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    domain: text("domain").notNull(),
+    matchScope: text("match_scope", {
+      enum: ["hostname", "registrable_domain"],
+    }).notNull(),
+    domainType: text("domain_type", {
+      enum: [
+        "editorial",
+        "corporate",
+        "ugc",
+        "reference",
+        "institutional",
+        "other",
+      ],
+    }).notNull(),
+    method: text("method", {
+      enum: ["manual", "curated_rule", "model_suggestion"],
+    }).notNull(),
+    ruleVersion: text("rule_version").notNull(),
+    confidence: real("confidence"),
+    createdBy: text("created_by"),
+    reviewedAt: text("reviewed_at"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(current_timestamp)`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`(current_timestamp)`),
+  },
+  (table) => [
+    uniqueIndex("ai_domain_classifications_project_domain_scope_idx").on(
+      table.projectId,
+      table.domain,
+      table.matchScope,
+    ),
+    index("ai_domain_classifications_project_type_idx").on(
+      table.projectId,
+      table.domainType,
+    ),
+  ],
+);
+
 export const aiRuns = sqliteTable(
   "ai_runs",
   {
