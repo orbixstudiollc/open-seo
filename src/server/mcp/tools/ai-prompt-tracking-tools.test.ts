@@ -6,6 +6,8 @@ const mocks = vi.hoisted(() => ({
   getProjectForOrganization: vi.fn(),
   updateProjectRunSettings: vi.fn(),
   runPromptSet: vi.fn(),
+  refreshSuggestions: vi.fn(),
+  decideSuggestion: vi.fn(),
 }));
 
 vi.mock("cloudflare:workers", () => ({ env: {} }));
@@ -20,6 +22,15 @@ vi.mock("@/server/features/ai-visibility/services/AiVisibilityService", () => ({
     runPromptSet: mocks.runPromptSet,
   },
 }));
+vi.mock(
+  "@/server/features/ai-visibility/services/AiPromptSuggestionService",
+  () => ({
+    AiPromptSuggestionService: {
+      refreshSuggestions: mocks.refreshSuggestions,
+      decideSuggestion: mocks.decideSuggestion,
+    },
+  }),
+);
 
 import {
   manageAiPromptTrackingTool,
@@ -114,6 +125,51 @@ describe("AI prompt tracking MCP tools", () => {
     expect(result.structuredContent).toMatchObject({
       result: { runId: "run_1" },
       meta: { runId: "run_1" },
+    });
+  });
+
+  it("creates free suggestions and persists approval through the management tool", async () => {
+    mocks.refreshSuggestions.mockResolvedValue({
+      created: 2,
+      createdBySource: { gsc: 1, topic_gap: 1 },
+      suggestions: [],
+    });
+    mocks.decideSuggestion.mockResolvedValue({
+      id: "prompt_1",
+      state: "active",
+      suggestionSource: "gsc",
+    });
+
+    await manageAiPromptTrackingTool.handler(
+      {
+        projectId: "project_1",
+        promptSetId: "set_1",
+        action: "suggest",
+      },
+      toolExtra,
+    );
+    const result = await manageAiPromptTrackingTool.handler(
+      {
+        projectId: "project_1",
+        promptSetId: "set_1",
+        trackedPromptId: "prompt_1",
+        action: "approve",
+      },
+      toolExtra,
+    );
+
+    expect(mocks.refreshSuggestions).toHaveBeenCalledWith({
+      projectId: "project_1",
+      promptSetId: "set_1",
+    });
+    expect(mocks.decideSuggestion).toHaveBeenCalledWith({
+      projectId: "project_1",
+      promptSetId: "set_1",
+      trackedPromptId: "prompt_1",
+      decision: "approve",
+    });
+    expect(result.structuredContent).toMatchObject({
+      result: { state: "active", suggestionSource: "gsc" },
     });
   });
 

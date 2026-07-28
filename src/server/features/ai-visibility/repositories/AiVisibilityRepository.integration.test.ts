@@ -405,6 +405,62 @@ function runRepositoryContract(
       ).resolves.toBeNull();
     });
 
+    it("persists suggestion decisions and only returns active prompts to runs", async () => {
+      const { repository, projectId } = context;
+      const promptSetId = `${label}-suggestion-set`;
+      await repository.createPromptSet({
+        id: promptSetId,
+        projectId,
+        name: "Suggestion lifecycle",
+        normalizedName: "suggestion lifecycle",
+      });
+      await repository.addPromptSetModels(promptSetId, ["chat_gpt"]);
+      await repository.createTrackedPrompt({
+        id: `${label}-active-prompt`,
+        promptSetId,
+        prompt: "Which platform is best?",
+        normalizedPrompt: "Which platform is best?",
+      });
+      const suggestion = await repository.createPromptSuggestion({
+        id: `${label}-suggested-prompt`,
+        promptSetId,
+        prompt: "Compare Acme vs Contoso.",
+        normalizedPrompt: "Compare Acme vs Contoso.",
+        state: "suggested",
+        suggestionSource: "gsc",
+      });
+      expect(suggestion).toMatchObject({
+        created: true,
+        prompt: { state: "suggested", suggestionSource: "gsc" },
+      });
+      await repository.updateTrackedPrompt(suggestion.prompt.id, promptSetId, {
+        state: "rejected",
+      });
+
+      await expect(
+        repository.createPromptSuggestion({
+          id: `${label}-replacement-suggestion`,
+          promptSetId,
+          prompt: "Compare Acme vs Contoso.",
+          normalizedPrompt: "Compare Acme vs Contoso.",
+          state: "suggested",
+          suggestionSource: "gsc",
+        }),
+      ).resolves.toMatchObject({
+        created: false,
+        prompt: {
+          id: suggestion.prompt.id,
+          state: "rejected",
+          suggestionSource: "gsc",
+        },
+      });
+      await expect(
+        repository.getRunnablePromptSetDefinition(promptSetId),
+      ).resolves.toMatchObject({
+        prompts: [{ id: `${label}-active-prompt`, state: "active" }],
+      });
+    });
+
     it("persists a complete 45-prompt × four-model unattended run", async () => {
       const { repository, projectId } = context;
       const promptSetId = `${label}-45-set`;

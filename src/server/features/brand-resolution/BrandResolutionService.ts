@@ -13,6 +13,11 @@ import {
   type BrandResolutionEvidence,
   type ResolutionCandidate,
 } from "./brandResolutionEngine";
+import { replacementFor } from "./brandResolutionRules";
+import {
+  configureBrandRegistry,
+  type RegistrySetupInput,
+} from "./configureBrandRegistry";
 import type { BrandResolutionAction } from "@/types/schemas/brand-resolution";
 import { AppError } from "@/server/lib/errors";
 
@@ -99,32 +104,6 @@ function sameDecision(
     rule.confidence === decision.confidence &&
     rule.reason === decision.reason
   );
-}
-
-function replacementFor(input: {
-  projectId: string;
-  normalizedName: string;
-  decision: BrandResolutionDecision;
-  createdBy?: string;
-}): ReplacementRule {
-  const ruleId = crypto.randomUUID();
-  return {
-    id: ruleId,
-    projectId: input.projectId,
-    normalizedName: input.normalizedName,
-    state: input.decision.state,
-    brandId: input.decision.brandId,
-    source: input.decision.source,
-    ruleVersion: input.decision.ruleVersion,
-    confidence: input.decision.confidence,
-    createdBy: input.createdBy,
-    reason: input.decision.reason,
-    evidence: input.decision.evidence.map((item) => ({
-      id: crypto.randomUUID(),
-      kind: item.kind,
-      value: item.value,
-    })),
-  };
 }
 
 function registryForEngine(registry: Registry) {
@@ -404,6 +383,8 @@ export function createBrandResolutionService(repository: Repository) {
   }
 
   return {
+    configureRegistry: (input: RegistrySetupInput, actorId: string) =>
+      configureBrandRegistry(repository, input, actorId),
     getResolutionState,
     refreshAutomaticResolutions,
     applyManualAction,
