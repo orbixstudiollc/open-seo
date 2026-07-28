@@ -47,7 +47,7 @@ describe("recommendation workflow persistence", () => {
       "CREATE TABLE ai_brands (id text PRIMARY KEY NOT NULL)",
     );
     await client.executeMultiple(
-      readFileSync("drizzle/0042_boring_weapon_omega.sql", "utf8"),
+      readFileSync("drizzle/0043_sour_blockbuster.sql", "utf8"),
     );
     await client.execute("PRAGMA foreign_keys = ON");
     await client.execute({
