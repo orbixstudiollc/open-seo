@@ -87,7 +87,7 @@ export function MarkdownAnswer({ text }: Props) {
         <button
           type="button"
           onClick={() => setExpanded((prev) => !prev)}
-          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-base-content underline decoration-base-300 underline-offset-2 hover:decoration-base-content"
           aria-expanded={expanded}
         >
           {expanded ? (

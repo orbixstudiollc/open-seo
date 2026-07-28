@@ -126,10 +126,10 @@ export function AuthenticatedAppLayout({
           onOpenDrawer={() => setDrawerOpen(true)}
         />
 
-        {/* PostHog-style cutout: the main content sits on a raised panel with a
-            thin strip of the sidebar background above it and a hairline border. */}
+        {/* The route outlet stays on the app canvas. Cards and controls provide
+            the white/dark lifted surfaces with hairline-only depth. */}
         <div className="flex min-h-0 flex-1 flex-col md:pt-2">
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-base-100 md:rounded-tl-lg md:border-l md:border-t md:border-base-300">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-base-200 md:rounded-tl-lg md:border-l md:border-t md:border-base-300">
             <SeoApiStatusBanners
               shouldShowSeoApiWarning={shouldShowSeoApiWarning}
               seoApiKeyStatusError={seoApiKeyStatusError}
@@ -170,7 +170,7 @@ function MobileTopBar({
   onOpenDrawer: () => void;
 }) {
   return (
-    <div className="flex shrink-0 items-center gap-1 border-b border-base-300 bg-base-100 px-2 py-1.5 md:hidden">
+    <div className="flex shrink-0 items-center gap-1 border-b border-base-300 bg-base-200 px-2 py-1.5 md:hidden">
       <button
         type="button"
         className="btn btn-square btn-ghost btn-sm"

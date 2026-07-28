@@ -222,7 +222,7 @@ export function KeywordResearchPage(input: Props) {
     <div className="px-4 py-4 md:px-6 md:py-6 pb-24 md:pb-8 overflow-auto">
       <div className="mx-auto flex max-w-7xl flex-col gap-5">
         <div>
-          <h1 className="text-2xl font-semibold">Keyword Research</h1>
+          <h1 className="text-2xl font-normal">Keyword Research</h1>
           <p className="text-sm text-base-content/70">
             Discover keyword ideas, search demand, and ranking opportunities.
           </p>
@@ -318,7 +318,7 @@ function KeywordSaveDialog({
   return (
     <div className="modal modal-open">
       <div className="modal-box">
-        <h3 className="font-bold text-lg">
+        <h3 className="font-semibold text-lg">
           Save {controller.selectedRows.size} Keywords
         </h3>
         <div className="py-4">

@@ -13,7 +13,7 @@ export function AuthConfigErrorCard({
   onRetry,
 }: AuthConfigErrorCardProps) {
   return (
-    <div className="card w-full max-w-2xl bg-base-100 border border-base-300 shadow-xl">
+    <div className="card w-full max-w-2xl bg-base-100 border border-base-300">
       <div className="card-body gap-4">
         <h2 className="card-title gap-2">
           <ShieldAlert className="size-5 text-error" />

@@ -205,7 +205,7 @@ export function KeywordResearchDesktopTable({
           getRowProps={(row) => ({
             className: `cursor-pointer border-b border-base-200 hover:bg-base-200/50 ${
               overviewKeyword?.keyword === row.original.keyword
-                ? "bg-primary/5 border-l-2 border-l-primary"
+                ? "bg-base-300/30 border-l-2 border-l-base-content"
                 : ""
             }`,
             onClick: () => handleRowClick(row.original),

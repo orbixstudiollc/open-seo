@@ -40,11 +40,11 @@ export function CitationIntelligencePage({
           {Array.from({ length: 4 }, (_, index) => (
             <div
               key={index}
-              className="ai-visibility-card h-36 animate-pulse bg-[var(--visibility-surface)]"
+              className="ai-visibility-card h-36 animate-pulse bg-[var(--app-surface)]"
             />
           ))}
         </div>
-        <div className="ai-visibility-card h-80 animate-pulse bg-[var(--visibility-surface)]" />
+        <div className="ai-visibility-card h-80 animate-pulse bg-[var(--app-surface)]" />
       </PageFrame>
     );
   }
@@ -54,7 +54,7 @@ export function CitationIntelligencePage({
       <PageFrame header={header}>
         <div
           role="alert"
-          className="ai-visibility-card flex items-start gap-3 border-red-500/30 px-5 py-4 text-sm text-red-700 dark:text-red-300"
+          className="ai-visibility-card flex items-start gap-3 border-[var(--app-negative)]/30 px-5 py-4 text-sm text-[var(--app-negative)]"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
           {getStandardErrorMessage(
@@ -106,13 +106,13 @@ function CitationHeader({
   return (
     <header className="flex flex-col justify-between gap-5 pb-2 sm:flex-row sm:items-end">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
           Tracked-answer corpus
         </p>
         <h1 className="ai-visibility-display mt-2 text-[30px] leading-tight sm:text-4xl">
           Citation Intelligence
         </h1>
-        <p className="mt-2 max-w-2xl text-sm text-[var(--visibility-body)]">
+        <p className="mt-2 max-w-2xl text-sm text-[var(--app-body)]">
           Which sources models cite across stored runs—and which sources appear
           with competitors but never your primary brand.
         </p>
@@ -120,7 +120,7 @@ function CitationHeader({
       <div
         role="group"
         aria-label="Citation intelligence period"
-        className="inline-flex self-start rounded-lg border border-[var(--visibility-hairline-strong)] bg-[var(--visibility-surface)] p-1 sm:self-auto"
+        className="inline-flex self-start rounded-lg border border-[var(--app-hairline-strong)] bg-[var(--app-surface)] p-1 sm:self-auto"
       >
         {WINDOWS.map((days) => (
           <button
@@ -129,8 +129,8 @@ function CitationHeader({
             aria-pressed={windowDays === days}
             className={`h-10 min-w-14 rounded-md px-3 text-sm font-medium transition-colors ${
               windowDays === days
-                ? "bg-[var(--visibility-accent)] text-white"
-                : "text-[var(--visibility-body)] hover:bg-[var(--visibility-canvas-soft)]"
+                ? "bg-[var(--app-ink)] text-[var(--app-canvas)]"
+                : "text-[var(--app-body)] hover:bg-[var(--app-canvas-soft)]"
             }`}
             onClick={() => onWindowChange(days)}
           >
@@ -175,15 +175,13 @@ function MetricCards({ overview }: { overview: CitationIntelligenceOverview }) {
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => (
         <section key={card.label} className="ai-visibility-card p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
             {card.label}
           </p>
           <p className="ai-visibility-display mt-3 text-4xl tabular-nums">
             {card.value}
           </p>
-          <p className="mt-3 text-xs text-[var(--visibility-muted)]">
-            {card.detail}
-          </p>
+          <p className="mt-3 text-xs text-[var(--app-muted)]">{card.detail}</p>
         </section>
       ))}
     </div>
@@ -193,12 +191,12 @@ function MetricCards({ overview }: { overview: CitationIntelligenceOverview }) {
 function GapReport({ overview }: { overview: CitationIntelligenceOverview }) {
   return (
     <section className="ai-visibility-card overflow-hidden">
-      <div className="border-b border-[var(--visibility-hairline)] px-5 py-4">
+      <div className="border-b border-[var(--app-hairline)] px-5 py-4">
         <div className="flex items-center gap-2">
-          <LibraryBig className="size-4 text-[var(--visibility-accent)]" />
+          <LibraryBig className="size-4 text-[var(--app-ink)]" />
           <h2 className="text-base font-semibold">Competitor-source gaps</h2>
         </div>
-        <p className="mt-1 max-w-3xl text-[13px] text-[var(--visibility-muted)]">
+        <p className="mt-1 max-w-3xl text-[13px] text-[var(--app-muted)]">
           {overview.gapReport.scopeNote} A citation and brand mention only prove
           answer-level co-occurrence, not that the page supports a specific
           statement.{" "}
@@ -210,7 +208,7 @@ function GapReport({ overview }: { overview: CitationIntelligenceOverview }) {
       {overview.gapReport.entries.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="border-b border-[var(--visibility-hairline)] bg-[var(--visibility-canvas-soft)] text-[11px] uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+            <thead className="border-b border-[var(--app-hairline)] bg-[var(--app-canvas-soft)] text-[11px] uppercase tracking-[0.08em] text-[var(--app-muted)]">
               <tr>
                 <th className="w-14 px-5 py-3 font-semibold">Rank</th>
                 <th className="px-3 py-3 font-semibold">Domain</th>
@@ -223,10 +221,10 @@ function GapReport({ overview }: { overview: CitationIntelligenceOverview }) {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--visibility-hairline)]">
+            <tbody className="divide-y divide-[var(--app-hairline)]">
               {overview.gapReport.entries.map((entry, index) => (
                 <tr key={entry.domain}>
-                  <td className="px-5 py-4 tabular-nums text-[var(--visibility-muted)]">
+                  <td className="px-5 py-4 tabular-nums text-[var(--app-muted)]">
                     {index + 1}
                   </td>
                   <td className="px-3 py-4">
@@ -235,7 +233,7 @@ function GapReport({ overview }: { overview: CitationIntelligenceOverview }) {
                       classification={entry.classification}
                     />
                   </td>
-                  <td className="max-w-72 px-3 py-4 text-[var(--visibility-body)]">
+                  <td className="max-w-72 px-3 py-4 text-[var(--app-body)]">
                     {entry.competitorBrands
                       .map((brand) => brand.name)
                       .join(", ")}
@@ -275,10 +273,10 @@ function ClassificationNote({
   overview: CitationIntelligenceOverview;
 }) {
   return (
-    <aside className="ai-visibility-card flex items-start gap-3 bg-[var(--visibility-canvas-soft)] px-5 py-4 text-[13px] text-[var(--visibility-body)]">
-      <Info className="mt-0.5 size-4 shrink-0 text-[var(--visibility-accent)]" />
+    <aside className="ai-visibility-card flex items-start gap-3 bg-[var(--app-canvas-soft)] px-5 py-4 text-[13px] text-[var(--app-body)]">
+      <Info className="mt-0.5 size-4 shrink-0 text-[var(--app-ink)]" />
       <div>
-        <p className="font-semibold text-[var(--visibility-ink)]">
+        <p className="font-semibold text-[var(--app-ink)]">
           How domain types are classified
         </p>
         <p className="mt-1">{overview.classificationNote}</p>
@@ -301,7 +299,7 @@ function DomainTable({ overview }: { overview: CitationIntelligenceOverview }) {
       {overview.domains.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px] text-left text-sm">
-            <thead className="border-b border-[var(--visibility-hairline)] bg-[var(--visibility-canvas-soft)] text-[11px] uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+            <thead className="border-b border-[var(--app-hairline)] bg-[var(--app-canvas-soft)] text-[11px] uppercase tracking-[0.08em] text-[var(--app-muted)]">
               <tr>
                 <th className="px-5 py-3 font-semibold">Domain</th>
                 <th className="px-3 py-3 font-semibold">Type · method</th>
@@ -316,13 +314,13 @@ function DomainTable({ overview }: { overview: CitationIntelligenceOverview }) {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--visibility-hairline)]">
+            <tbody className="divide-y divide-[var(--app-hairline)]">
               {overview.domains.map((row) => (
                 <tr key={row.domain}>
                   <td className="px-5 py-4">
                     <p className="font-medium">{row.domain}</p>
                     <p
-                      className="mt-1 max-w-80 truncate text-xs text-[var(--visibility-muted)]"
+                      className="mt-1 max-w-80 truncate text-xs text-[var(--app-muted)]"
                       title={row.hostnames.join(", ")}
                     >
                       {row.hostnames.join(", ")}
@@ -365,7 +363,7 @@ function UrlTable({ overview }: { overview: CitationIntelligenceOverview }) {
       {overview.urls.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="border-b border-[var(--visibility-hairline)] bg-[var(--visibility-canvas-soft)] text-[11px] uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+            <thead className="border-b border-[var(--app-hairline)] bg-[var(--app-canvas-soft)] text-[11px] uppercase tracking-[0.08em] text-[var(--app-muted)]">
               <tr>
                 <th className="px-5 py-3 font-semibold">Page</th>
                 <th className="px-3 py-3 font-semibold">Domain</th>
@@ -380,7 +378,7 @@ function UrlTable({ overview }: { overview: CitationIntelligenceOverview }) {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--visibility-hairline)]">
+            <tbody className="divide-y divide-[var(--app-hairline)]">
               {overview.urls.map((row) => (
                 <tr key={row.url}>
                   <td className="max-w-md px-5 py-4">
@@ -388,19 +386,19 @@ function UrlTable({ overview }: { overview: CitationIntelligenceOverview }) {
                       href={row.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block truncate font-medium underline decoration-[var(--visibility-hairline-strong)] underline-offset-2 hover:decoration-[var(--visibility-accent)]"
+                      className="block truncate font-medium underline decoration-[var(--app-hairline-strong)] underline-offset-2 hover:decoration-[var(--app-ink)]"
                       title={row.title ?? row.url}
                     >
                       {row.title ?? row.url}
                     </a>
                     <p
-                      className="mt-1 truncate text-xs text-[var(--visibility-muted)]"
+                      className="mt-1 truncate text-xs text-[var(--app-muted)]"
                       title={row.url}
                     >
                       {row.url}
                     </p>
                   </td>
-                  <td className="px-3 py-4 text-[var(--visibility-body)]">
+                  <td className="px-3 py-4 text-[var(--app-body)]">
                     {row.domain}
                   </td>
                   <td className="px-3 py-4 text-right tabular-nums">
@@ -435,9 +433,9 @@ function TableHeader({
   description: string;
 }) {
   return (
-    <div className="border-b border-[var(--visibility-hairline)] px-5 py-4">
+    <div className="border-b border-[var(--app-hairline)] px-5 py-4">
       <h2 className="text-base font-semibold">{title}</h2>
-      <p className="mt-0.5 text-[13px] text-[var(--visibility-muted)]">
+      <p className="mt-0.5 text-[13px] text-[var(--app-muted)]">
         {description}
       </p>
     </div>
@@ -451,14 +449,14 @@ function ClassificationLabel({
 }) {
   if (classification.domainType === "unknown") {
     return (
-      <span className="mt-1 inline-flex rounded-full bg-[var(--visibility-canvas-soft)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--visibility-muted)]">
+      <span className="mt-1 inline-flex rounded-full bg-[var(--app-canvas-soft)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--app-muted)]">
         Unclassified
       </span>
     );
   }
   return (
     <span
-      className="mt-1 inline-flex rounded-full border border-[var(--visibility-hairline)] bg-[var(--visibility-canvas-soft)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--visibility-body)]"
+      className="mt-1 inline-flex rounded-full border border-[var(--app-hairline)] bg-[var(--app-canvas-soft)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--app-body)]"
       title={
         classification.ruleVersion
           ? `Rule version ${classification.ruleVersion}`
@@ -475,7 +473,7 @@ function EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <div className="px-5 py-10 text-center">
       <p className="text-sm font-medium">{title}</p>
-      <p className="mx-auto mt-1 max-w-lg text-xs text-[var(--visibility-muted)]">
+      <p className="mx-auto mt-1 max-w-lg text-xs text-[var(--app-muted)]">
         {body}
       </p>
     </div>

@@ -42,7 +42,7 @@ function ToolbarMenu({
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
             role="menu"
-            className="absolute right-0 top-full mt-1 z-50 rounded-lg border border-base-300 bg-base-100 shadow-lg py-1 min-w-[230px]"
+            className="absolute right-0 top-full mt-1 z-50 rounded-lg border border-base-300 bg-base-100 py-1 min-w-[230px]"
             onClick={() => setOpen(false)}
           >
             {children}

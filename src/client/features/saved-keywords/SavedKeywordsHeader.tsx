@@ -27,7 +27,7 @@ export function SavedKeywordsHeader({
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <h1 className="text-2xl font-semibold">Saved Keywords</h1>
+        <h1 className="text-2xl font-normal">Saved Keywords</h1>
         <p className="text-sm text-base-content/70">
           Save keyword ideas from research, organize them with tags, and revisit
           when you&apos;re ready to act.
@@ -52,7 +52,7 @@ export function SavedKeywordsHeader({
           <ul
             tabIndex={0}
             role="menu"
-            className="dropdown-content menu z-10 w-64 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+            className="dropdown-content menu z-10 w-64 rounded-box border border-base-300 bg-base-100 p-2"
           >
             <li>
               <button
@@ -91,7 +91,7 @@ export function SavedKeywordsHeader({
           <ul
             tabIndex={0}
             role="menu"
-            className="dropdown-content menu z-10 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+            className="dropdown-content menu z-10 w-56 rounded-box border border-base-300 bg-base-100 p-2"
           >
             <li>
               <button

@@ -87,7 +87,7 @@ export function SavedKeywordsTagFilter({
         type="button"
         className={`inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition ${
           hasSelection
-            ? "border-primary/50 bg-primary/10 text-base-content"
+            ? "border-base-content/40 bg-base-300 text-base-content"
             : "border-base-300 bg-base-100 hover:border-base-content/30"
         }`}
         onClick={() => setOpen((v) => !v)}
@@ -95,7 +95,7 @@ export function SavedKeywordsTagFilter({
         <TagIcon className="size-3.5 opacity-70" />
         <span className="font-medium">Tags</span>
         {hasSelection ? (
-          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-content">
+          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-base-content px-1.5 text-[11px] font-semibold text-base-200">
             {selectedTags.length}
           </span>
         ) : null}
@@ -182,7 +182,7 @@ function TagFilterPopover({
   onClearSelection: () => void;
 }) {
   return (
-    <div className="absolute right-0 top-full z-20 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-2xl">
+    <div className="absolute right-0 top-full z-20 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-base-300 bg-base-100">
       <div className="border-b border-base-300 p-2">
         <label className="flex items-center gap-2 rounded-md border border-base-300 bg-base-200/50 px-2 py-1.5">
           <Search className="size-3.5 opacity-50" />
@@ -278,7 +278,7 @@ function TagFilterRow({
           <span
             className={`flex size-4 shrink-0 items-center justify-center rounded border ${
               checked
-                ? "border-primary bg-primary text-primary-content"
+                ? "border-base-content bg-base-content text-base-200"
                 : "border-base-300"
             }`}
           >

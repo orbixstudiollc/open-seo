@@ -259,7 +259,7 @@ export function KeywordSuggestionStep({
       <>
         {sectionHeader("Finding your top keywords...")}
         <div className="flex flex-col items-center justify-center gap-3 py-16">
-          <Loader2 className="size-8 animate-spin text-primary" />
+          <Loader2 className="size-8 animate-spin text-base-content" />
           <p className="text-xs text-base-content/50">
             This usually takes a few seconds
           </p>

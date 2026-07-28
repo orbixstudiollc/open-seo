@@ -90,7 +90,7 @@ function ScoreGauge({ label, score }: { label: string; score: number | null }) {
           ) : null}
         </svg>
         <span
-          className={`absolute inset-0 flex items-center justify-center text-lg font-bold ${scoreColor(score)}`}
+          className={`absolute inset-0 flex items-center justify-center text-lg font-semibold ${scoreColor(score)}`}
         >
           {score ?? "-"}
         </span>

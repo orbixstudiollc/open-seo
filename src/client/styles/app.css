@@ -5,13 +5,105 @@
 }
 
 :root {
-  --trend-grid-color: oklch(56% 0.01 255 / 0.28);
-  --trend-axis-color: oklch(42% 0.01 255 / 0.85);
+  /* App-global DESIGN.md tokens. CursorGothic is not licensed, so the app
+     intentionally starts with the documented system-ui fallback. */
+  --app-font-sans: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --app-font-mono:
+    "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, monospace;
+  --app-canvas: #f7f7f4;
+  --app-canvas-soft: #fafaf7;
+  --app-surface: #ffffff;
+  --app-surface-strong: #e6e5e0;
+  --app-ink: #26251e;
+  --app-body: #5a5852;
+  /* Darkened slightly from the source palette so normal-size muted text is AA
+     on both the canvas and card surface. */
+  --app-muted: #6f6c63;
+  --app-muted-soft: #807d72;
+  --app-hairline: #e6e5e0;
+  --app-hairline-soft: #efeee8;
+  --app-hairline-strong: #cfcdc4;
+  --app-primary: #f54e00;
+  --app-primary-active: #d04200;
+  /* White on Cursor Orange is 3.52:1. Warm dark ink keeps CTA labels AA. */
+  --app-on-primary: #171713;
+  --app-positive: #187a59;
+  --app-positive-soft: rgb(24 122 89 / 0.12);
+  --app-negative: #cf2d56;
+  --app-negative-soft: rgb(207 45 86 / 0.12);
+  --app-warning: #855710;
+  --app-warning-soft: rgb(133 87 16 / 0.12);
+  --app-info: #276482;
+  --app-info-soft: rgb(39 100 130 / 0.12);
+  --app-timeline-thinking: #dfa88f;
+  --app-timeline-grep: #9fc9a2;
+  --app-timeline-read: #9fbbe0;
+  --app-timeline-edit: #c0a8dd;
+  --app-timeline-done: #c08532;
+  --app-radius-xs: 4px;
+  --app-radius-sm: 6px;
+  --app-radius-md: 8px;
+  --app-radius-lg: 12px;
+  --app-radius-xl: 16px;
+  --app-focus: #f54e00;
+
+  /* Compatibility aliases for Phase 6/7 branches. These are aliases only;
+     there is no AI Visibility-scoped token source anymore. */
+  --visibility-canvas: var(--app-canvas);
+  --visibility-canvas-soft: var(--app-canvas-soft);
+  --visibility-surface: var(--app-surface);
+  --visibility-ink: var(--app-ink);
+  --visibility-body: var(--app-body);
+  --visibility-muted: var(--app-muted);
+  --visibility-hairline: var(--app-hairline);
+  --visibility-hairline-strong: var(--app-hairline-strong);
+  --visibility-accent: var(--app-primary);
+  --visibility-accent-active: var(--app-primary-active);
+  --visibility-positive: var(--app-positive);
+  --visibility-positive-soft: var(--app-positive-soft);
+  --visibility-negative: var(--app-negative);
+  --visibility-negative-soft: var(--app-negative-soft);
+
+  --trend-grid-color: rgb(111 108 99 / 0.28);
+  --trend-axis-color: rgb(38 37 30 / 0.72);
   --trend-fill-start-opacity: 0.32;
   --trend-fill-end-opacity: 0.05;
-  --trend-tooltip-bg: oklch(99% 0.005 255 / 0.96);
-  --trend-tooltip-border: oklch(84% 0.01 255 / 0.7);
-  --trend-tooltip-shadow: oklch(0% 0 0 / 0.1);
+  --trend-tooltip-bg: rgb(255 255 255 / 0.98);
+  --trend-tooltip-border: var(--app-hairline-strong);
+}
+
+html[data-theme="openseo-dark"] {
+  --app-canvas: #171713;
+  --app-canvas-soft: #1b1a17;
+  --app-surface: #211f1b;
+  --app-surface-strong: #36342e;
+  --app-ink: #f1efe7;
+  --app-body: #c8c4b8;
+  --app-muted: #9d998d;
+  --app-muted-soft: #858176;
+  --app-hairline: #36342e;
+  --app-hairline-soft: #2b2924;
+  --app-hairline-strong: #4b4840;
+  --app-primary: #f54e00;
+  --app-primary-active: #d04200;
+  --app-on-primary: #171713;
+  --app-positive: #6fc496;
+  --app-positive-soft: rgb(111 196 150 / 0.14);
+  --app-negative: #e38069;
+  --app-negative-soft: rgb(227 128 105 / 0.14);
+  --app-warning: #e1b15d;
+  --app-warning-soft: rgb(225 177 93 / 0.14);
+  --app-info: #83bad3;
+  --app-info-soft: rgb(131 186 211 / 0.14);
+  --app-focus: #ff6b29;
+
+  --trend-grid-color: rgb(157 153 141 / 0.22);
+  --trend-axis-color: rgb(200 196 184 / 0.7);
+  --trend-fill-start-opacity: 0.24;
+  --trend-fill-end-opacity: 0.03;
+  --trend-tooltip-bg: rgb(33 31 27 / 0.98);
+  --trend-tooltip-border: var(--app-hairline-strong);
 }
 
 @plugin "daisyui" {
@@ -25,26 +117,26 @@
   default: true;
   prefersdark: false;
   color-scheme: light;
-  --color-base-100: oklch(100% 0 0);
-  --color-base-200: oklch(97% 0 0);
-  --color-base-300: oklch(92% 0 0);
-  --color-base-content: oklch(20% 0 0);
-  --color-primary: oklch(50% 0.12 262);
-  --color-primary-content: oklch(100% 0 0);
-  --color-secondary: oklch(55% 0.15 145);
-  --color-secondary-content: oklch(100% 0 0);
-  --color-accent: oklch(50% 0.12 262);
-  --color-accent-content: oklch(100% 0 0);
-  --color-neutral: oklch(25% 0 0);
-  --color-neutral-content: oklch(100% 0 0);
-  --color-info: oklch(70% 0.15 230);
-  --color-info-content: oklch(100% 0 0);
-  --color-success: oklch(65% 0.18 145);
-  --color-success-content: oklch(100% 0 0);
-  --color-warning: oklch(80% 0.15 80);
-  --color-warning-content: oklch(100% 0 0);
-  --color-error: oklch(65% 0.2 25);
-  --color-error-content: oklch(100% 0 0);
+  --color-base-100: var(--app-surface);
+  --color-base-200: var(--app-canvas);
+  --color-base-300: var(--app-hairline);
+  --color-base-content: var(--app-ink);
+  --color-primary: var(--app-primary);
+  --color-primary-content: var(--app-on-primary);
+  --color-secondary: var(--app-ink);
+  --color-secondary-content: var(--app-canvas);
+  --color-accent: var(--app-ink);
+  --color-accent-content: var(--app-canvas);
+  --color-neutral: var(--app-ink);
+  --color-neutral-content: var(--app-canvas);
+  --color-info: var(--app-info);
+  --color-info-content: var(--app-surface);
+  --color-success: var(--app-positive);
+  --color-success-content: var(--app-surface);
+  --color-warning: var(--app-warning);
+  --color-warning-content: var(--app-surface);
+  --color-error: var(--app-negative);
+  --color-error-content: var(--app-surface);
   --radius-selector: 0.5rem;
   --radius-field: 0.5rem;
   --radius-box: 0.75rem;
@@ -55,31 +147,31 @@
   --noise: 0;
 }
 
-/* Dark theme - auto-activates via prefers-color-scheme */
+/* Dark theme */
 @plugin "daisyui/theme" {
   name: "openseo-dark";
   prefersdark: true;
   color-scheme: dark;
-  --color-base-100: oklch(18% 0 0);
-  --color-base-200: oklch(12% 0 0);
-  --color-base-300: oklch(27% 0 0);
-  --color-base-content: oklch(92% 0 0);
-  --color-primary: oklch(66% 0.12 262);
-  --color-primary-content: oklch(100% 0 0);
-  --color-secondary: oklch(60% 0.15 145);
-  --color-secondary-content: oklch(100% 0 0);
-  --color-accent: oklch(66% 0.12 262);
-  --color-accent-content: oklch(100% 0 0);
-  --color-neutral: oklch(85% 0 0);
-  --color-neutral-content: oklch(20% 0 0);
-  --color-info: oklch(70% 0.15 230);
-  --color-info-content: oklch(100% 0 0);
-  --color-success: oklch(65% 0.18 145);
-  --color-success-content: oklch(100% 0 0);
-  --color-warning: oklch(80% 0.15 80);
-  --color-warning-content: oklch(100% 0 0);
-  --color-error: oklch(65% 0.2 25);
-  --color-error-content: oklch(100% 0 0);
+  --color-base-100: var(--app-surface);
+  --color-base-200: var(--app-canvas);
+  --color-base-300: var(--app-hairline);
+  --color-base-content: var(--app-ink);
+  --color-primary: var(--app-primary);
+  --color-primary-content: var(--app-on-primary);
+  --color-secondary: var(--app-ink);
+  --color-secondary-content: var(--app-canvas);
+  --color-accent: var(--app-ink);
+  --color-accent-content: var(--app-canvas);
+  --color-neutral: var(--app-ink);
+  --color-neutral-content: var(--app-canvas);
+  --color-info: var(--app-info);
+  --color-info-content: var(--app-canvas);
+  --color-success: var(--app-positive);
+  --color-success-content: var(--app-canvas);
+  --color-warning: var(--app-warning);
+  --color-warning-content: var(--app-canvas);
+  --color-error: var(--app-negative);
+  --color-error-content: var(--app-canvas);
   --radius-selector: 0.5rem;
   --radius-field: 0.5rem;
   --radius-box: 0.75rem;
@@ -93,60 +185,184 @@
 html,
 body {
   @apply m-0 bg-base-200;
+  color: var(--app-ink);
+  font-family: var(--app-font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
   overflow: hidden;
 }
 
-/* DESIGN.md-scoped tokens for the tracked AI Visibility overview. Existing
-   application surfaces intentionally keep the standard OpenSEO theme. */
+/* The class remains as a page hook, but all values are app-global. */
 .ai-visibility-page {
-  --visibility-canvas: #f7f7f4;
-  --visibility-canvas-soft: #fafaf7;
-  --visibility-surface: #ffffff;
-  --visibility-ink: #26251e;
-  --visibility-body: #5a5852;
-  --visibility-muted: #807d72;
-  --visibility-hairline: #e6e5e0;
-  --visibility-hairline-strong: #cfcdc4;
-  --visibility-accent: #f54e00;
-  --visibility-accent-active: #d04200;
-  --visibility-positive: #1f8a65;
-  --visibility-positive-soft: rgb(31 138 101 / 0.12);
-  --visibility-negative: #cf2d56;
-  --visibility-negative-soft: rgb(207 45 86 / 0.12);
-  background: var(--visibility-canvas);
-  color: var(--visibility-ink);
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-html[data-theme="openseo-dark"] .ai-visibility-page {
-  --visibility-canvas: #171713;
-  --visibility-canvas-soft: #1b1a17;
-  --visibility-surface: #211f1b;
-  --visibility-ink: #f1efe7;
-  --visibility-body: #c8c4b8;
-  --visibility-muted: #9d998d;
-  --visibility-hairline: #36342e;
-  --visibility-hairline-strong: #4b4840;
-  --visibility-accent: #f54e00;
-  --visibility-accent-active: #d04200;
-  --visibility-positive: #6fc496;
-  --visibility-positive-soft: rgb(111 196 150 / 0.14);
-  --visibility-negative: #e38069;
-  --visibility-negative-soft: rgb(227 128 105 / 0.14);
+  background: var(--app-canvas);
+  color: var(--app-ink);
 }
 
 .ai-visibility-card {
-  border: 1px solid var(--visibility-hairline);
-  border-radius: 12px;
-  background: var(--visibility-surface);
+  border: 1px solid var(--app-hairline);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
 }
 
 .ai-visibility-display {
   font-weight: 400;
   letter-spacing: -0.02em;
+}
+
+h1 {
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+code,
+pre,
+kbd,
+samp,
+.font-mono {
+  font-family: var(--app-font-mono);
+}
+
+/* Tailwind opacity utilities below 70% do not keep normal-size copy at AA on
+   the light surfaces. Preserve the hierarchy with explicit accessible tokens. */
+:where(
+  .text-base-content\/30,
+  .text-base-content\/35,
+  .text-base-content\/40,
+  .text-base-content\/45,
+  .text-base-content\/50,
+  .text-base-content\/55,
+  .text-base-content\/60
+) {
+  color: var(--app-muted);
+}
+
+:where(
+  .text-base-content\/65,
+  .text-base-content\/68,
+  .text-base-content\/70,
+  .text-base-content\/75,
+  .text-base-content\/80,
+  .text-base-content\/85,
+  .text-base-content\/90
+) {
+  color: var(--app-body);
+}
+
+/* Hairlines, not shadows, provide depth throughout the app. The utility
+   override also catches custom cards and menus that are not daisyUI classes. */
+:where(.shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl) {
+  box-shadow: none !important;
+}
+
+:where(.hover\:shadow, .hover\:shadow-sm, .hover\:shadow-md):hover {
+  box-shadow: none !important;
+}
+
+:where(.rounded-2xl, .rounded-3xl) {
+  border-radius: var(--app-radius-lg);
+}
+
+/* Display and card surfaces */
+.card,
+.modal-box {
+  border: 1px solid var(--app-hairline);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  box-shadow: none;
+}
+
+.card-title {
+  color: var(--app-ink);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+:where(.dropdown-content, [role="listbox"]) {
+  border-color: var(--app-hairline-strong);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  box-shadow: none !important;
+}
+
+/* Buttons */
+.btn {
+  border-radius: var(--app-radius-md);
+  box-shadow: none;
+  font-family: var(--app-font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.btn:not(.btn-xs):not(.btn-sm):not(.btn-lg) {
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding-inline: 1.125rem;
+}
+
+.btn-primary {
+  border-color: var(--app-primary);
+  background: var(--app-primary);
+  color: var(--app-on-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary.btn-active {
+  border-color: var(--app-primary-active);
+  background: var(--app-primary-active);
+  color: #ffffff;
+}
+
+.btn:not(
+  .btn-primary,
+  .btn-error,
+  .btn-neutral,
+  .btn-ghost,
+  .btn-outline,
+  .btn-soft
+) {
+  --btn-color: var(--app-surface);
+  --btn-border: var(--app-hairline-strong);
+  color: var(--app-ink);
+}
+
+.btn-ghost {
+  color: var(--app-body);
+}
+
+.btn-ghost:hover {
+  background: var(--app-surface-strong);
+  color: var(--app-ink);
+}
+
+.btn-outline {
+  border-color: var(--app-hairline-strong);
+  background: transparent;
+}
+
+/* Forms */
+:where(.input, .select, .textarea, .toggle, .checkbox) {
+  border-color: var(--app-hairline-strong);
+  border-radius: var(--app-radius-md);
+  background-color: var(--app-surface);
+  color: var(--app-ink);
+  box-shadow: none;
+}
+
+:where(.input, .select):not(
+  .input-xs,
+  .input-sm,
+  .input-lg,
+  .select-xs,
+  .select-sm,
+  .select-lg
+) {
+  min-height: 2.75rem;
 }
 
 /* Prevent Safari mobile from zooming on input focus (requires 16px minimum) */
@@ -156,14 +372,171 @@ select {
   @apply text-base;
 }
 
-/* Global input focus styling - use primary color instead of default ring */
+/* Visible, consistent focus treatment on cream and dark canvases. */
 .input:focus,
 .input:focus-visible,
+.select:focus,
+.select:focus-visible,
 .textarea:focus,
-.textarea:focus-visible {
-  outline: none;
-  border-color: var(--color-primary);
-  background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
+.textarea:focus-visible,
+.toggle:focus-visible {
+  outline: 2px solid var(--app-focus);
+  outline-offset: 2px;
+  border-color: var(--app-hairline-strong);
+  background-color: var(--app-surface);
+}
+
+:where(
+  a,
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="radio"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid var(--app-focus);
+  outline-offset: 2px;
+}
+
+:where(.link-primary, .text-primary) {
+  color: var(--app-ink);
+}
+
+.link-primary {
+  text-decoration-color: var(--app-hairline-strong);
+  text-underline-offset: 3px;
+}
+
+/* Tabs use an ink rule; orange is reserved for primary actions. */
+.tabs-border > .tab.tab-active::before {
+  --tab-border-color: var(--app-ink);
+}
+
+.tab {
+  color: var(--app-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.tab:is(.tab-active, [aria-selected="true"]) {
+  color: var(--app-ink);
+}
+
+/* Badges and semantic feedback */
+.badge {
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-primary {
+  border-color: var(--app-hairline-strong);
+  background: var(--app-surface-strong);
+  color: var(--app-ink);
+}
+
+:where(.text-success\/80) {
+  color: var(--app-positive);
+}
+
+:where(.text-error\/80) {
+  color: var(--app-negative);
+}
+
+:where(.text-warning\/80) {
+  color: var(--app-warning);
+}
+
+:where(.text-info\/80) {
+  color: var(--app-info);
+}
+
+.alert {
+  display: flex;
+  gap: 0.75rem;
+  border: 1px solid var(--app-hairline-strong);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  padding: 1rem;
+  color: var(--app-body);
+}
+
+.alert-warning {
+  border-color: color-mix(
+    in oklab,
+    var(--app-warning) 45%,
+    var(--app-hairline)
+  );
+  background: var(--app-warning-soft);
+  color: var(--app-ink);
+}
+
+.alert-info {
+  border-color: color-mix(in oklab, var(--app-info) 45%, var(--app-hairline));
+  background: var(--app-info-soft);
+  color: var(--app-ink);
+}
+
+.alert-success {
+  border-color: color-mix(
+    in oklab,
+    var(--app-positive) 45%,
+    var(--app-hairline)
+  );
+  background: var(--app-positive-soft);
+  color: var(--app-ink);
+}
+
+.alert-error {
+  border-color: color-mix(
+    in oklab,
+    var(--app-negative) 45%,
+    var(--app-hairline)
+  );
+  background: var(--app-negative-soft);
+  color: var(--app-ink);
+}
+
+/* Data surfaces */
+.table {
+  color: var(--app-ink);
+}
+
+.table :where(thead, tfoot) {
+  background: var(--app-canvas-soft);
+  color: var(--app-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.table :where(th, td) {
+  border-color: var(--app-hairline);
+}
+
+.skeleton {
+  background-color: var(--app-hairline);
+  background-image: linear-gradient(
+    105deg,
+    transparent 0% 40%,
+    var(--app-hairline-soft) 50%,
+    transparent 60% 100%
+  );
+}
+
+[data-sonner-toast],
+.recharts-default-tooltip {
+  border: 1px solid var(--app-hairline-strong) !important;
+  border-radius: var(--app-radius-md) !important;
+  background: var(--app-surface) !important;
+  color: var(--app-ink) !important;
+  box-shadow: none !important;
+}
+
+.recharts-legend-item-text {
+  color: var(--app-body) !important;
 }
 
 /* Safe area utilities for mobile devices */
@@ -196,66 +569,6 @@ select {
   body {
     touch-action: pan-x pan-y;
   }
-}
-
-/* Dark mode: neutral interactive surfaces should lift above the panel, not
-   sink below it. DaisyUI derives default buttons and the tabs-box well from
-   base-200, which is darker than the base-100 content panel in dark mode,
-   so they read as sunken/disabled. Colored variants (primary, error, ...)
-   set their own --btn-color and are excluded. */
-html[data-theme="openseo-dark"]
-  .btn:not(
-    .btn-primary,
-    .btn-error,
-    .btn-neutral,
-    .btn-ghost,
-    .btn-outline,
-    .btn-soft
-  ) {
-  --btn-color: oklch(25% 0 0);
-}
-
-/* Light mode: the base-200 default button is nearly invisible on the
-   base-100 content panel; use a white surface with a visible border,
-   matching inputs/selects. */
-html[data-theme="openseo"]
-  .btn:not(
-    .btn-primary,
-    .btn-error,
-    .btn-neutral,
-    .btn-ghost,
-    .btn-outline,
-    .btn-soft
-  ) {
-  --btn-color: var(--color-base-100);
-  --btn-border: var(--color-base-300);
-}
-
-/* Underline tabs: DaisyUI's tabs-border underlines the active tab with
-   currentColor; use the primary accent instead (PostHog-style). */
-.tabs-border > .tab.tab-active::before {
-  --tab-border-color: var(--color-primary);
-}
-
-/* Custom alert styling with darker borders and transparent background */
-.alert {
-  @apply flex gap-3 rounded-lg border p-4 text-base-content/70;
-}
-
-.alert-warning {
-  @apply border-warning/70 bg-warning/40 text-base-content/90;
-}
-
-.alert-info {
-  @apply border-info/70 bg-info/40 text-base-content/90;
-}
-
-.alert-success {
-  @apply border-success/70 bg-success/40 text-base-content/90;
-}
-
-.alert-error {
-  @apply border-error/70 bg-error/40 text-base-content/90;
 }
 
 /* Tag chip colors — muted background + readable text in both themes.
@@ -393,30 +706,4 @@ html[data-theme="openseo-dark"] .score-tier-5 {
 }
 html[data-theme="openseo-dark"] .score-tier-6 {
   color: #fda4af;
-}
-
-html[data-theme="openseo-dark"] {
-  --trend-grid-color: oklch(78% 0.01 255 / 0.22);
-  --trend-axis-color: oklch(84% 0.01 255 / 0.62);
-  --trend-fill-start-opacity: 0.24;
-  --trend-fill-end-opacity: 0.03;
-  --trend-tooltip-bg: oklch(21% 0.01 255 / 0.95);
-  --trend-tooltip-border: oklch(40% 0.01 255 / 0.65);
-  --trend-tooltip-shadow: oklch(0% 0 0 / 0.35);
-}
-
-html[data-theme="openseo-dark"] .alert-warning {
-  @apply border-warning/60 bg-warning/20;
-}
-
-html[data-theme="openseo-dark"] .alert-info {
-  @apply border-info/60 bg-info/20;
-}
-
-html[data-theme="openseo-dark"] .alert-success {
-  @apply border-success/60 bg-success/20;
-}
-
-html[data-theme="openseo-dark"] .alert-error {
-  @apply border-error/60 bg-error/20;
 }

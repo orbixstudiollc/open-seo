@@ -110,7 +110,7 @@ export function SamChat({
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="flex size-12 items-center justify-center rounded-full bg-base-300 text-base-content">
         <Wrench className="size-6" />
       </div>
       <div className="space-y-1">

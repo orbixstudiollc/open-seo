@@ -91,7 +91,7 @@ function SerpAnalysisTable({ items }: { items: SerpResultItem[] }) {
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-primary hover:underline truncate flex items-center gap-1"
+                    className="font-medium text-base-content underline decoration-base-300 underline-offset-2 hover:decoration-base-content truncate flex items-center gap-1"
                     title={item.title}
                   >
                     {item.title || item.url}

@@ -52,7 +52,7 @@ export function LighthouseIssuesHeader({
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body py-5 gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold">Lighthouse Issues</h1>
+            <h1 className="text-2xl font-normal">Lighthouse Issues</h1>
             <p className="text-sm text-base-content/70 break-all">
               {finalUrl ?? "Loading URL..."}
             </p>
@@ -151,7 +151,7 @@ function CategoryTabs({
           key={tab}
           className={`pb-2 border-b-2 text-sm font-medium transition-colors ${
             category === tab
-              ? "border-primary text-base-content"
+              ? "border-base-content text-base-content"
               : "border-transparent text-base-content/60 hover:text-base-content"
           }`}
           onClick={() => onCategoryChange(tab)}
@@ -199,7 +199,7 @@ function ExportMenu({
       </div>
       <ul
         tabIndex={0}
-        className="dropdown-content z-10 menu p-2 shadow-lg bg-base-100 border border-base-300 rounded-box w-72"
+        className="dropdown-content z-10 menu p-2 bg-base-100 border border-base-300 rounded-box w-72"
       >
         <li className="menu-title">
           <span>Export to Sheets</span>

@@ -30,10 +30,16 @@ function stateLabel(state: Candidate["decision"]["state"]) {
 }
 
 function stateBadge(state: Candidate["decision"]["state"]) {
-  if (state === "resolved") return "bg-[#dcefe5] text-[#176c4f]";
-  if (state === "suppressed") return "bg-[#e6e5e0] text-[#5a5852]";
-  if (state === "needs_review") return "bg-[#f4e4c8] text-[#80591f]";
-  return "bg-[#ece7f3] text-[#655575]";
+  if (state === "resolved") {
+    return "bg-[var(--app-positive-soft)] text-[var(--app-positive)]";
+  }
+  if (state === "suppressed") {
+    return "bg-[var(--app-surface-strong)] text-[var(--app-body)]";
+  }
+  if (state === "needs_review") {
+    return "bg-[var(--app-warning-soft)] text-[var(--app-warning)]";
+  }
+  return "bg-[var(--app-canvas-soft)] text-[var(--app-body)]";
 }
 
 export function BrandResolutionPage({ projectId }: { projectId: string }) {
@@ -131,24 +137,24 @@ export function BrandResolutionPage({ projectId }: { projectId: string }) {
     stateQuery.error ?? refresh.error ?? applyAction.error ?? undefined;
 
   return (
-    <div className="min-h-full overflow-auto bg-[#f7f7f4] px-4 py-6 text-[#26251e] md:px-8">
+    <div className="min-h-full overflow-auto bg-[var(--app-canvas)] px-4 py-6 text-[var(--app-ink)] md:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#807d72]">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
               AI visibility registry
             </p>
             <h1 className="mt-1 text-3xl font-normal tracking-[-0.02em]">
               Brand resolution
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-[#5a5852]">
+            <p className="mt-2 max-w-2xl text-sm text-[var(--app-body)]">
               Review canonical brands without rewriting a single observed
               mention. Every decision keeps its rule, evidence, and history.
             </p>
           </div>
           <button
             type="button"
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[#f54e00] px-4 text-sm font-medium text-white disabled:opacity-50"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[var(--app-primary)] px-4 text-sm font-medium text-[var(--app-on-primary)] disabled:opacity-50"
             disabled={refresh.isPending || stateQuery.isPending}
             onClick={() => refresh.mutate()}
           >
@@ -160,7 +166,7 @@ export function BrandResolutionPage({ projectId }: { projectId: string }) {
         </header>
 
         {error ? (
-          <div className="flex items-start gap-2 rounded-lg border border-[#cf2d56]/30 bg-white p-3 text-sm text-[#cf2d56]">
+          <div className="flex items-start gap-2 rounded-lg border border-[var(--app-negative)]/30 bg-[var(--app-surface)] p-3 text-sm text-[var(--app-negative)]">
             <AlertCircle className="mt-0.5 size-4 shrink-0" />
             {getStandardErrorMessage(error)}
           </div>
@@ -168,19 +174,19 @@ export function BrandResolutionPage({ projectId }: { projectId: string }) {
 
         {stateQuery.isPending ? (
           <div className="flex min-h-64 items-center justify-center">
-            <Loader2 className="size-6 animate-spin text-[#807d72]" />
+            <Loader2 className="size-6 animate-spin text-[var(--app-muted)]" />
           </div>
         ) : state ? (
           <>
             <SummaryCards state={state} />
 
             {state.truncated ? (
-              <div className="rounded-lg border border-[#cfcdc4] bg-white p-3 text-sm text-[#5a5852]">
+              <div className="rounded-lg border border-[var(--app-hairline-strong)] bg-[var(--app-surface)] p-3 text-sm text-[var(--app-body)]">
                 This review is bounded to the latest 5,000 mention rows.
               </div>
             ) : null}
 
-            <div className="border-b border-[#e6e5e0]">
+            <div className="border-b border-[var(--app-hairline)]">
               <div role="tablist" className="flex gap-6">
                 {(
                   [
@@ -204,8 +210,8 @@ export function BrandResolutionPage({ projectId }: { projectId: string }) {
                     }}
                     className={`border-b-2 px-1 pb-3 text-sm font-medium ${
                       tab === value
-                        ? "border-[#f54e00] text-[#26251e]"
-                        : "border-transparent text-[#807d72]"
+                        ? "border-[var(--app-ink)] text-[var(--app-ink)]"
+                        : "border-transparent text-[var(--app-muted)]"
                     }`}
                   >
                     {label}
@@ -253,8 +259,8 @@ export function BrandResolutionPage({ projectId }: { projectId: string }) {
             )}
 
             {tab === "review" && selected.size > 0 && !editor ? (
-              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#e6e5e0] bg-white p-4">
-                <span className="mr-2 text-sm text-[#5a5852]">
+              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--app-hairline)] bg-[var(--app-surface)] p-4">
+                <span className="mr-2 text-sm text-[var(--app-body)]">
                   {selected.size} selected
                 </span>
                 <ActionButton
@@ -305,9 +311,9 @@ function SummaryCards({ state }: { state: ResolutionState }) {
       {cards.map(([label, value]) => (
         <div
           key={label}
-          className="rounded-xl border border-[#e6e5e0] bg-white p-5"
+          className="rounded-xl border border-[var(--app-hairline)] bg-[var(--app-surface)] p-5"
         >
-          <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[#807d72]">
+          <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
             {label}
           </div>
           <div className="mt-2 text-3xl font-normal tracking-[-0.02em]">
@@ -332,15 +338,15 @@ function CandidateTable({
 }) {
   if (candidates.length === 0) {
     return (
-      <div className="rounded-xl border border-[#e6e5e0] bg-white p-10 text-center text-sm text-[#807d72]">
+      <div className="rounded-xl border border-[var(--app-hairline)] bg-[var(--app-surface)] p-10 text-center text-sm text-[var(--app-muted)]">
         Nothing in this queue.
       </div>
     );
   }
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#e6e5e0] bg-white">
+    <div className="overflow-x-auto rounded-xl border border-[var(--app-hairline)] bg-[var(--app-surface)]">
       <table className="w-full min-w-[860px] text-left text-sm">
-        <thead className="border-b border-[#efeee8] text-xs font-semibold uppercase tracking-[0.08em] text-[#807d72]">
+        <thead className="border-b border-[var(--app-hairline-soft)] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
           <tr>
             <th className="w-12 px-4 py-3">
               <span className="sr-only">Select</span>
@@ -353,13 +359,13 @@ function CandidateTable({
             <th className="px-4 py-3" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#efeee8]">
+        <tbody className="divide-y divide-[var(--app-hairline-soft)]">
           {candidates.map((candidate) => (
             <tr key={candidate.normalizedName}>
               <td className="px-4 py-4 align-top">
                 <input
                   type="checkbox"
-                  className="checkbox checkbox-sm border-[#cfcdc4]"
+                  className="checkbox checkbox-sm border-[var(--app-hairline-strong)]"
                   checked={selected.has(candidate.normalizedName)}
                   onChange={() => onToggle(candidate.normalizedName)}
                   aria-label={`Select ${candidate.rawNames[0]}`}
@@ -368,11 +374,11 @@ function CandidateTable({
               <td className="px-4 py-4 align-top">
                 <div className="font-medium">{candidate.rawNames[0]}</div>
                 {candidate.rawNames.length > 1 ? (
-                  <div className="mt-1 text-xs text-[#807d72]">
+                  <div className="mt-1 text-xs text-[var(--app-muted)]">
                     Raw variants: {candidate.rawNames.slice(1).join(", ")}
                   </div>
                 ) : null}
-                <code className="mt-1 block text-xs text-[#a09c92]">
+                <code className="mt-1 block text-xs text-[var(--app-muted-soft)]">
                   {candidate.normalizedName}
                 </code>
               </td>
@@ -385,11 +391,11 @@ function CandidateTable({
                 >
                   {stateLabel(candidate.decision.state)}
                 </span>
-                <div className="mt-1 text-xs text-[#807d72]">
+                <div className="mt-1 text-xs text-[var(--app-muted)]">
                   {Math.round(candidate.decision.confidence * 100)}% confidence
                 </div>
               </td>
-              <td className="max-w-72 px-4 py-4 align-top text-xs text-[#5a5852]">
+              <td className="max-w-72 px-4 py-4 align-top text-xs text-[var(--app-body)]">
                 {candidate.decision.evidence.length > 0
                   ? candidate.decision.evidence
                       .slice(0, 2)
@@ -398,10 +404,10 @@ function CandidateTable({
                   : candidate.decision.reason}
               </td>
               <td className="px-4 py-4 align-top">
-                <code className="text-xs text-[#807d72]">
+                <code className="text-xs text-[var(--app-muted)]">
                   {candidate.decision.ruleVersion}
                 </code>
-                <div className="mt-1 text-xs text-[#a09c92]">
+                <div className="mt-1 text-xs text-[var(--app-muted-soft)]">
                   {candidate.persisted ? candidate.decision.source : "preview"}
                 </div>
               </td>
@@ -409,7 +415,7 @@ function CandidateTable({
                 {candidate.decision.state === "suppressed" ? (
                   <button
                     type="button"
-                    className="rounded-md px-2 py-1 text-xs font-medium text-[#26251e] hover:bg-[#efeee8]"
+                    className="rounded-md px-2 py-1 text-xs font-medium text-[var(--app-ink)] hover:bg-[var(--app-hairline-soft)]"
                     onClick={() => onRestore(candidate)}
                   >
                     Restore
@@ -433,15 +439,15 @@ function ResolvedTable({
 }) {
   if (state.canonicalBrands.length === 0) {
     return (
-      <div className="rounded-xl border border-[#e6e5e0] bg-white p-10 text-center text-sm text-[#807d72]">
+      <div className="rounded-xl border border-[var(--app-hairline)] bg-[var(--app-surface)] p-10 text-center text-sm text-[var(--app-muted)]">
         Refresh or review candidates to create canonical brands.
       </div>
     );
   }
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#e6e5e0] bg-white">
+    <div className="overflow-x-auto rounded-xl border border-[var(--app-hairline)] bg-[var(--app-surface)]">
       <table className="w-full min-w-[720px] text-left text-sm">
-        <thead className="border-b border-[#efeee8] text-xs font-semibold uppercase tracking-[0.08em] text-[#807d72]">
+        <thead className="border-b border-[var(--app-hairline-soft)] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
           <tr>
             <th className="px-4 py-3">Canonical brand</th>
             <th className="px-4 py-3">Raw variants retained</th>
@@ -449,16 +455,16 @@ function ResolvedTable({
             <th className="px-4 py-3">Split mapping</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#efeee8]">
+        <tbody className="divide-y divide-[var(--app-hairline-soft)]">
           {state.canonicalBrands.map((row) => (
             <tr key={row.brand.id}>
               <td className="px-4 py-4 align-top">
                 <div className="font-medium">{row.brand.name}</div>
-                <div className="mt-1 text-xs text-[#807d72]">
+                <div className="mt-1 text-xs text-[var(--app-muted)]">
                   {row.brand.domain ?? "No primary domain"}
                 </div>
               </td>
-              <td className="px-4 py-4 align-top text-[#5a5852]">
+              <td className="px-4 py-4 align-top text-[var(--app-body)]">
                 {row.rawNames.join(", ")}
               </td>
               <td className="px-4 py-4 align-top tabular-nums">
@@ -470,7 +476,7 @@ function ResolvedTable({
                     <button
                       key={name}
                       type="button"
-                      className="inline-flex items-center gap-1 rounded-md border border-[#e6e5e0] px-2 py-1 text-xs hover:bg-[#efeee8]"
+                      className="inline-flex items-center gap-1 rounded-md border border-[var(--app-hairline)] px-2 py-1 text-xs hover:bg-[var(--app-hairline-soft)]"
                       onClick={() =>
                         onSplit(
                           name,
@@ -502,30 +508,30 @@ function SuggestionStrip({
   onUse: (suggestion: ResolutionState["suggestions"][number]) => void;
 }) {
   return (
-    <section className="rounded-xl border border-[#e6e5e0] bg-white p-5">
+    <section className="rounded-xl border border-[var(--app-hairline)] bg-[var(--app-surface)] p-5">
       <h2 className="text-base font-semibold">Merge suggestions</h2>
-      <p className="mt-1 text-sm text-[#807d72]">
+      <p className="mt-1 text-sm text-[var(--app-muted)]">
         Suggestions never change a mapping until a reviewer accepts one.
       </p>
       <div className="mt-4 grid gap-2 md:grid-cols-2">
         {state.suggestions.slice(0, 6).map((suggestion) => (
           <div
             key={suggestion.id}
-            className="flex items-center justify-between gap-3 rounded-lg border border-[#efeee8] p-3"
+            className="flex items-center justify-between gap-3 rounded-lg border border-[var(--app-hairline-soft)] p-3"
           >
             <div className="min-w-0">
               <div className="truncate text-sm">
                 {suggestion.sourceNormalizedName} →{" "}
                 <strong>{suggestion.targetBrandName}</strong>
               </div>
-              <div className="mt-1 text-xs text-[#807d72]">
+              <div className="mt-1 text-xs text-[var(--app-muted)]">
                 Suggestion only · {Math.round(suggestion.confidence * 100)}%
                 confidence
               </div>
             </div>
             <button
               type="button"
-              className="shrink-0 rounded-md border border-[#cfcdc4] px-2.5 py-1.5 text-xs font-medium hover:bg-[#efeee8]"
+              className="shrink-0 rounded-md border border-[var(--app-hairline-strong)] px-2.5 py-1.5 text-xs font-medium hover:bg-[var(--app-hairline-soft)]"
               onClick={() => onUse(suggestion)}
             >
               Review merge
@@ -573,13 +579,13 @@ function DecisionEditor({
     editor.reason.trim().length >= 3 &&
     (!needsCanonical || editor.canonicalName.trim().length > 0);
   return (
-    <section className="rounded-xl border border-[#cfcdc4] bg-white p-5">
+    <section className="rounded-xl border border-[var(--app-hairline-strong)] bg-[var(--app-surface)] p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold">
             Confirm {editor.action.replace("_", " ")}
           </h2>
-          <p className="mt-1 text-sm text-[#5a5852]">
+          <p className="mt-1 text-sm text-[var(--app-body)]">
             This replaces the active mapping for {selectedCount} candidate
             {selectedCount === 1 ? "" : "s"}. Raw mentions and prior rules stay
             intact.
@@ -587,7 +593,7 @@ function DecisionEditor({
         </div>
         <button
           type="button"
-          className="text-sm text-[#807d72]"
+          className="text-sm text-[var(--app-muted)]"
           onClick={onCancel}
         >
           Cancel
@@ -599,7 +605,7 @@ function DecisionEditor({
             <label className="text-sm">
               <span className="mb-1.5 block font-medium">Existing brand</span>
               <select
-                className="select w-full rounded-lg border-[#cfcdc4] bg-white"
+                className="select w-full rounded-lg border-[var(--app-hairline-strong)] bg-[var(--app-surface)]"
                 value={editor.brandId ?? ""}
                 onChange={(event) => {
                   const brand = brands.find(
@@ -623,7 +629,7 @@ function DecisionEditor({
             <label className="text-sm">
               <span className="mb-1.5 block font-medium">Canonical name</span>
               <input
-                className="input w-full rounded-lg border-[#cfcdc4] bg-white"
+                className="input w-full rounded-lg border-[var(--app-hairline-strong)] bg-[var(--app-surface)]"
                 value={editor.canonicalName}
                 onChange={(event) =>
                   onChange({
@@ -639,7 +645,7 @@ function DecisionEditor({
         <label className="text-sm md:col-span-2">
           <span className="mb-1.5 block font-medium">Review reason</span>
           <textarea
-            className="textarea min-h-24 w-full rounded-lg border-[#cfcdc4] bg-white"
+            className="textarea min-h-24 w-full rounded-lg border-[var(--app-hairline-strong)] bg-[var(--app-surface)]"
             value={editor.reason}
             maxLength={500}
             onChange={(event) =>
@@ -652,7 +658,7 @@ function DecisionEditor({
       <div className="mt-4 flex justify-end">
         <button
           type="button"
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#26251e] px-4 text-sm font-medium text-[#f7f7f4] disabled:opacity-40"
+          className="inline-flex h-10 items-center gap-2 rounded-lg bg-[var(--app-primary)] px-4 text-sm font-medium text-[var(--app-on-primary)] hover:bg-[var(--app-primary-active)] hover:text-white disabled:opacity-40"
           disabled={!valid || pending}
           onClick={onSubmit}
         >
@@ -676,7 +682,7 @@ function ActionButton({
   return (
     <button
       type="button"
-      className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#cfcdc4] px-3 text-sm font-medium hover:bg-[#efeee8]"
+      className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--app-hairline-strong)] px-3 text-sm font-medium hover:bg-[var(--app-hairline-soft)]"
       onClick={onClick}
     >
       {icon}

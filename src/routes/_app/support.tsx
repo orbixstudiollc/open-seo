@@ -22,12 +22,12 @@ function SupportPage() {
   };
 
   return (
-    <div className="h-full overflow-auto bg-base-100 px-4 py-8 pb-24 md:px-6 md:py-12 md:pb-8">
+    <div className="h-full overflow-auto bg-base-200 px-4 py-8 pb-24 md:px-6 md:py-12 md:pb-8">
       <div className="mx-auto max-w-xl">
         <p className="text-sm font-medium text-base-content/40">
           Help & Community
         </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">
+        <h1 className="mt-1 text-2xl font-normal tracking-tight">
           We want to hear from you
         </h1>
         <p className="mt-2 text-sm text-base-content/60">

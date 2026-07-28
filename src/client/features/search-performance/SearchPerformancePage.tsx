@@ -193,7 +193,7 @@ export function SearchPerformancePage({ projectId }: { projectId: string }) {
       <div className="mx-auto max-w-7xl space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">Search Performance</h1>
+            <h1 className="text-2xl font-normal">Search Performance</h1>
             <p className="text-sm text-base-content/70">
               See your site&apos;s clicks, impressions, CTR, and position from
               Google Search Console.

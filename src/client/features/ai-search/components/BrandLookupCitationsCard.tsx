@@ -182,7 +182,7 @@ export function CitationTabsCard({
           </div>
           <ul
             tabIndex={0}
-            className="menu dropdown-content z-10 mt-1 w-48 rounded-box border border-base-300 bg-base-100 p-1 shadow"
+            className="menu dropdown-content z-10 mt-1 w-48 rounded-box border border-base-300 bg-base-100 p-1"
           >
             <li>
               <button

@@ -78,7 +78,7 @@ function LeaderboardRow({
   return (
     <li
       className={`grid grid-cols-[1.25rem_minmax(0,1fr)_2.75rem] items-center gap-3 px-4 py-2.5 ${
-        entry.isTarget ? "bg-primary/5" : ""
+        entry.isTarget ? "bg-base-300/30" : ""
       }`}
     >
       <span className="text-xs tabular-nums text-base-content/40">{rank}</span>
@@ -96,7 +96,7 @@ function LeaderboardRow({
         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-base-200">
           <div
             className={`h-full rounded-full ${
-              entry.isTarget ? "bg-primary" : "bg-base-content/25"
+              entry.isTarget ? "bg-base-content" : "bg-base-content/25"
             }`}
             style={{ width: `${barWidth}%` }}
           />

@@ -48,9 +48,9 @@ function SettingsPage() {
   }
 
   return (
-    <div className="h-full overflow-auto bg-base-100 px-4 py-8 pb-24 md:px-6 md:py-12 md:pb-8">
+    <div className="h-full overflow-auto bg-base-200 px-4 py-8 pb-24 md:px-6 md:py-12 md:pb-8">
       <div className="mx-auto max-w-xl space-y-10">
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-normal tracking-tight">Settings</h1>
 
         <section className="space-y-3">
           <h2 className="text-sm font-medium text-base-content/50">
@@ -76,7 +76,7 @@ function SettingsPage() {
                     aria-label={option.label}
                     className={`flex cursor-pointer items-center justify-center rounded-md px-3 py-1.5 transition-colors ${
                       isActive
-                        ? "bg-base-100 text-base-content shadow-sm"
+                        ? "border border-base-300 bg-base-100 text-base-content"
                         : "text-base-content/50 hover:text-base-content/80"
                     }`}
                     onClick={() => setThemePreference(option.value)}

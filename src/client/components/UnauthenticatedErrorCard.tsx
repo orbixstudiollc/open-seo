@@ -30,7 +30,7 @@ export function UnauthenticatedErrorCard({
   }
 
   return (
-    <div className="card w-full max-w-md bg-base-100 border border-base-300 shadow-xl">
+    <div className="card w-full max-w-md bg-base-100 border border-base-300">
       <div className="card-body gap-4">
         <h2 className="card-title">Authentication required</h2>
         <p className="text-sm text-base-content/70">{message}</p>

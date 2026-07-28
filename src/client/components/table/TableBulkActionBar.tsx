@@ -22,7 +22,7 @@ export function TableBulkActionBar({
       : "flex justify-center";
   const toolbarClass =
     placement === "fixed"
-      ? "pointer-events-auto flex items-stretch overflow-visible rounded-xl border border-base-content/15 bg-base-300/85 shadow-2xl backdrop-blur"
+      ? "pointer-events-auto flex items-stretch overflow-visible rounded-xl border border-base-content/15 bg-base-300/85 backdrop-blur"
       : "flex items-stretch overflow-visible rounded-xl border border-base-content/15 bg-base-200";
 
   return (
@@ -109,7 +109,7 @@ export function TableBulkExportMenu({
       <ul
         tabIndex={0}
         role="menu"
-        className="dropdown-content menu z-10 mb-2 w-52 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+        className="dropdown-content menu z-10 mb-2 w-52 rounded-box border border-base-300 bg-base-100 p-2"
       >
         {actions.map((action, index) => (
           <li key={index}>
@@ -131,7 +131,7 @@ export function TableBulkExportMenu({
 export function TableExportMenu({
   actions,
   buttonClassName = "btn btn-sm gap-1",
-  menuClassName = "dropdown-content z-10 menu p-2 shadow-lg bg-base-100 border border-base-300 rounded-box w-56",
+  menuClassName = "dropdown-content z-10 menu p-2 bg-base-100 border border-base-300 rounded-box w-56",
 }: {
   actions: Array<{
     label: ReactNode;

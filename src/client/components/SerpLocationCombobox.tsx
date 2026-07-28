@@ -177,7 +177,7 @@ export function SerpLocationCombobox({
       </label>
 
       {open && (
-        <div className="absolute z-30 mt-1 w-full rounded-box border border-base-300 bg-base-100 shadow-lg p-1">
+        <div className="absolute z-30 mt-1 w-full rounded-box border border-base-300 bg-base-100 p-1">
           {isError ? (
             <p className="px-3 py-2 text-sm text-error">
               Unable to load locations

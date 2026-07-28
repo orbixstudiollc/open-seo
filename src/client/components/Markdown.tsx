@@ -67,7 +67,7 @@ function isHttpUrl(value: string | undefined): value is string {
 
 export const MARKDOWN_COMPONENTS = {
   h1: ({ children }: { children?: ReactNode }) => (
-    <h1 className="mt-5 mb-2 text-base font-semibold first:mt-0">{children}</h1>
+    <h1 className="mt-5 mb-2 text-base font-normal first:mt-0">{children}</h1>
   ),
   h2: ({ children }: { children?: ReactNode }) => (
     <h2 className="mt-5 mb-2 text-sm font-semibold first:mt-0">{children}</h2>

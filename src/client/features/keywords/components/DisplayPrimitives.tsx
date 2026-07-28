@@ -160,7 +160,6 @@ export function AreaTrendChart({ trend }: { trend: MonthlySearch[] }) {
               backgroundColor: "var(--trend-tooltip-bg)",
               border: "1px solid var(--trend-tooltip-border)",
               borderRadius: "10px",
-              boxShadow: "0 8px 24px var(--trend-tooltip-shadow)",
               color: "var(--color-base-content)",
             }}
           />
@@ -206,7 +205,7 @@ export function SortHeader({
   return (
     <button
       ref={tooltip.triggerRef}
-      className={`inline-flex items-center gap-0.5 hover:text-primary transition-colors cursor-pointer select-none ${className ?? ""}`}
+      className={`inline-flex items-center gap-0.5 hover:text-base-content transition-colors cursor-pointer select-none ${className ?? ""}`}
       onClick={() => onToggle(field)}
       onMouseEnter={tooltip.scheduleOpen}
       onMouseLeave={tooltip.close}

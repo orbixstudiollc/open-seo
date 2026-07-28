@@ -14,7 +14,7 @@ export function OverviewStats({ keyword }: { keyword: KeywordResearchRow }) {
   return (
     <div className="shrink-0 bg-base-100 border border-base-300 rounded-xl px-4 py-2.5 flex items-center gap-4 min-h-[48px]">
       <div className="flex items-center gap-2 min-w-0 shrink-0">
-        <span className="font-bold text-base truncate max-w-[240px] capitalize">
+        <span className="font-semibold text-base truncate max-w-[240px] capitalize">
           {keyword.keyword}
         </span>
         <ScoreBadge value={keyword.keywordDifficulty} />

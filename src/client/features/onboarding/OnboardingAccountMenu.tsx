@@ -27,7 +27,7 @@ export function OnboardingAccountMenu({
         </button>
         <ul
           tabIndex={0}
-          className="dropdown-content z-20 menu mt-3 min-w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+          className="dropdown-content z-20 menu mt-3 min-w-56 rounded-box border border-base-300 bg-base-100 p-2"
         >
           <li className="menu-title max-w-full">
             <span className="truncate text-base-content" data-ph-mask>

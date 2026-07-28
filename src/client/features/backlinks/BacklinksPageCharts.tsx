@@ -65,7 +65,7 @@ export function BacklinksTrendChart({
             yAxisId="left"
             type="monotone"
             dataKey="backlinks"
-            stroke="#2563eb"
+            stroke="var(--app-ink)"
             strokeWidth={2}
             dot={false}
             name="Backlinks"
@@ -74,7 +74,7 @@ export function BacklinksTrendChart({
             yAxisId="right"
             type="monotone"
             dataKey="referringDomains"
-            stroke="#14b8a6"
+            stroke="var(--app-muted)"
             strokeWidth={2}
             dot={false}
             name="Referring domains"
@@ -128,7 +128,7 @@ export function BacklinksNewLostChart({
           <Line
             type="monotone"
             dataKey="lostBacklinks"
-            stroke="#ef4444"
+            stroke="var(--app-negative)"
             strokeWidth={2}
             dot={false}
             name="Lost backlinks"
@@ -136,7 +136,7 @@ export function BacklinksNewLostChart({
           <Line
             type="monotone"
             dataKey="newBacklinks"
-            stroke="#16a34a"
+            stroke="var(--app-positive)"
             strokeWidth={2}
             dot={false}
             name="New backlinks"

@@ -26,7 +26,7 @@ export function SuggestedQuestions({
           <button
             key={question}
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/15"
+            className="inline-flex items-center gap-1.5 rounded-full border border-base-content/30 bg-base-300 px-3 py-1.5 text-xs font-medium text-base-content transition-colors hover:border-base-content/50"
             onClick={() => onSelect(question)}
           >
             <Sparkles className="size-3.5" />
@@ -36,7 +36,7 @@ export function SuggestedQuestions({
           <button
             key={question}
             type="button"
-            className="rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-medium text-base-content/70 transition-colors hover:border-primary/50 hover:text-base-content"
+            className="rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-medium text-base-content/70 transition-colors hover:border-base-content/30 hover:text-base-content"
             onClick={() => onSelect(question)}
           >
             {question}
@@ -60,7 +60,7 @@ export function WelcomeMessage({
 }) {
   return (
     <div className="flex gap-3">
-      <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-full bg-base-300 text-base-content">
         <Sparkles className="size-4" />
       </div>
       <div className="min-w-0 flex-1 space-y-3 pt-0.5 text-sm">
@@ -142,7 +142,7 @@ export function UpgradeSidebar({
   return (
     <aside className="hidden w-96 flex-shrink-0 flex-col border-r border-base-300 bg-base-200/20 lg:flex">
       <div className="flex items-center gap-2.5 border-b border-base-300 px-6 py-4 text-xs text-base-content/55">
-        <span className="inline-flex size-8 items-center justify-center rounded-full border border-base-300 bg-base-100 text-primary">
+        <span className="inline-flex size-8 items-center justify-center rounded-full border border-base-300 bg-base-100 text-base-content">
           <Globe className="size-4" />
         </span>
         <div className="min-w-0">
@@ -171,7 +171,7 @@ export function UpgradeSidebar({
               key={label}
               className="flex gap-2.5 text-sm leading-snug text-base-content/75"
             >
-              <Check className="mt-0.5 size-4 flex-shrink-0 text-primary" />
+              <Check className="mt-0.5 size-4 flex-shrink-0 text-success" />
               <span>{label}</span>
             </li>
           ))}
@@ -204,7 +204,7 @@ export function UpgradeSidebar({
       <div className="space-y-1.5 border-t border-base-300 px-6 py-4">
         <div className="h-1 w-full overflow-hidden rounded-full bg-base-300">
           <div
-            className="h-full rounded-full bg-primary transition-all"
+            className="h-full rounded-full bg-base-content transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -226,7 +226,7 @@ export function ChatGate({
 }) {
   return (
     <div className="flex-shrink-0 border-t border-base-300 px-5 py-4">
-      <div className="mx-auto w-full max-w-2xl rounded-box border border-primary/30 bg-primary/5 p-4 text-center">
+      <div className="mx-auto w-full max-w-2xl rounded-box border border-base-content/20 bg-base-100 p-4 text-center">
         <p className="text-sm font-medium">
           That’s all {FREE_ONBOARDING_QUESTION_LIMIT} free questions
         </p>

@@ -12,7 +12,7 @@ function DataforseoApiKeyHelpPage() {
       <div className="mx-auto max-w-3xl space-y-4">
         <div className="card bg-base-100 border border-base-300">
           <div className="card-body gap-3">
-            <h1 className="text-2xl font-semibold">
+            <h1 className="text-2xl font-normal">
               Set up your DataForSEO API key
             </h1>
             <p className="text-sm text-base-content/70">

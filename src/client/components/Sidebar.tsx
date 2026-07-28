@@ -66,7 +66,7 @@ function SidebarNavLink({
       {({ isActive }: { isActive: boolean }) => (
         <>
           {isActive ? (
-            <div className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r-full bg-primary" />
+            <div className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r-full bg-base-content" />
           ) : null}
           <Icon className="h-4 w-4 shrink-0" />
           <span className="truncate">{label}</span>
@@ -258,7 +258,7 @@ function SidebarFooter({ onNavigate }: { onNavigate?: () => void }) {
           </button>
           <ul
             tabIndex={0}
-            className="dropdown-content z-30 menu mb-1 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+            className="dropdown-content z-30 menu mb-1 w-56 rounded-box border border-base-300 bg-base-100 p-2"
           >
             <li>
               <Link to="/settings" onClick={closeMenu}>

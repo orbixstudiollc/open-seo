@@ -6,7 +6,7 @@ const COLORS: Record<KeywordIntent, string> = {
   informational: "border-info/30 bg-info/15 text-info",
   commercial: "border-warning/35 bg-warning/20 text-warning",
   transactional: "border-success/30 bg-success/15 text-success",
-  navigational: "border-primary/30 bg-primary/15 text-primary",
+  navigational: "border-base-content/30 bg-base-300 text-base-content",
   unknown: "border-base-300 bg-base-200 text-base-content/60",
 };
 

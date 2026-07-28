@@ -41,7 +41,7 @@ export function KeywordResearchMobileResults({ controller }: Props) {
         <button
           className={`flex-1 py-2 text-sm font-medium text-center border-b-2 transition-colors ${
             mobileTab === "keywords"
-              ? "border-primary text-primary"
+              ? "border-base-content text-base-content"
               : "border-transparent text-base-content/60"
           }`}
           onClick={() => controller.setMobileTab("keywords")}
@@ -51,7 +51,7 @@ export function KeywordResearchMobileResults({ controller }: Props) {
         <button
           className={`flex-1 py-2 text-sm font-medium text-center border-b-2 transition-colors ${
             mobileTab === "serp"
-              ? "border-primary text-primary"
+              ? "border-base-content text-base-content"
               : "border-transparent text-base-content/60"
           }`}
           onClick={() => controller.setMobileTab("serp")}
@@ -168,7 +168,7 @@ function MobileKeywordResults({ controller }: Props) {
           </div>
           <ul
             tabIndex={0}
-            className="dropdown-content z-10 menu p-2 shadow-lg bg-base-100 border border-base-300 rounded-box w-56"
+            className="dropdown-content z-10 menu p-2 bg-base-100 border border-base-300 rounded-box w-56"
           >
             <li>
               <button onClick={handleExportToSheets} disabled={!canExport}>

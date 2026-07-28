@@ -58,7 +58,7 @@ export function ProjectSwitcher({
 
       <ul
         tabIndex={0}
-        className="dropdown-content z-30 menu w-full rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+        className="dropdown-content z-30 menu w-full rounded-box border border-base-300 bg-base-100 p-2"
       >
         {projects.map((project) => {
           const isActive = project.id === activeProjectId;
@@ -78,7 +78,7 @@ export function ProjectSwitcher({
                   ) : null}
                 </span>
                 {isActive ? (
-                  <Check className="size-4 shrink-0 text-primary" />
+                  <Check className="size-4 shrink-0 text-base-content" />
                 ) : null}
               </button>
             </li>
