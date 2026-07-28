@@ -5,6 +5,7 @@ import type {
 } from "@/server/features/ai-visibility/repositories/AiVisibilityAnalyticsRepository";
 import type {
   VisibilityDeltaStatus,
+  VisibilityLeaderboardSort,
   VisibilityMetric,
   VisibilityOverview,
   VisibilityWindow,
@@ -31,11 +32,13 @@ type BuildArgs = {
   runs: AnalyticsRunRow[];
   observations: AnalyticsObservationRow[];
   brands: AnalyticsBrandRow[];
+  leaderboardSort?: VisibilityLeaderboardSort;
 };
 
 export async function getVisibilityOverview(input: {
   projectId: string;
   windowDays: VisibilityWindow;
+  leaderboardSort?: VisibilityLeaderboardSort;
   asOf?: Date;
 }): Promise<VisibilityOverview> {
   const { AiVisibilityAnalyticsRepository } =
@@ -68,6 +71,7 @@ export async function getVisibilityOverview(input: {
     runs,
     observations,
     brands,
+    leaderboardSort: input.leaderboardSort ?? "mentions",
   });
 }
 
@@ -123,7 +127,12 @@ export function buildVisibilityOverview(args: BuildArgs): VisibilityOverview {
     platforms: buildBreakdowns(currentAnswers, primaryBrandId, "platform"),
     topics: buildBreakdowns(currentAnswers, primaryBrandId, "topic"),
     prompts: buildBreakdowns(currentAnswers, primaryBrandId, "prompt"),
-    shareOfVoice: buildShareOfVoice(currentAnswers, activeBrands, primaryBrand),
+    shareOfVoice: buildShareOfVoice(
+      currentAnswers,
+      activeBrands,
+      primaryBrand,
+      args.leaderboardSort ?? "mentions",
+    ),
   };
 }
 
@@ -157,11 +166,19 @@ function normalizeAnswers(rows: AnalyticsObservationRow[]): StoredAnswer[] {
       byId.set(row.answerId, answer);
     }
     if (row.mentionBrandId && row.mentionCount != null) {
-      answer.mentionsByBrand.set(
-        row.mentionBrandId,
-        (answer.mentionsByBrand.get(row.mentionBrandId) ?? 0) +
-          row.mentionCount,
-      );
+      const mention = answer.mentionsByBrand.get(row.mentionBrandId) ?? {
+        count: 0,
+        sentiments: [],
+        positions: [],
+      };
+      mention.count += row.mentionCount;
+      if (row.mentionSentiment) {
+        mention.sentiments.push(row.mentionSentiment);
+      }
+      if (row.mentionPosition != null) {
+        mention.positions.push(row.mentionPosition);
+      }
+      answer.mentionsByBrand.set(row.mentionBrandId, mention);
     }
   }
   return Array.from(byId.values());

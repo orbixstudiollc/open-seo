@@ -1,10 +1,12 @@
 import { db } from "@/db";
+import { runBatch } from "@/db/runBatch";
 import {
   aiAnswers,
   aiBrandAliases,
   aiBrandMentions,
   aiBrands,
   aiCitations,
+  aiMentionScoringAttempts,
   aiProjectRunSettings,
   aiPromptSetModels,
   aiPromptSets,
@@ -17,19 +19,24 @@ import {
 } from "@/db/schema";
 import { createAiVisibilityRepository } from "./createAiVisibilityRepository";
 
-export const AiVisibilityRepository = createAiVisibilityRepository(db, {
-  projects,
-  aiProjectRunSettings,
-  aiPromptSets,
-  aiPromptSetModels,
-  aiPromptTopics,
-  aiTrackedPrompts,
-  aiPromptTags,
-  aiPromptTagAssignments,
-  aiBrands,
-  aiBrandAliases,
-  aiRuns,
-  aiAnswers,
-  aiBrandMentions,
-  aiCitations,
-});
+export const AiVisibilityRepository = createAiVisibilityRepository(
+  db,
+  {
+    projects,
+    aiProjectRunSettings,
+    aiPromptSets,
+    aiPromptSetModels,
+    aiPromptTopics,
+    aiTrackedPrompts,
+    aiPromptTags,
+    aiPromptTagAssignments,
+    aiBrands,
+    aiBrandAliases,
+    aiRuns,
+    aiAnswers,
+    aiBrandMentions,
+    aiMentionScoringAttempts,
+    aiCitations,
+  },
+  runBatch,
+);

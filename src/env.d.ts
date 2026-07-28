@@ -50,6 +50,8 @@ declare namespace Cloudflare {
     AI_BASE_URL?: string;
     AI_API_KEY?: string;
     AI_MODEL?: string;
+    AI_SCORING_INPUT_USD_PER_MILLION?: string;
+    AI_SCORING_OUTPUT_USD_PER_MILLION?: string;
   }
 }
 

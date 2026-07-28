@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import { useState } from "react";
 import { getStandardErrorMessage } from "@/client/lib/error-messages";
 import {
   ShareOfVoiceCard,
@@ -8,6 +9,7 @@ import {
 import { VisibilityTrendCard } from "@/client/features/ai-visibility/VisibilityTrendCard";
 import { getVisibilityOverview } from "@/serverFunctions/ai-visibility-analytics";
 import type {
+  VisibilityLeaderboardSort,
   VisibilityOverview,
   VisibilityWindow,
 } from "@/types/schemas/ai-visibility-analytics";
@@ -29,9 +31,19 @@ export function VisibilityOverviewPage({
   windowDays,
   onWindowChange,
 }: Props) {
+  const [leaderboardSort, setLeaderboardSort] =
+    useState<VisibilityLeaderboardSort>("mentions");
   const query = useQuery({
-    queryKey: ["ai-visibility-overview", projectId, windowDays],
-    queryFn: () => getVisibilityOverview({ data: { projectId, windowDays } }),
+    queryKey: [
+      "ai-visibility-overview",
+      projectId,
+      windowDays,
+      leaderboardSort,
+    ],
+    queryFn: () =>
+      getVisibilityOverview({
+        data: { projectId, windowDays, leaderboardSort },
+      }),
     staleTime: 60_000,
   });
 
@@ -95,6 +107,7 @@ export function VisibilityOverviewPage({
         <ShareOfVoiceCard
           shareOfVoice={overview.shareOfVoice}
           primaryBrandName={overview.primaryBrand?.name ?? null}
+          onSortChange={setLeaderboardSort}
         />
       </div>
     </PageFrame>

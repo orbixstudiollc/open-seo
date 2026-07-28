@@ -93,6 +93,7 @@ export const {
   aiBrandResolutionEvidence,
   aiRuns,
   aiAnswers,
+  aiMentionScoringAttempts,
   aiBrandMentions,
   aiCitations,
   audits,

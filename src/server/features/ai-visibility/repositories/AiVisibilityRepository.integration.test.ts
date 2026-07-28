@@ -144,6 +144,45 @@ function runRepositoryContract(
         mentionCount: 1,
       };
       await repository.insertBrandMentions([mention, mention]);
+      const [storedMention] =
+        await repository.getBrandMentionsForAnswer(answerId);
+      expect(storedMention).toMatchObject({
+        normalizedName: "acme",
+        sentiment: null,
+        scoringStatus: "pending",
+      });
+      const scoringAttempt = {
+        id: `${label}-scoring-attempt`,
+        answerId,
+        runId,
+        providerKind: "openrouter",
+        modelId: "test/scorer",
+        promptVersion: "mention-sentiment-v1",
+        status: "running",
+        costBasis: "unknown",
+        startedAt: "2024-01-01T00:00:02.100Z",
+      };
+      await expect(
+        repository.tryCreateMentionScoringAttempt(scoringAttempt),
+      ).resolves.toBe(true);
+      await expect(
+        repository.tryCreateMentionScoringAttempt({
+          ...scoringAttempt,
+          id: `${scoringAttempt.id}-duplicate`,
+        }),
+      ).resolves.toBe(false);
+      await repository.completeMentionScoring({
+        attemptId: scoringAttempt.id,
+        answerId,
+        status: "success",
+        completedAt: "2024-01-01T00:00:02.200Z",
+        inputTokens: 100,
+        outputTokens: 20,
+        costUsd: 0.0015,
+        costBasis: "actual",
+        errorCode: null,
+        sentiments: [{ mentionId: storedMention.id, sentiment: "positive" }],
+      });
       const citation = {
         answerId,
         citationOrder: 0,
@@ -187,10 +226,28 @@ function runRepositoryContract(
             cacheKey: "ai-search:prompt-response:synthetic",
           },
         ],
-        mentions: [{ normalizedName: "acme", brandId }],
+        mentions: [
+          {
+            normalizedName: "acme",
+            brandId,
+            sentiment: "positive",
+            scoringStatus: "scored",
+          },
+        ],
+        scoringAttempts: [
+          {
+            id: scoringAttempt.id,
+            status: "success",
+            inputTokens: 100,
+            outputTokens: 20,
+            costUsd: 0.0015,
+            costBasis: "actual",
+          },
+        ],
         citations: [{ domain: "example.com", citationOrder: 0 }],
       });
       expect(stored?.mentions).toHaveLength(1);
+      expect(stored?.scoringAttempts).toHaveLength(1);
       expect(stored?.citations).toHaveLength(1);
 
       await expect(

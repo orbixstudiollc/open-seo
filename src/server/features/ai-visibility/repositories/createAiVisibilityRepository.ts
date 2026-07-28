@@ -21,6 +21,7 @@ import {
   aiBrandMentions,
   aiBrands,
   aiCitations,
+  aiMentionScoringAttempts,
   aiProjectRunSettings,
   aiPromptSetModels,
   aiPromptSets,
@@ -49,6 +50,7 @@ const tables = {
   aiRuns,
   aiAnswers,
   aiBrandMentions,
+  aiMentionScoringAttempts,
   aiCitations,
 };
 
@@ -78,6 +80,10 @@ type BrandMentionInsert = Omit<
   "id" | "createdAt"
 >;
 type BrandMentionRecord = typeof aiBrandMentions.$inferSelect;
+type MentionScoringAttemptInsert = InferInsertModel<
+  typeof aiMentionScoringAttempts
+>;
+type MentionScoringAttemptRecord = typeof aiMentionScoringAttempts.$inferSelect;
 type CitationInsert = Omit<
   InferInsertModel<typeof aiCitations>,
   "id" | "createdAt"
@@ -199,11 +205,37 @@ type AiVisibilityRepositoryContract = {
   ) => Promise<AnswerRecord | null>;
   getAnswersForRun: (runId: string) => Promise<AnswerRecord[]>;
   insertBrandMentions: (values: BrandMentionInsert[]) => Promise<void>;
+  getBrandMentionsForAnswer: (
+    answerId: string,
+  ) => Promise<BrandMentionRecord[]>;
+  tryCreateMentionScoringAttempt: (
+    values: MentionScoringAttemptInsert,
+  ) => Promise<boolean>;
+  getMentionScoringAttempt: (
+    answerId: string,
+    promptVersion: string,
+  ) => Promise<MentionScoringAttemptRecord | null>;
+  completeMentionScoring: (values: {
+    attemptId: string;
+    answerId: string;
+    status: "success" | "failed" | "skipped";
+    completedAt: string;
+    inputTokens: number | null;
+    outputTokens: number | null;
+    costUsd: number | null;
+    costBasis: "actual" | "estimated" | "unknown";
+    errorCode: string | null;
+    sentiments?: Array<{
+      mentionId: number;
+      sentiment: "positive" | "neutral" | "negative" | null;
+    }>;
+  }) => Promise<void>;
   insertCitations: (values: CitationInsert[]) => Promise<void>;
   getRunWithObservations: (runId: string) => Promise<{
     run: RunRecord;
     answers: AnswerRecord[];
     mentions: BrandMentionRecord[];
+    scoringAttempts: MentionScoringAttemptRecord[];
     citations: CitationRecord[];
   } | null>;
   pruneTerminalRunsBefore: (params: {
@@ -220,6 +252,9 @@ type AiVisibilityRepositoryContract = {
 
 const OBSERVATION_INSERT_SIZE = 10;
 const RETENTION_DELETE_SIZE = 90;
+type AtomicBatch = (
+  build: (tx: AiVisibilityRepositoryDatabase) => readonly Promise<unknown>[],
+) => Promise<void>;
 
 /**
  * The factory keeps one repository implementation testable against both
@@ -229,7 +264,17 @@ const RETENTION_DELETE_SIZE = 90;
 export function createAiVisibilityRepository(
   database: AiVisibilityRepositoryDatabase,
   schema: AiVisibilityRepositoryTables = tables,
+  atomicBatch?: AtomicBatch,
 ): AiVisibilityRepositoryContract {
+  async function executeAtomically(
+    build: (tx: AiVisibilityRepositoryDatabase) => readonly Promise<unknown>[],
+  ) {
+    if (atomicBatch) {
+      await atomicBatch(build);
+      return;
+    }
+    for (const statement of build(database)) await statement;
+  }
   async function getOrCreateProjectRunSettings(projectId: string) {
     await database
       .insert(schema.aiProjectRunSettings)
@@ -823,6 +868,125 @@ export function createAiVisibilityRepository(
     }
   }
 
+  async function getBrandMentionsForAnswer(answerId: string) {
+    return database
+      .select()
+      .from(schema.aiBrandMentions)
+      .where(eq(schema.aiBrandMentions.answerId, answerId))
+      .orderBy(schema.aiBrandMentions.position, schema.aiBrandMentions.id);
+  }
+
+  async function tryCreateMentionScoringAttempt(
+    values: MentionScoringAttemptInsert,
+  ) {
+    const inserted = await database
+      .insert(schema.aiMentionScoringAttempts)
+      .values(values)
+      .onConflictDoNothing({
+        target: [
+          schema.aiMentionScoringAttempts.answerId,
+          schema.aiMentionScoringAttempts.promptVersion,
+        ],
+      })
+      .returning({ id: schema.aiMentionScoringAttempts.id });
+    return inserted.length > 0;
+  }
+
+  async function getMentionScoringAttempt(
+    answerId: string,
+    promptVersion: string,
+  ) {
+    const [attempt] = await database
+      .select()
+      .from(schema.aiMentionScoringAttempts)
+      .where(
+        and(
+          eq(schema.aiMentionScoringAttempts.answerId, answerId),
+          eq(schema.aiMentionScoringAttempts.promptVersion, promptVersion),
+        ),
+      )
+      .limit(1);
+    return attempt ?? null;
+  }
+
+  async function completeMentionScoring(values: {
+    attemptId: string;
+    answerId: string;
+    status: "success" | "failed" | "skipped";
+    completedAt: string;
+    inputTokens: number | null;
+    outputTokens: number | null;
+    costUsd: number | null;
+    costBasis: "actual" | "estimated" | "unknown";
+    errorCode: string | null;
+    sentiments?: Array<{
+      mentionId: number;
+      sentiment: "positive" | "neutral" | "negative" | null;
+    }>;
+  }) {
+    const scoringStatus =
+      values.status === "success"
+        ? ("scored" as const)
+        : values.status === "failed"
+          ? ("failed" as const)
+          : ("skipped" as const);
+    await executeAtomically((tx) => [
+      ...(values.sentiments ?? []).map((sentiment) =>
+        tx
+          .update(schema.aiBrandMentions)
+          .set({
+            sentiment: sentiment.sentiment,
+            scoringStatus,
+            scoringAttemptId: values.attemptId,
+            scoredAt: values.completedAt,
+          })
+          .where(
+            and(
+              eq(schema.aiBrandMentions.id, sentiment.mentionId),
+              eq(schema.aiBrandMentions.answerId, values.answerId),
+              eq(schema.aiBrandMentions.scoringStatus, "pending"),
+            ),
+          ),
+      ),
+      ...(values.status === "success"
+        ? []
+        : [
+            tx
+              .update(schema.aiBrandMentions)
+              .set({
+                sentiment: null,
+                scoringStatus,
+                scoringAttemptId: values.attemptId,
+                scoredAt: values.completedAt,
+              })
+              .where(
+                and(
+                  eq(schema.aiBrandMentions.answerId, values.answerId),
+                  eq(schema.aiBrandMentions.scoringStatus, "pending"),
+                ),
+              ),
+          ]),
+      tx
+        .update(schema.aiMentionScoringAttempts)
+        .set({
+          status: values.status,
+          inputTokens: values.inputTokens,
+          outputTokens: values.outputTokens,
+          costUsd: values.costUsd,
+          costBasis: values.costBasis,
+          errorCode: values.errorCode,
+          completedAt: values.completedAt,
+        })
+        .where(
+          and(
+            eq(schema.aiMentionScoringAttempts.id, values.attemptId),
+            eq(schema.aiMentionScoringAttempts.answerId, values.answerId),
+            eq(schema.aiMentionScoringAttempts.status, "running"),
+          ),
+        ),
+    ]);
+  }
+
   async function insertCitations(values: CitationInsert[]) {
     for (let i = 0; i < values.length; i += OBSERVATION_INSERT_SIZE) {
       await database
@@ -849,6 +1013,7 @@ export function createAiVisibilityRepository(
       .orderBy(schema.aiAnswers.observedAt);
     const answerIds = answers.map((answer) => answer.id);
     const mentions = [];
+    const scoringAttempts = [];
     const citations = [];
     for (let i = 0; i < answerIds.length; i += RETENTION_DELETE_SIZE) {
       const ids = answerIds.slice(i, i + RETENTION_DELETE_SIZE);
@@ -859,6 +1024,13 @@ export function createAiVisibilityRepository(
           .from(schema.aiBrandMentions)
           .where(inArray(schema.aiBrandMentions.answerId, ids))
           .orderBy(schema.aiBrandMentions.id)),
+      );
+      scoringAttempts.push(
+        ...(await database
+          .select()
+          .from(schema.aiMentionScoringAttempts)
+          .where(inArray(schema.aiMentionScoringAttempts.answerId, ids))
+          .orderBy(schema.aiMentionScoringAttempts.startedAt)),
       );
       citations.push(
         ...(await database
@@ -871,7 +1043,7 @@ export function createAiVisibilityRepository(
           )),
       );
     }
-    return { run, answers, mentions, citations };
+    return { run, answers, mentions, scoringAttempts, citations };
   }
 
   /**
@@ -963,6 +1135,10 @@ export function createAiVisibilityRepository(
     getAnswerById,
     getAnswersForRun,
     insertBrandMentions,
+    getBrandMentionsForAnswer,
+    tryCreateMentionScoringAttempt,
+    getMentionScoringAttempt,
+    completeMentionScoring,
     insertCitations,
     getRunWithObservations,
     pruneTerminalRunsBefore,

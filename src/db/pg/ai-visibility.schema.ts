@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- normalized AI visibility tables stay in one dialect schema for parity review. */
 import { sql } from "drizzle-orm";
 import {
   type AnyPgColumn,
@@ -388,6 +389,52 @@ export const aiAnswers = pgTable(
   ],
 );
 
+export const aiMentionScoringAttempts = pgTable(
+  "ai_mention_scoring_attempts",
+  {
+    id: text("id").primaryKey(),
+    answerId: text("answer_id")
+      .notNull()
+      .references(() => aiAnswers.id, { onDelete: "cascade" }),
+    runId: text("run_id")
+      .notNull()
+      .references(() => aiRuns.id, { onDelete: "cascade" }),
+    providerKind: text("provider_kind", {
+      enum: ["openrouter", "custom"],
+    }).notNull(),
+    modelId: text("model_id").notNull(),
+    promptVersion: text("prompt_version").notNull(),
+    status: text("status", {
+      enum: ["running", "success", "failed", "skipped"],
+    })
+      .notNull()
+      .default("running"),
+    inputTokens: integer("input_tokens"),
+    outputTokens: integer("output_tokens"),
+    costUsd: real("cost_usd"),
+    costBasis: text("cost_basis", {
+      enum: ["actual", "estimated", "unknown"],
+    })
+      .notNull()
+      .default("unknown"),
+    inputUsdPerMillion: real("input_usd_per_million"),
+    outputUsdPerMillion: real("output_usd_per_million"),
+    errorCode: text("error_code"),
+    startedAt: timestampColumn("started_at").notNull().default(isoNow),
+    completedAt: timestampColumn("completed_at"),
+  },
+  (table) => [
+    uniqueIndex("ai_mention_scoring_attempts_answer_version_idx").on(
+      table.answerId,
+      table.promptVersion,
+    ),
+    index("ai_mention_scoring_attempts_run_started_idx").on(
+      table.runId,
+      table.startedAt,
+    ),
+  ],
+);
+
 export const aiBrandMentions = pgTable(
   "ai_brand_mentions",
   {
@@ -401,6 +448,22 @@ export const aiBrandMentions = pgTable(
       onDelete: "set null",
     }),
     mentionCount: integer("mention_count").notNull().default(1),
+    sentiment: text("sentiment", {
+      enum: ["positive", "neutral", "negative"],
+    }),
+    position: integer("position"),
+    firstOccurrenceStart: integer("first_occurrence_start"),
+    firstOccurrenceEnd: integer("first_occurrence_end"),
+    scoringStatus: text("scoring_status", {
+      enum: ["pending", "scored", "failed", "skipped"],
+    })
+      .notNull()
+      .default("pending"),
+    scoringAttemptId: text("scoring_attempt_id").references(
+      () => aiMentionScoringAttempts.id,
+      { onDelete: "set null" },
+    ),
+    scoredAt: timestampColumn("scored_at"),
     createdAt: timestampColumn("created_at").notNull().default(isoNow),
   },
   (table) => [
