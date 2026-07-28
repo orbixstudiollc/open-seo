@@ -112,6 +112,10 @@ body {
   --visibility-hairline-strong: #cfcdc4;
   --visibility-accent: #f54e00;
   --visibility-accent-active: #d04200;
+  --visibility-positive: #1f8a65;
+  --visibility-positive-soft: rgb(31 138 101 / 0.12);
+  --visibility-negative: #cf2d56;
+  --visibility-negative-soft: rgb(207 45 86 / 0.12);
   background: var(--visibility-canvas);
   color: var(--visibility-ink);
   font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -128,6 +132,10 @@ html[data-theme="openseo-dark"] .ai-visibility-page {
   --visibility-hairline-strong: #4b4840;
   --visibility-accent: #f54e00;
   --visibility-accent-active: #d04200;
+  --visibility-positive: #6fc496;
+  --visibility-positive-soft: rgb(111 196 150 / 0.14);
+  --visibility-negative: #e38069;
+  --visibility-negative-soft: rgb(227 128 105 / 0.14);
 }
 
 .ai-visibility-card {

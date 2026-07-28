@@ -1,4 +1,5 @@
 import { sortBy } from "remeda";
+import { formatAiModelLabel } from "@/shared/aiVisibilityLabels";
 import type { AnalyticsBrandRow } from "@/server/features/ai-visibility/repositories/AiVisibilityAnalyticsRepository";
 import type {
   VisibilityBreakdown,
@@ -198,7 +199,7 @@ function breakdownDescriptor(answer: StoredAnswer, kind: BreakdownKind) {
   if (kind === "platform") {
     return {
       key: answer.model,
-      label: formatModelLabel(answer.model),
+      label: formatAiModelLabel(answer.model),
       detail: answer.modelName,
     };
   }
@@ -214,15 +215,4 @@ function breakdownDescriptor(answer: StoredAnswer, kind: BreakdownKind) {
     label: answer.promptText,
     detail: answer.topicName ?? "Uncategorized",
   };
-}
-
-function formatModelLabel(model: string): string {
-  const labels: Record<string, string> = {
-    chat_gpt: "ChatGPT",
-    claude: "Claude",
-    gemini: "Gemini",
-    perplexity: "Perplexity",
-    google: "Google",
-  };
-  return labels[model] ?? model.replaceAll(/[_-]+/gu, " ");
 }

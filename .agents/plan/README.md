@@ -44,7 +44,7 @@ rollups attach to resolved entities. Phase 6 depends on 5.
   OpenSEO's actual advantage here; deferring it guarantees it never happens.
 - **UI work follows `/DESIGN.md`** (Cursor-derived design language: warm-cream
   canvas, single orange accent, hairline cards, editorial type). Read it before
-  writing any UI. It applies to all new AI-visibility surfaces (Phases 2, 3, 6,
-  7). Substitute the system-ui fallback stack where CursorGothic is referenced —
+  writing any UI. USER RULING 28 Jul: it applies to the WHOLE app — see
+  `phase-8-global-design.md` for the migration flow. Substitute the system-ui fallback stack where CursorGothic is referenced —
   the font itself is not licensed to this project. Existing app pages are out of
   scope unless a brief says otherwise.
