@@ -127,6 +127,14 @@ export const aiTrackedPrompts = pgTable(
     }),
     prompt: text("prompt").notNull(),
     normalizedPrompt: text("normalized_prompt").notNull(),
+    state: text("state", {
+      enum: ["active", "suggested", "rejected"],
+    })
+      .notNull()
+      .default("active"),
+    suggestionSource: text("suggestion_source", {
+      enum: ["gsc", "topic_gap"],
+    }),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: timestampColumn("created_at").notNull().default(isoNow),
     updatedAt: timestampColumn("updated_at").notNull().default(isoNow),
@@ -140,6 +148,11 @@ export const aiTrackedPrompts = pgTable(
     index("ai_tracked_prompts_set_topic_order_idx").on(
       table.promptSetId,
       table.topicId,
+      table.sortOrder,
+    ),
+    index("ai_tracked_prompts_set_state_order_idx").on(
+      table.promptSetId,
+      table.state,
       table.sortOrder,
     ),
   ],
