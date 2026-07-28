@@ -2,10 +2,17 @@ import { sortBy } from "remeda";
 import { formatAiModelLabel } from "@/shared/aiVisibilityLabels";
 import type { AnalyticsBrandRow } from "@/server/features/ai-visibility/repositories/AiVisibilityAnalyticsRepository";
 import type {
+  VisibilityLeaderboardSort,
   VisibilityBreakdown,
   VisibilityMetric,
   VisibilityOverview,
 } from "@/types/schemas/ai-visibility-analytics";
+
+export type StoredMention = {
+  count: number;
+  sentiments: Array<"positive" | "neutral" | "negative">;
+  positions: number[];
+};
 
 export type StoredAnswer = {
   id: string;
@@ -18,7 +25,7 @@ export type StoredAnswer = {
   status: "success" | "error";
   topicId: string | null;
   topicName: string | null;
-  mentionsByBrand: Map<string, number>;
+  mentionsByBrand: Map<string, StoredMention>;
 };
 
 export function computeMetric(
@@ -31,7 +38,8 @@ export function computeMetric(
     primaryBrandId == null
       ? 0
       : successful.filter(
-          (answer) => (answer.mentionsByBrand.get(primaryBrandId) ?? 0) > 0,
+          (answer) =>
+            (answer.mentionsByBrand.get(primaryBrandId)?.count ?? 0) > 0,
         ).length;
   const successfulCount = successful.length;
   return {
@@ -122,6 +130,7 @@ export function buildShareOfVoice(
   answers: StoredAnswer[],
   brands: AnalyticsBrandRow[],
   primaryBrand: AnalyticsBrandRow | null,
+  sort: VisibilityLeaderboardSort,
 ): VisibilityOverview["shareOfVoice"] {
   if (!primaryBrand || brands.length < 2) return null;
   const successful = answers.filter((answer) => answer.status === "success");
@@ -129,10 +138,20 @@ export function buildShareOfVoice(
 
   const brandById = new Map(brands.map((brand) => [brand.id, brand]));
   const mentions = new Map(brands.map((brand) => [brand.id, 0]));
+  const sentimentScores = new Map<string, number[]>();
+  const positions = new Map<string, number[]>();
   for (const answer of successful) {
-    for (const [brandId, count] of answer.mentionsByBrand) {
+    for (const [brandId, observation] of answer.mentionsByBrand) {
       if (brandById.has(brandId)) {
-        mentions.set(brandId, (mentions.get(brandId) ?? 0) + count);
+        mentions.set(brandId, (mentions.get(brandId) ?? 0) + observation.count);
+        sentimentScores.set(brandId, [
+          ...(sentimentScores.get(brandId) ?? []),
+          ...observation.sentiments.map(sentimentValue),
+        ]);
+        positions.set(brandId, [
+          ...(positions.get(brandId) ?? []),
+          ...observation.positions,
+        ]);
       }
     }
   }
@@ -140,9 +159,11 @@ export function buildShareOfVoice(
     (total, count) => total + count,
     0,
   );
-  const entries = sortBy(
-    brands.map((brand) => {
+  const entries = brands
+    .map((brand) => {
       const count = mentions.get(brand.id) ?? 0;
+      const scores = sentimentScores.get(brand.id) ?? [];
+      const observedPositions = positions.get(brand.id) ?? [];
       return {
         brandId: brand.id,
         label: brand.name,
@@ -150,13 +171,18 @@ export function buildShareOfVoice(
         mentions: count,
         sharePct:
           denominator === 0 ? null : round1((count / denominator) * 100),
+        sentimentEstimate: scores.length === 0 ? null : round1(average(scores)),
+        averagePosition:
+          observedPositions.length === 0
+            ? null
+            : round1(average(observedPositions)),
+        scoredAnswers: scores.length,
       };
-    }),
-    [(entry) => entry.mentions, "desc"],
-    [(entry) => entry.label, "asc"],
-  );
+    })
+    .toSorted((a, b) => compareLeaderboardEntries(a, b, sort));
   return {
     platforms: successfulModels(successful),
+    sortBy: sort,
     entries,
   };
 }
@@ -193,6 +219,50 @@ export function successfulModels(answers: StoredAnswer[]): string[] {
 
 export function round1(value: number): number {
   return Math.round(value * 10) / 10;
+}
+
+function sentimentValue(
+  sentiment: "positive" | "neutral" | "negative",
+): number {
+  return sentiment === "positive" ? 1 : sentiment === "negative" ? -1 : 0;
+}
+
+function average(values: number[]): number {
+  return values.reduce((total, value) => total + value, 0) / values.length;
+}
+
+function compareLeaderboardEntries(
+  a: NonNullable<VisibilityOverview["shareOfVoice"]>["entries"][number],
+  b: NonNullable<VisibilityOverview["shareOfVoice"]>["entries"][number],
+  sort: VisibilityLeaderboardSort,
+): number {
+  if (sort === "sentiment") {
+    const sentimentOrder = compareNullable(
+      a.sentimentEstimate,
+      b.sentimentEstimate,
+      "desc",
+    );
+    if (sentimentOrder) return sentimentOrder;
+  } else if (sort === "position") {
+    const positionOrder = compareNullable(
+      a.averagePosition,
+      b.averagePosition,
+      "asc",
+    );
+    if (positionOrder) return positionOrder;
+  }
+  const mentionOrder = b.mentions - a.mentions;
+  return mentionOrder || a.label.localeCompare(b.label);
+}
+
+function compareNullable(
+  a: number | null,
+  b: number | null,
+  direction: "asc" | "desc",
+): number {
+  if (a == null) return b == null ? 0 : 1;
+  if (b == null) return -1;
+  return direction === "asc" ? a - b : b - a;
 }
 
 function breakdownDescriptor(answer: StoredAnswer, kind: BreakdownKind) {

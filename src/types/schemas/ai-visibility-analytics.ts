@@ -6,9 +6,16 @@ export const visibilityWindowSchema = z.union([
   z.literal(90),
 ]);
 
+export const visibilityLeaderboardSortSchema = z.enum([
+  "mentions",
+  "sentiment",
+  "position",
+]);
+
 export const visibilityOverviewInputSchema = z.object({
   projectId: z.string().min(1),
   windowDays: visibilityWindowSchema.default(30),
+  leaderboardSort: visibilityLeaderboardSortSchema.default("mentions"),
 });
 
 export const visibilityOverviewSearchSchema = z.object({
@@ -20,6 +27,9 @@ export const visibilityOverviewSearchSchema = z.object({
 });
 
 export type VisibilityWindow = z.infer<typeof visibilityWindowSchema>;
+export type VisibilityLeaderboardSort = z.infer<
+  typeof visibilityLeaderboardSortSchema
+>;
 
 export type VisibilityMetric = {
   visibilityPct: number | null;
@@ -73,12 +83,16 @@ export type VisibilityOverview = {
   prompts: VisibilityBreakdown[];
   shareOfVoice: {
     platforms: string[];
+    sortBy: VisibilityLeaderboardSort;
     entries: Array<{
       brandId: string;
       label: string;
       isTarget: boolean;
       mentions: number;
       sharePct: number | null;
+      sentimentEstimate: number | null;
+      averagePosition: number | null;
+      scoredAnswers: number;
     }>;
   } | null;
 };

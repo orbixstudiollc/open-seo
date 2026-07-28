@@ -10,5 +10,6 @@ export const getVisibilityOverview = createServerFn({ method: "GET" })
     readVisibilityOverview({
       projectId: context.projectId,
       windowDays: data.windowDays,
+      leaderboardSort: data.leaderboardSort,
     }),
   );

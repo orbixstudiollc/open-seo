@@ -9,6 +9,7 @@ import {
   finalizeAiTrackedRun,
   prepareAiTrackedRun,
 } from "@/server/features/ai-visibility/services/aiTrackedRunExecution";
+import { executeAiMentionScoring } from "@/server/features/ai-visibility/services/aiMentionScoringExecution";
 import { failAiRunIfActive } from "@/server/features/ai-visibility/services/aiTrackedRunGuards";
 import type { AiTrackedRunParams } from "@/server/features/ai-visibility/services/aiTrackedRunTypes";
 import { pgStep } from "@/server/workflows/pgStep";
@@ -57,6 +58,34 @@ export async function runAiTrackedRunWorkflow(
         if (result.status === "rejected") {
           console.error(
             `[ai-visibility] ${params.runId} answer step failed:`,
+            result.reason,
+          );
+        }
+      }
+    }
+
+    for (
+      let offset = 0;
+      offset < work.length;
+      offset += AI_TRACKED_RUN_BATCH_SIZE
+    ) {
+      const batch = work.slice(offset, offset + AI_TRACKED_RUN_BATCH_SIZE);
+      const settled = await Promise.allSettled(
+        batch.map((item, batchIndex) =>
+          pgStep(
+            step,
+            `score-${offset + batchIndex}-${item.model}`,
+            STEP_CONFIG,
+            () => executeAiMentionScoring(item, params.projectId),
+          ),
+        ),
+      );
+      for (const result of settled) {
+        if (result.status === "rejected") {
+          // Scoring enriches an already-terminal answer. Its failure is
+          // observable in logs/attempt rows but cannot fail the parent run.
+          console.error(
+            `[ai-visibility] ${params.runId} mention scoring step failed:`,
             result.reason,
           );
         }

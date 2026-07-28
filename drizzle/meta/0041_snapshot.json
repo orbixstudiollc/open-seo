@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "2d805d2c-d8cb-4fe8-870a-641aa77bd6f0",
-  "prevId": "d8b14167-5973-4f62-bc96-bee1e1012d47",
+  "id": "bba82751-319e-4c45-b072-4d6540b9668c",
+  "prevId": "cab7544a-c0a8-4a2b-a080-bce228e67540",
   "tables": {
     "backlink_snapshots": {
       "name": "backlink_snapshots",
@@ -1680,6 +1680,56 @@
           "autoincrement": false,
           "default": 1
         },
+        "sentiment": {
+          "name": "sentiment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "first_occurrence_start": {
+          "name": "first_occurrence_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "first_occurrence_end": {
+          "name": "first_occurrence_end",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "scoring_status": {
+          "name": "scoring_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "scoring_attempt_id": {
+          "name": "scoring_attempt_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "scored_at": {
+          "name": "scored_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "text",
@@ -1727,6 +1777,19 @@
           "tableTo": "ai_brands",
           "columnsFrom": [
             "brand_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "ai_brand_mentions_scoring_attempt_id_ai_mention_scoring_attempts_id_fk": {
+          "name": "ai_brand_mentions_scoring_attempt_id_ai_mention_scoring_attempts_id_fk",
+          "tableFrom": "ai_brand_mentions",
+          "tableTo": "ai_mention_scoring_attempts",
+          "columnsFrom": [
+            "scoring_attempt_id"
           ],
           "columnsTo": [
             "id"
@@ -2288,6 +2351,175 @@
           "tableTo": "projects",
           "columnsFrom": [
             "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "ai_mention_scoring_attempts": {
+      "name": "ai_mention_scoring_attempts",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "answer_id": {
+          "name": "answer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "run_id": {
+          "name": "run_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "provider_kind": {
+          "name": "provider_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "prompt_version": {
+          "name": "prompt_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'running'"
+        },
+        "input_tokens": {
+          "name": "input_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "output_tokens": {
+          "name": "output_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cost_usd": {
+          "name": "cost_usd",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cost_basis": {
+          "name": "cost_basis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'unknown'"
+        },
+        "input_usd_per_million": {
+          "name": "input_usd_per_million",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "output_usd_per_million": {
+          "name": "output_usd_per_million",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "error_code": {
+          "name": "error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "ai_mention_scoring_attempts_answer_version_idx": {
+          "name": "ai_mention_scoring_attempts_answer_version_idx",
+          "columns": [
+            "answer_id",
+            "prompt_version"
+          ],
+          "isUnique": true
+        },
+        "ai_mention_scoring_attempts_run_started_idx": {
+          "name": "ai_mention_scoring_attempts_run_started_idx",
+          "columns": [
+            "run_id",
+            "started_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "ai_mention_scoring_attempts_answer_id_ai_answers_id_fk": {
+          "name": "ai_mention_scoring_attempts_answer_id_ai_answers_id_fk",
+          "tableFrom": "ai_mention_scoring_attempts",
+          "tableTo": "ai_answers",
+          "columnsFrom": [
+            "answer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "ai_mention_scoring_attempts_run_id_ai_runs_id_fk": {
+          "name": "ai_mention_scoring_attempts_run_id_ai_runs_id_fk",
+          "tableFrom": "ai_mention_scoring_attempts",
+          "tableTo": "ai_runs",
+          "columnsFrom": [
+            "run_id"
           ],
           "columnsTo": [
             "id"

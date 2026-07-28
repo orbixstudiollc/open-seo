@@ -8,13 +8,21 @@ import {
 } from "@/server/mcp/output-schemas";
 import { withMcpProjectAuth } from "@/server/mcp/project-auth";
 import { projectIdSchema } from "@/server/mcp/schemas";
-import { visibilityWindowSchema } from "@/types/schemas/ai-visibility-analytics";
+import {
+  visibilityLeaderboardSortSchema,
+  visibilityWindowSchema,
+} from "@/types/schemas/ai-visibility-analytics";
 
 const inputSchema = {
   projectId: projectIdSchema,
   windowDays: visibilityWindowSchema
     .default(30)
     .describe("Current and prior comparison window in days: 7, 30, or 90."),
+  leaderboardSort: visibilityLeaderboardSortSchema
+    .default("mentions")
+    .describe(
+      "Order the brand leaderboard by mention volume, estimated sentiment, or average first-mention position.",
+    ),
 } as const;
 
 type Args = z.infer<z.ZodObject<typeof inputSchema>>;
@@ -24,7 +32,7 @@ export const getAiVisibilityAnalyticsTool = {
   config: {
     title: "Get AI visibility analytics",
     description:
-      "Read coverage-aware visibility, trend, platform, topic, prompt, and Share of Voice analytics from persisted AI answers. Uses no credits. Missing history and platform failures are preserved rather than treated as zero.",
+      "Read coverage-aware visibility, trend, platform, topic, prompt, and brand leaderboard analytics, including estimated sentiment and average first-mention position. Uses no credits. Missing scoring and platform failures remain null rather than zero.",
     inputSchema,
     outputSchema: z
       .object({
@@ -42,6 +50,7 @@ export const getAiVisibilityAnalyticsTool = {
     const overview = await getVisibilityOverview({
       projectId: args.projectId,
       windowDays: args.windowDays,
+      leaderboardSort: args.leaderboardSort,
     });
     return mcpResponse({
       text: summarizeOverview(overview),

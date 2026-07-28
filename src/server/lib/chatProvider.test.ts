@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildChatAgentModel,
+  buildMentionScoringModel,
   resolveChatProviderSync,
 } from "@/server/lib/chatProvider";
 
@@ -126,5 +127,17 @@ describe("buildChatAgentModel", () => {
       modelId: "minimax/minimax-m3",
     });
     expect(model.modelId).toBe("minimax/minimax-m3");
+  });
+});
+
+describe("buildMentionScoringModel", () => {
+  it("uses the configured chat-provider model for scoring", () => {
+    const model = buildMentionScoringModel({
+      kind: "custom",
+      apiKey: "custom-key",
+      modelId: "local-scorer",
+      baseURL: "https://gateway.example.com/v1",
+    });
+    expect(model.modelId).toBe("local-scorer");
   });
 });

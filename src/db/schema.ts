@@ -94,6 +94,7 @@ export const {
   aiDomainClassifications,
   aiRuns,
   aiAnswers,
+  aiMentionScoringAttempts,
   aiBrandMentions,
   aiCitations,
   audits,

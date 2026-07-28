@@ -9,6 +9,7 @@ vi.mock("cloudflare:workers", () => ({
 const mocks = vi.hoisted(() => ({
   prepare: vi.fn(),
   execute: vi.fn(),
+  score: vi.fn(),
   finalize: vi.fn(),
   fail: vi.fn(),
 }));
@@ -24,6 +25,12 @@ vi.mock(
 vi.mock("@/server/features/ai-visibility/services/aiTrackedRunGuards", () => ({
   failAiRunIfActive: mocks.fail,
 }));
+vi.mock(
+  "@/server/features/ai-visibility/services/aiMentionScoringExecution",
+  () => ({
+    executeAiMentionScoring: mocks.score,
+  }),
+);
 vi.mock("@/db", () => ({
   withPgClient: (fn: () => Promise<unknown>) => fn(),
 }));
@@ -49,14 +56,17 @@ describe("AiTrackedRunWorkflow", () => {
       if (item.answerId === "answer_2") throw new Error("model failed");
       return { status: "success", replayed: false };
     });
+    mocks.score.mockResolvedValue({ status: "success" });
     mocks.finalize.mockResolvedValue({ status: "partial" });
+    const stepNames: string[] = [];
 
     const step = {
       do: (
-        _name: string,
+        name: string,
         configOrCallback: unknown,
         maybeCallback?: () => Promise<unknown>,
       ) => {
+        stepNames.push(name);
         const callback =
           typeof configOrCallback === "function"
             ? (configOrCallback as () => Promise<unknown>)
@@ -85,6 +95,13 @@ describe("AiTrackedRunWorkflow", () => {
 
     expect(maxConcurrent).toBe(4);
     expect(mocks.execute).toHaveBeenCalledTimes(10);
+    expect(mocks.score).toHaveBeenCalledTimes(10);
+    expect(
+      stepNames.findIndex((name) => name.startsWith("score-")),
+    ).toBeGreaterThan(
+      stepNames.findLastIndex((name) => name.startsWith("answer-")),
+    );
+    expect(stepNames.at(-1)).toBe("finalize");
     expect(mocks.finalize).toHaveBeenCalledTimes(1);
     expect(mocks.fail).not.toHaveBeenCalled();
   });

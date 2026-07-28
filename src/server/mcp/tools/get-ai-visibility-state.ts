@@ -44,6 +44,7 @@ export const getAiVisibilityStateTool = {
         run: looseObjectOutputSchema.optional(),
         answers: z.array(looseObjectOutputSchema).optional(),
         mentions: z.array(looseObjectOutputSchema).optional(),
+        scoringAttempts: z.array(looseObjectOutputSchema).optional(),
         citations: z.array(looseObjectOutputSchema).optional(),
         ...optionalMetaOutputSchema,
       })
@@ -115,6 +116,9 @@ export const getAiVisibilityStateTool = {
       const citations = stored.citations.filter((citation) =>
         answerIds.has(citation.answerId),
       );
+      const scoringAttempts = stored.scoringAttempts.filter((attempt) =>
+        answerIds.has(attempt.answerId),
+      );
       const run = {
         ...stored.run,
         answerCount: stored.answers.length,
@@ -122,9 +126,15 @@ export const getAiVisibilityStateTool = {
         truncated: stored.answers.length > answers.length,
       };
       return mcpResponse({
-        text: `AI visibility run ${stored.run.id}: ${stored.run.status}, ${stored.answers.length} answers, ${stored.mentions.length} brand mentions, ${stored.citations.length} citations.`,
+        text: `AI visibility run ${stored.run.id}: ${stored.run.status}, ${stored.answers.length} answers, ${stored.mentions.length} brand mentions, ${stored.scoringAttempts.length} scoring attempts, ${stored.citations.length} citations.`,
         meta: buildProjectMeta(context, args.projectId),
-        structuredContent: { run, answers, mentions, citations },
+        structuredContent: {
+          run,
+          answers,
+          mentions,
+          scoringAttempts,
+          citations,
+        },
       });
     }
 

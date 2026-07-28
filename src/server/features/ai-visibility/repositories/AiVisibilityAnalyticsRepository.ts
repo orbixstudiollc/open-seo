@@ -28,6 +28,8 @@ export type AnalyticsObservationRow = {
   topicName: string | null;
   mentionBrandId: string | null;
   mentionCount: number | null;
+  mentionSentiment?: "positive" | "neutral" | "negative" | null;
+  mentionPosition?: number | null;
 };
 
 export type AnalyticsBrandRow = {
@@ -93,6 +95,8 @@ async function getObservations(runIds: string[]) {
             topicName: aiPromptTopics.name,
             mentionBrandId: aiBrandMentions.brandId,
             mentionCount: aiBrandMentions.mentionCount,
+            mentionSentiment: aiBrandMentions.sentiment,
+            mentionPosition: aiBrandMentions.position,
           })
           .from(aiRuns)
           .innerJoin(aiAnswers, eq(aiAnswers.runId, aiRuns.id))

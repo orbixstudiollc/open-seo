@@ -66,13 +66,18 @@ describe("get_ai_visibility_analytics MCP tool", () => {
       await import("./get-ai-visibility-analytics");
 
     const result = await getAiVisibilityAnalyticsTool.handler(
-      { projectId: "project_1", windowDays: 30 },
+      {
+        projectId: "project_1",
+        windowDays: 30,
+        leaderboardSort: "sentiment",
+      },
       toolExtra,
     );
 
     expect(mocks.getVisibilityOverview).toHaveBeenCalledWith({
       projectId: "project_1",
       windowDays: 30,
+      leaderboardSort: "sentiment",
     });
     expect(result.structuredContent).toMatchObject({
       overview: {
@@ -102,7 +107,11 @@ describe("get_ai_visibility_analytics MCP tool", () => {
       await import("./get-ai-visibility-analytics");
 
     const result = await getAiVisibilityAnalyticsTool.handler(
-      { projectId: "project_1", windowDays: 30 },
+      {
+        projectId: "project_1",
+        windowDays: 30,
+        leaderboardSort: "mentions",
+      },
       toolExtra,
     );
 
