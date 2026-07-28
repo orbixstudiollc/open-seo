@@ -7,9 +7,11 @@
  */
 
 export type IssueSeverity = "critical" | "warning" | "info";
+type AuditRecommendationCategory = "on_page" | "technical";
 
 interface AuditIssueDescriptor {
   severity: IssueSeverity;
+  recommendationCategory: AuditRecommendationCategory;
   title: string;
   explanation: string;
   howToFix: string;
@@ -18,6 +20,7 @@ interface AuditIssueDescriptor {
 export const AUDIT_ISSUE_TYPES = {
   "blocked-page": {
     severity: "critical",
+    recommendationCategory: "technical",
     title: "Crawler was blocked",
     explanation:
       "The site returned a bot challenge or access denial (e.g. a Cloudflare challenge, 403, or 429) instead of the page. We report this honestly rather than pretending the page is broken — but it means this page could not be audited, and other crawlers like search engines may face similar friction.",
@@ -26,6 +29,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "server-error": {
     severity: "critical",
+    recommendationCategory: "technical",
     title: "Server error (5xx)",
     explanation:
       "The page returned a 5xx server error. Search engines that repeatedly see server errors will crawl the site less and may drop the page from the index.",
@@ -34,6 +38,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "broken-internal-link": {
     severity: "critical",
+    recommendationCategory: "technical",
     title: "Broken internal link",
     explanation:
       "This page links to an internal URL that returns an error status (4xx/5xx). Broken links waste crawl budget, leak link equity, and frustrate users — they are among the most common and most damaging technical SEO issues.",
@@ -42,6 +47,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "missing-title": {
     severity: "critical",
+    recommendationCategory: "on_page",
     title: "Missing title tag",
     explanation:
       "The page has no <title>. The title is the strongest on-page relevance signal and the headline shown in search results; without it search engines generate one themselves, usually badly.",
@@ -50,6 +56,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "broken-page": {
     severity: "warning",
+    recommendationCategory: "technical",
     title: "Page returns an error (4xx)",
     explanation:
       "This crawled URL returned a client error (e.g. 404). If it is referenced from your sitemap or other pages, crawlers keep wasting requests on it.",
@@ -58,6 +65,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "duplicate-title": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Duplicate title",
     explanation:
       "Multiple pages share the same title tag. Search engines use titles to differentiate pages; duplicates make pages compete with each other and depress click-through rates.",
@@ -66,6 +74,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "duplicate-meta-description": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Duplicate meta description",
     explanation:
       "Multiple pages share the same meta description, so search results show identical snippets and users cannot tell the pages apart.",
@@ -74,6 +83,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "duplicate-content": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Duplicate page content",
     explanation:
       "Two or more URLs serve byte-identical visible text. Search engines pick one version to index and ignore the rest, and ranking signals get split across the duplicates.",
@@ -82,6 +92,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "missing-meta-description": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Missing meta description",
     explanation:
       "The page has no meta description. Search engines will assemble a snippet from page text, which is often less compelling and hurts click-through rate.",
@@ -90,6 +101,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "missing-h1": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Missing H1 heading",
     explanation:
       "The page has no H1. The H1 tells users and search engines what the page is about; pages without one tend to have weaker topical clarity.",
@@ -98,6 +110,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "multiple-h1": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Multiple H1 headings",
     explanation:
       "The page has more than one H1, which dilutes the main-topic signal and usually indicates a templating mistake (e.g. a logo and a headline both marked up as H1).",
@@ -106,6 +119,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "redirect-chain": {
     severity: "warning",
+    recommendationCategory: "technical",
     title: "Redirect chain",
     explanation:
       "Reaching the final page requires two or more consecutive redirects. Each hop adds latency, leaks link equity, and burns crawl budget; long chains may not be followed at all.",
@@ -114,6 +128,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "redirect-loop": {
     severity: "warning",
+    recommendationCategory: "technical",
     title: "Redirect loop",
     explanation:
       "This redirect eventually points back to itself, so the URL never resolves. Browsers and crawlers give up with an error.",
@@ -122,6 +137,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "canonical-conflict": {
     severity: "warning",
+    recommendationCategory: "technical",
     title: "Conflicting canonical signals",
     explanation:
       "The page declares different canonical URLs in its HTML <link rel=canonical> and its HTTP Link header. When signals conflict, search engines ignore both and choose their own canonical.",
@@ -130,6 +146,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "thin-content": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Thin content",
     explanation:
       "The page has very little visible text. Thin pages rarely rank, can drag down sitewide quality assessments, and (if the site renders client-side) may indicate content invisible to plain-HTML crawlers.",
@@ -138,6 +155,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "images-missing-alt": {
     severity: "warning",
+    recommendationCategory: "on_page",
     title: "Images missing alt text",
     explanation:
       "One or more images on the page lack alt attributes. Alt text is an accessibility requirement and the main way search engines understand images.",
@@ -146,6 +164,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "orphan-page": {
     severity: "warning",
+    recommendationCategory: "technical",
     title: "Orphan page",
     explanation:
       "No crawled page links to this URL — it was only discoverable via the sitemap. Pages without internal links receive little crawl attention and no internal link equity, and users can't find them by browsing.",
@@ -154,6 +173,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "no-outgoing-links": {
     severity: "warning",
+    recommendationCategory: "technical",
     title: "Page has no outgoing links",
     explanation:
       "The page contains no links at all — a dead end. Link equity that flows into it stops there, crawlers have nowhere to go next, and users have to reach for the back button.",
@@ -162,6 +182,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "title-too-long": {
     severity: "info",
+    recommendationCategory: "on_page",
     title: "Title too long",
     explanation:
       "The title exceeds ~60 characters, so search results will truncate it and the ending may be cut off mid-phrase.",
@@ -170,6 +191,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "title-too-short": {
     severity: "info",
+    recommendationCategory: "on_page",
     title: "Title too short",
     explanation:
       "The title is under ~10 characters, which is usually too generic to describe the page or attract clicks.",
@@ -178,6 +200,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "meta-description-too-long": {
     severity: "info",
+    recommendationCategory: "on_page",
     title: "Meta description too long",
     explanation:
       "The meta description exceeds ~160 characters, so search engines will truncate the snippet.",
@@ -186,6 +209,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "meta-description-too-short": {
     severity: "info",
+    recommendationCategory: "on_page",
     title: "Meta description too short",
     explanation:
       "The meta description is under ~70 characters. Short descriptions waste the snippet space search results give you, and search engines often ignore them in favor of text pulled from the page.",
@@ -194,6 +218,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "heading-order-skip": {
     severity: "info",
+    recommendationCategory: "on_page",
     title: "Heading levels skip",
     explanation:
       "The heading hierarchy skips levels (e.g. an H4 directly after an H2). This weakens document structure for accessibility tools and content parsing.",
@@ -202,6 +227,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "slow-response": {
     severity: "info",
+    recommendationCategory: "technical",
     title: "Slow server response",
     explanation:
       "The HTML response took over 1.5 seconds. Slow time-to-first-byte drags down every downstream performance metric and reduces crawl rate on large sites.",
@@ -210,6 +236,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "noindex-page": {
     severity: "info",
+    recommendationCategory: "technical",
     title: "Page is noindex",
     explanation:
       "The page asks search engines not to index it (via robots meta tag or X-Robots-Tag header). That's often intentional — this is a heads-up, not an error.",
@@ -218,6 +245,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "canonicalized-page": {
     severity: "info",
+    recommendationCategory: "technical",
     title: "Canonicalized to another URL",
     explanation:
       "The page declares a different URL as its canonical, telling search engines to index that URL instead. Fine when intentional (parameter pages, syndication) — a problem if this page was meant to rank.",
@@ -226,6 +254,7 @@ export const AUDIT_ISSUE_TYPES = {
   },
   "deep-page": {
     severity: "info",
+    recommendationCategory: "technical",
     title: "Page is deep in the site structure",
     explanation:
       "The page is 5+ clicks from the homepage. Deep pages get crawled less often and receive less link equity.",

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- the existing Site Audit repository keeps all reads and writes on one provider-aware boundary. */
 /**
  * Data access layer for site audit tables.
  * Provider-aware (D1 or Postgres) via the `@/db` handle. Covers audits,
@@ -300,6 +301,32 @@ async function getLatestAuditForProject(projectId: string) {
   });
 }
 
+async function getLatestCompletedAuditFindings(projectId: string) {
+  const audit = await db.query.audits.findFirst({
+    where: and(eq(audits.projectId, projectId), eq(audits.status, "completed")),
+    orderBy: desc(audits.startedAt),
+  });
+  if (!audit) return null;
+
+  const findings = await db
+    .select({
+      id: auditIssues.id,
+      auditId: auditIssues.auditId,
+      pageId: auditIssues.pageId,
+      pageUrl: auditIssues.pageUrl,
+      issueType: auditIssues.issueType,
+      severity: auditIssues.severity,
+      detailsJson: auditIssues.detailsJson,
+      crawlDepth: auditPages.crawlDepth,
+      inSitemap: auditPages.inSitemap,
+    })
+    .from(auditIssues)
+    .leftJoin(auditPages, eq(auditPages.id, auditIssues.pageId))
+    .where(eq(auditIssues.auditId, audit.id));
+
+  return { audit, findings };
+}
+
 async function getIssuesForAudit(
   auditId: string,
   filters: { severity?: "critical" | "warning" | "info"; issueType?: string },
@@ -447,6 +474,7 @@ export const AuditRepository = {
   insertLighthouseResults,
   getAuditForProject,
   getLatestAuditForProject,
+  getLatestCompletedAuditFindings,
   getIssuesForAudit,
   getPagesForAudit,
   hasPagesForAudit,

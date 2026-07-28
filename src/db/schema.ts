@@ -2,6 +2,7 @@ import { getDatabaseProvider } from "./provider";
 import * as sqliteApp from "./app.schema";
 import * as sqliteAiVisibility from "./ai-visibility.schema";
 import * as sqliteAudit from "./audit.schema";
+import * as sqliteRecommendations from "./recommendations.schema";
 import * as sqliteSam from "./sam.schema";
 import * as sqliteAuth from "./better-auth-schema";
 import * as sqliteBilling from "./billing.schema";
@@ -12,6 +13,7 @@ import * as sqliteTelemetry from "./telemetry.schema";
 import * as pgApp from "./pg/app.schema";
 import * as pgAiVisibility from "./pg/ai-visibility.schema";
 import * as pgAudit from "./pg/audit.schema";
+import * as pgRecommendations from "./pg/recommendations.schema";
 import * as pgSam from "./pg/sam.schema";
 import * as pgAuth from "./pg/better-auth-schema";
 import * as pgBilling from "./pg/billing.schema";
@@ -33,6 +35,7 @@ import * as pgTelemetry from "./pg/telemetry.schema";
 type AppSchema = typeof sqliteApp &
   typeof sqliteAiVisibility &
   typeof sqliteAudit &
+  typeof sqliteRecommendations &
   typeof sqliteSam &
   typeof sqliteAuth &
   typeof sqliteBilling &
@@ -47,6 +50,7 @@ const runtimeSchema =
         ...pgApp,
         ...pgAiVisibility,
         ...pgAudit,
+        ...pgRecommendations,
         ...pgSam,
         ...pgAuth,
         ...pgBilling,
@@ -59,6 +63,7 @@ const runtimeSchema =
         ...sqliteApp,
         ...sqliteAiVisibility,
         ...sqliteAudit,
+        ...sqliteRecommendations,
         ...sqliteSam,
         ...sqliteAuth,
         ...sqliteBilling,
@@ -107,6 +112,10 @@ export const {
   auditLinks,
   auditIssues,
   auditLighthouseResults,
+  recommendations,
+  recommendationAuditIssueEvidence,
+  recommendationCitationEvidence,
+  recommendationScoreFactors,
   samSessions,
   samProjectMemory,
   user,

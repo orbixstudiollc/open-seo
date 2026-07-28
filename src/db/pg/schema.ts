@@ -1,6 +1,7 @@
 export * from "./app.schema";
 export * from "./ai-visibility.schema";
 export * from "./audit.schema";
+export * from "./recommendations.schema";
 export * from "./sam.schema";
 export * from "./better-auth-schema";
 export * from "./billing.schema";
