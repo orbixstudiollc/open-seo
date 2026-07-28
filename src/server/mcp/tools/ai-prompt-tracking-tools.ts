@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AiVisibilityService } from "@/server/features/ai-visibility/services/AiVisibilityService";
+import { AiPromptSuggestionService } from "@/server/features/ai-visibility/services/AiPromptSuggestionService";
 import { buildProjectMeta } from "@/server/mcp/context";
 import { mcpResponse } from "@/server/mcp/formatters";
 import {
@@ -26,6 +27,10 @@ import {
   updateAiTrackedPromptInputSchema,
 } from "@/types/schemas/ai-search";
 import {
+  decideAiPromptSuggestionInputSchema,
+  refreshAiPromptSuggestionsInputSchema,
+} from "@/types/schemas/ai-visibility-setup";
+import {
   aiRunCadenceSchema,
   AI_TRACKED_RUN_MAX_CALL_CAP,
 } from "@/shared/ai-visibility";
@@ -42,6 +47,9 @@ const managementActionSchema = z.enum([
   "create_tag",
   "update_tag",
   "assign_tag",
+  "suggest",
+  "approve",
+  "reject",
 ]);
 
 const managementInputSchema = {
@@ -121,6 +129,18 @@ async function manage(args: ManagementArgs) {
         assignAiPromptTagInputSchema.parse(args),
       );
       return { assigned: args.assigned ?? true };
+    case "suggest":
+      return AiPromptSuggestionService.refreshSuggestions(
+        refreshAiPromptSuggestionsInputSchema.parse(args),
+      );
+    case "approve":
+    case "reject":
+      return AiPromptSuggestionService.decideSuggestion(
+        decideAiPromptSuggestionInputSchema.parse({
+          ...args,
+          decision: args.action,
+        }),
+      );
   }
 }
 
@@ -129,7 +149,7 @@ export const manageAiPromptTrackingTool = {
   config: {
     title: "Manage AI prompt tracking",
     description:
-      "Configure the project's tracked-run cadence/cap and create, update, archive, or tag tracked prompt sets. Uses no provider credits. Actions: update_settings, create_set, update_set, archive_set, create_topic, update_topic, create_prompt, update_prompt, create_tag, update_tag, assign_tag.",
+      "Configure tracked runs and manage prompt suggestions without paid provider calls. Actions: update_settings, create_set, update_set, archive_set, create_topic, update_topic, create_prompt, update_prompt, create_tag, update_tag, assign_tag, suggest, approve, reject. Suggest reads Search Console when connected and adds topic-gap candidates; approve activates a candidate and reject prevents it from resurfacing.",
     inputSchema: managementInputSchema,
     outputSchema: {
       result: looseObjectOutputSchema,
@@ -137,7 +157,7 @@ export const manageAiPromptTrackingTool = {
     },
     annotations: {
       readOnlyHint: false,
-      openWorldHint: false,
+      openWorldHint: true,
       destructiveHint: true,
     },
   },

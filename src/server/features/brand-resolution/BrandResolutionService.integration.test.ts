@@ -174,4 +174,49 @@ describe("brand resolution reversible persistence", () => {
       split.history.filter((rule) => rule.normalizedName === "clay global"),
     ).toHaveLength(3);
   });
+
+  it("configures one primary brand and competitors through canonical rules", async () => {
+    const configured = await service.configureRegistry(
+      {
+        projectId,
+        primary: { name: "Acme", domain: "acme.com" },
+        competitors: [
+          { name: "Contoso", domain: "contoso.com" },
+          { name: "Northwind" },
+        ],
+      },
+      "wizard-user",
+    );
+
+    expect(configured.primaryBrand).toMatchObject({
+      name: "Acme",
+      domain: "acme.com",
+      isPrimary: true,
+    });
+    expect(configured.competitors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "Contoso", isPrimary: false }),
+        expect.objectContaining({ name: "Northwind", isPrimary: false }),
+      ]),
+    );
+    const registry = await repository.getRegistry(projectId);
+    expect(
+      registry.brands.filter((brand) => brand.isPrimary && !brand.archivedAt),
+    ).toHaveLength(1);
+    const rules = await repository.listActiveRules(projectId);
+    expect(rules).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          normalizedName: "acme",
+          source: "manual",
+          createdBy: "wizard-user",
+        }),
+        expect.objectContaining({
+          normalizedName: "contoso",
+          source: "manual",
+          createdBy: "wizard-user",
+        }),
+      ]),
+    );
+  });
 });

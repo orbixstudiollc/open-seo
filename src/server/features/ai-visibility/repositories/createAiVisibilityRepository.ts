@@ -127,6 +127,9 @@ type AiVisibilityRepositoryContract = {
   createTrackedPrompt: (
     values: TrackedPromptInsert,
   ) => Promise<TrackedPromptRecord>;
+  createPromptSuggestion: (
+    values: TrackedPromptInsert,
+  ) => Promise<{ created: boolean; prompt: TrackedPromptRecord }>;
   updateTrackedPrompt: (
     trackedPromptId: string,
     promptSetId: string,
@@ -452,6 +455,33 @@ export function createAiVisibilityRepository(
     return row;
   }
 
+  async function createPromptSuggestion(values: TrackedPromptInsert) {
+    const [created] = await database
+      .insert(schema.aiTrackedPrompts)
+      .values(values)
+      .onConflictDoNothing({
+        target: [
+          schema.aiTrackedPrompts.promptSetId,
+          schema.aiTrackedPrompts.normalizedPrompt,
+        ],
+      })
+      .returning();
+    if (created) return { created: true, prompt: created };
+
+    const [existing] = await database
+      .select()
+      .from(schema.aiTrackedPrompts)
+      .where(
+        and(
+          eq(schema.aiTrackedPrompts.promptSetId, values.promptSetId),
+          eq(schema.aiTrackedPrompts.normalizedPrompt, values.normalizedPrompt),
+        ),
+      )
+      .limit(1);
+    if (!existing) throw new Error("Failed to resolve tracked AI suggestion");
+    return { created: false, prompt: existing };
+  }
+
   async function updateTrackedPrompt(
     trackedPromptId: string,
     promptSetId: string,
@@ -624,7 +654,9 @@ export function createAiVisibilityRepository(
     return {
       promptSet: definition.promptSet,
       models: definition.models,
-      prompts: definition.prompts.filter((prompt) => !prompt.archivedAt),
+      prompts: definition.prompts.filter(
+        (prompt) => prompt.state === "active" && !prompt.archivedAt,
+      ),
     };
   }
 
@@ -1111,6 +1143,7 @@ export function createAiVisibilityRepository(
     createTopic,
     updateTopic,
     createTrackedPrompt,
+    createPromptSuggestion,
     updateTrackedPrompt,
     createTag,
     updateTag,

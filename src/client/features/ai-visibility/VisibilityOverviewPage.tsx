@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { AlertCircle, ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import { useState } from "react";
@@ -8,7 +8,10 @@ import {
   VisibilityBreakdownCard,
 } from "@/client/features/ai-visibility/VisibilityBreakdowns";
 import { VisibilityTrendCard } from "@/client/features/ai-visibility/VisibilityTrendCard";
+import { AiPromptSuggestionQueue } from "@/client/features/ai-visibility/AiPromptSuggestionQueue";
+import { AiVisibilitySetupWizard } from "@/client/features/ai-visibility/AiVisibilitySetupWizard";
 import { getVisibilityOverview } from "@/serverFunctions/ai-visibility-analytics";
+import { getAiVisibilitySetupState } from "@/serverFunctions/ai-visibility-setup";
 import type {
   VisibilityLeaderboardSort,
   VisibilityOverview,
@@ -32,6 +35,77 @@ export function VisibilityOverviewPage({
   windowDays,
   onWindowChange,
 }: Props) {
+  const queryClient = useQueryClient();
+  const setupQuery = useQuery({
+    queryKey: ["ai-visibility-setup", projectId],
+    queryFn: () => getAiVisibilitySetupState({ data: { projectId } }),
+  });
+
+  if (setupQuery.isPending) {
+    return (
+      <VisibilityOverviewLoading
+        windowDays={windowDays}
+        onWindowChange={onWindowChange}
+      />
+    );
+  }
+
+  if (setupQuery.isError) {
+    return (
+      <PageFrame
+        header={
+          <OverviewHeader windowDays={windowDays} onChange={onWindowChange} />
+        }
+      >
+        <div
+          role="alert"
+          className="ai-visibility-card flex items-start gap-3 border-[var(--app-negative)]/30 px-5 py-4 text-sm text-[var(--app-negative)]"
+        >
+          <AlertCircle className="mt-0.5 size-4 shrink-0" />
+          {getStandardErrorMessage(
+            setupQuery.error,
+            "Couldn't load AI visibility setup.",
+          )}
+        </div>
+      </PageFrame>
+    );
+  }
+
+  if (setupQuery.data.needsSetup) {
+    return (
+      <AiVisibilitySetupWizard
+        projectId={projectId}
+        setupState={setupQuery.data}
+        onComplete={(state) =>
+          queryClient.setQueryData(["ai-visibility-setup", projectId], state)
+        }
+      />
+    );
+  }
+
+  return (
+    <ConfiguredVisibilityOverview
+      projectId={projectId}
+      windowDays={windowDays}
+      onWindowChange={onWindowChange}
+      setupState={setupQuery.data}
+      onSetupStateChange={async () => {
+        await setupQuery.refetch();
+      }}
+    />
+  );
+}
+
+function ConfiguredVisibilityOverview({
+  projectId,
+  windowDays,
+  onWindowChange,
+  setupState,
+  onSetupStateChange,
+}: Props & {
+  setupState: Awaited<ReturnType<typeof getAiVisibilitySetupState>>;
+  onSetupStateChange: () => Promise<void>;
+}) {
   const [leaderboardSort, setLeaderboardSort] =
     useState<VisibilityLeaderboardSort>("mentions");
   const query = useQuery({
@@ -95,6 +169,11 @@ export function VisibilityOverviewPage({
       }
     >
       <HeadlineSection overview={overview} />
+      <AiPromptSuggestionQueue
+        projectId={projectId}
+        setupState={setupState}
+        onStateChange={onSetupStateChange}
+      />
       <VisibilityTrendCard overview={overview} />
       <div className="grid gap-4 lg:grid-cols-2">
         <VisibilityBreakdownCard

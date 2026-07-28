@@ -172,6 +172,40 @@ export function createBrandResolutionRepository(
     return brand;
   }
 
+  async function configureBrands(
+    projectId: string,
+    brands: Array<
+      Pick<
+        typeof aiBrands.$inferInsert,
+        "id" | "name" | "normalizedName" | "domain" | "isPrimary"
+      >
+    >,
+  ) {
+    const updatedAt = new Date().toISOString();
+    await executeAtomically((tx) => [
+      tx
+        .update(schema.aiBrands)
+        .set({ isPrimary: false, updatedAt })
+        .where(eq(schema.aiBrands.projectId, projectId)),
+      ...brands.map((brand) =>
+        tx
+          .insert(schema.aiBrands)
+          .values({ ...brand, projectId, updatedAt, archivedAt: null })
+          .onConflictDoUpdate({
+            target: [schema.aiBrands.projectId, schema.aiBrands.normalizedName],
+            set: {
+              name: brand.name,
+              domain: brand.domain,
+              isPrimary: brand.isPrimary,
+              updatedAt,
+              archivedAt: null,
+            },
+          }),
+      ),
+    ]);
+    return getRegistry(projectId);
+  }
+
   async function replaceRules(
     projectId: string,
     replacements: ReplacementRule[],
@@ -245,6 +279,7 @@ export function createBrandResolutionRepository(
     getBrandById,
     getBrandByNormalizedName,
     createBrand,
+    configureBrands,
     replaceRules,
   };
 }
