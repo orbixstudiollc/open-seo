@@ -301,6 +301,50 @@ export const aiBrandResolutionEvidence = pgTable(
   (table) => [index("ai_brand_resolution_evidence_rule_idx").on(table.ruleId)],
 );
 
+export const aiDomainClassifications = pgTable(
+  "ai_domain_classifications",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    domain: text("domain").notNull(),
+    matchScope: text("match_scope", {
+      enum: ["hostname", "registrable_domain"],
+    }).notNull(),
+    domainType: text("domain_type", {
+      enum: [
+        "editorial",
+        "corporate",
+        "ugc",
+        "reference",
+        "institutional",
+        "other",
+      ],
+    }).notNull(),
+    method: text("method", {
+      enum: ["manual", "curated_rule", "model_suggestion"],
+    }).notNull(),
+    ruleVersion: text("rule_version").notNull(),
+    confidence: real("confidence"),
+    createdBy: text("created_by"),
+    reviewedAt: timestampColumn("reviewed_at"),
+    createdAt: timestampColumn("created_at").notNull().default(isoNow),
+    updatedAt: timestampColumn("updated_at").notNull().default(isoNow),
+  },
+  (table) => [
+    uniqueIndex("ai_domain_classifications_project_domain_scope_idx").on(
+      table.projectId,
+      table.domain,
+      table.matchScope,
+    ),
+    index("ai_domain_classifications_project_type_idx").on(
+      table.projectId,
+      table.domainType,
+    ),
+  ],
+);
+
 export const aiRuns = pgTable(
   "ai_runs",
   {

@@ -91,6 +91,7 @@ export const {
   aiBrandAliases,
   aiBrandResolutionRules,
   aiBrandResolutionEvidence,
+  aiDomainClassifications,
   aiRuns,
   aiAnswers,
   aiMentionScoringAttempts,

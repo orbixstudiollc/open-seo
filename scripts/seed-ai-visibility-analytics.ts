@@ -124,6 +124,7 @@ async function main() {
     const runDates = buildRunDates(days);
     let answerTotal = 0;
     let mentionTotal = 0;
+    let citationTotal = 0;
     for (let dayIndex = 0; dayIndex < runDates.length; dayIndex += 1) {
       // Deliberate full-day gaps: no run and no chart point.
       if (dayIndex % 13 === 5) continue;
@@ -133,6 +134,7 @@ async function main() {
       const answersExpected = promptRows.length * MODELS.length;
       const answerRows: (typeof schema.aiAnswers.$inferInsert)[] = [];
       const mentionRows: (typeof schema.aiBrandMentions.$inferInsert)[] = [];
+      const citationRows: (typeof schema.aiCitations.$inferInsert)[] = [];
 
       for (
         let promptIndex = 0;
@@ -167,21 +169,67 @@ async function main() {
             34 +
             Math.round((dayIndex / Math.max(days - 1, 1)) * 34) +
             Math.round(Math.sin(dayIndex / 8) * 8);
-          if (score(dayIndex, promptIndex, modelIndex, 3) < primaryThreshold) {
+          const mentionsPrimary =
+            score(dayIndex, promptIndex, modelIndex, 3) < primaryThreshold;
+          const mentionsRankPilot =
+            score(dayIndex, promptIndex, modelIndex, 19) < 42;
+          const mentionsSearchSignal =
+            score(dayIndex, promptIndex, modelIndex, 41) < 25;
+          if (mentionsPrimary) {
             mentionRows.push(
               mention(answerId, brandRows[0].id, brandRows[0].name, 1),
             );
           }
-          if (score(dayIndex, promptIndex, modelIndex, 19) < 42) {
+          if (mentionsRankPilot) {
             mentionRows.push(
               mention(answerId, brandRows[1].id, brandRows[1].name, 1),
             );
           }
-          if (score(dayIndex, promptIndex, modelIndex, 41) < 25) {
+          if (mentionsSearchSignal) {
             mentionRows.push(
               mention(answerId, brandRows[2].id, brandRows[2].name, 1),
             );
           }
+
+          const sources = [
+            citation(
+              answerId,
+              0,
+              "https://searchengineland.com/ai-search-measurement",
+              "A practical guide to AI search measurement",
+            ),
+          ];
+          if (score(dayIndex, promptIndex, modelIndex, 7) < 58) {
+            sources.push(
+              citation(
+                answerId,
+                sources.length,
+                "https://www.reddit.com/r/SEO/comments/demo/ai_visibility/",
+                "SEO community discussion",
+              ),
+            );
+          }
+          if ((mentionsRankPilot || mentionsSearchSignal) && !mentionsPrimary) {
+            sources.push(
+              citation(
+                answerId,
+                sources.length,
+                "https://competitor-insights.example/independent-seo-report",
+                "Independent SEO platform report",
+              ),
+            );
+          }
+          if (mentionsPrimary || mentionsRankPilot || mentionsSearchSignal) {
+            sources.push(
+              citation(
+                answerId,
+                sources.length,
+                "https://shared-reviews.example/seo-platforms",
+                "SEO platforms reviewed",
+              ),
+            );
+          }
+          citationRows.push(...sources);
         }
       }
 
@@ -208,15 +256,19 @@ async function main() {
       await batched(db, mentionRows, (row) =>
         db.insert(schema.aiBrandMentions).values(row),
       );
+      await batched(db, citationRows, (row) =>
+        db.insert(schema.aiCitations).values(row),
+      );
       answerTotal += answerRows.length;
       mentionTotal += mentionRows.length;
+      citationTotal += citationRows.length;
     }
 
     console.log(
-      `Seeded ${runDates.length} calendar days with deliberate gaps, ${answerTotal} answers, and ${mentionTotal} brand mentions.`,
+      `Seeded ${runDates.length} calendar days with deliberate gaps, ${answerTotal} answers, ${mentionTotal} brand mentions, and ${citationTotal} citations.`,
     );
     console.log(
-      "Run `pnpm dev`, open the Default project, then choose AI Visibility.",
+      "Run `pnpm dev`, open the Default project, then choose AI Visibility or Citation Intelligence.",
     );
   } finally {
     await dispose();
@@ -316,6 +368,21 @@ function mention(
     rawName,
     normalizedName: rawName.toLowerCase(),
     mentionCount,
+  };
+}
+
+function citation(
+  answerId: string,
+  citationOrder: number,
+  url: string,
+  title: string,
+): typeof schema.aiCitations.$inferInsert {
+  return {
+    answerId,
+    citationOrder,
+    url,
+    domain: new URL(url).hostname.replace(/^www\./u, ""),
+    title,
   };
 }
 
