@@ -10,6 +10,7 @@ data, or sensitive paths.
 
 ## Open
 
+- [ ] `2026-07-28T04:25:27Z` — `codex` — A `local_noauth` browser session still calls the hosted `/api/auth/get-session` endpoint and logs a 404 even though delegated auth succeeds; gate the session hook behind hosted mode or make the local endpoint response quiet.
 - [ ] `2026-07-27T16:48:33Z` — `codex` — `ci:check` again finds newly committed `.agents/plan/audits` and `DESIGN.md` files that bypassed the repository-wide Prettier gate, despite an earlier one-off formatting cleanup. Run the formatter in the plan/design generation workflow or enforce it before those documents land.
 - [ ] `2026-07-27T16:38:08Z` — `codex` — `docs/LOCAL_DEVELOPMENT.md` says `pnpm dev` and `pnpm dev:agents` set `AUTH_MODE=local_noauth` automatically, but both scripts currently run Vite without setting it, so a default checkout opens an `AUTH_CONFIG_MISSING` Cloudflare Access screen; make the scripts match the documented local default or correct the setup instructions.
 - [ ] `2026-07-27T16:31:38Z` — `codex` — Node-based D1 seed scripts that import `src/db/schema.ts` crash under `tsx` with `ERR_UNSUPPORTED_ESM_URL_SCHEME: cloudflare:` because the provider-aware barrel eagerly imports `cloudflare:workers`; give local scripts a Node-safe SQLite schema barrel or update the existing seed scripts to use the dialect seam explicitly.
