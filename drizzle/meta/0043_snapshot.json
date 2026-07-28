@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "72c8bf23-1ed0-4d4d-9a77-91cb4679866b",
-  "prevId": "bba82751-319e-4c45-b072-4d6540b9668c",
+  "id": "e3db1f3a-8f3d-4b84-9b1b-ce1ebb6a6942",
+  "prevId": "72c8bf23-1ed0-4d4d-9a77-91cb4679866b",
   "tables": {
     "backlink_snapshots": {
       "name": "backlink_snapshots",
@@ -4158,6 +4158,718 @@
         "audits_project_id_projects_id_fk": {
           "name": "audits_project_id_projects_id_fk",
           "tableFrom": "audits",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "recommendation_audit_issue_evidence": {
+      "name": "recommendation_audit_issue_evidence",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "recommendation_id": {
+          "name": "recommendation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "evidence_fingerprint": {
+          "name": "evidence_fingerprint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "audit_issue_id": {
+          "name": "audit_issue_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "source_audit_id": {
+          "name": "source_audit_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "issue_type": {
+          "name": "issue_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "severity": {
+          "name": "severity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "page_url": {
+          "name": "page_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "details_json": {
+          "name": "details_json",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_generated_at": {
+          "name": "last_generated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "recommendation_audit_evidence_fingerprint_idx": {
+          "name": "recommendation_audit_evidence_fingerprint_idx",
+          "columns": [
+            "recommendation_id",
+            "evidence_fingerprint"
+          ],
+          "isUnique": true
+        },
+        "recommendation_audit_evidence_issue_idx": {
+          "name": "recommendation_audit_evidence_issue_idx",
+          "columns": [
+            "audit_issue_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "recommendation_audit_issue_evidence_recommendation_id_recommendations_id_fk": {
+          "name": "recommendation_audit_issue_evidence_recommendation_id_recommendations_id_fk",
+          "tableFrom": "recommendation_audit_issue_evidence",
+          "tableTo": "recommendations",
+          "columnsFrom": [
+            "recommendation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recommendation_audit_issue_evidence_audit_issue_id_audit_issues_id_fk": {
+          "name": "recommendation_audit_issue_evidence_audit_issue_id_audit_issues_id_fk",
+          "tableFrom": "recommendation_audit_issue_evidence",
+          "tableTo": "audit_issues",
+          "columnsFrom": [
+            "audit_issue_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "recommendation_citation_evidence": {
+      "name": "recommendation_citation_evidence",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "recommendation_id": {
+          "name": "recommendation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "evidence_fingerprint": {
+          "name": "evidence_fingerprint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "citation_id": {
+          "name": "citation_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "competitor_brand_id": {
+          "name": "competitor_brand_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "evidence_role": {
+          "name": "evidence_role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'competitor_source'"
+        },
+        "source_answer_id": {
+          "name": "source_answer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source_hostname": {
+          "name": "source_hostname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source_title": {
+          "name": "source_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "prompt_text": {
+          "name": "prompt_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "observed_at": {
+          "name": "observed_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "competitor_brand_name": {
+          "name": "competitor_brand_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "last_generated_at": {
+          "name": "last_generated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "recommendation_citation_evidence_fingerprint_idx": {
+          "name": "recommendation_citation_evidence_fingerprint_idx",
+          "columns": [
+            "recommendation_id",
+            "evidence_fingerprint"
+          ],
+          "isUnique": true
+        },
+        "recommendation_citation_evidence_citation_idx": {
+          "name": "recommendation_citation_evidence_citation_idx",
+          "columns": [
+            "citation_id"
+          ],
+          "isUnique": false
+        },
+        "recommendation_citation_evidence_brand_idx": {
+          "name": "recommendation_citation_evidence_brand_idx",
+          "columns": [
+            "competitor_brand_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "recommendation_citation_evidence_recommendation_id_recommendations_id_fk": {
+          "name": "recommendation_citation_evidence_recommendation_id_recommendations_id_fk",
+          "tableFrom": "recommendation_citation_evidence",
+          "tableTo": "recommendations",
+          "columnsFrom": [
+            "recommendation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recommendation_citation_evidence_citation_id_ai_citations_id_fk": {
+          "name": "recommendation_citation_evidence_citation_id_ai_citations_id_fk",
+          "tableFrom": "recommendation_citation_evidence",
+          "tableTo": "ai_citations",
+          "columnsFrom": [
+            "citation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "recommendation_citation_evidence_competitor_brand_id_ai_brands_id_fk": {
+          "name": "recommendation_citation_evidence_competitor_brand_id_ai_brands_id_fk",
+          "tableFrom": "recommendation_citation_evidence",
+          "tableTo": "ai_brands",
+          "columnsFrom": [
+            "competitor_brand_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "recommendation_score_factors": {
+      "name": "recommendation_score_factors",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "recommendation_id": {
+          "name": "recommendation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "factor_key": {
+          "name": "factor_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "raw_value": {
+          "name": "raw_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "weight": {
+          "name": "weight",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contribution": {
+          "name": "contribution",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "explanation": {
+          "name": "explanation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "last_generated_at": {
+          "name": "last_generated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "recommendation_score_factors_key_idx": {
+          "name": "recommendation_score_factors_key_idx",
+          "columns": [
+            "recommendation_id",
+            "factor_key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "recommendation_score_factors_recommendation_id_recommendations_id_fk": {
+          "name": "recommendation_score_factors_recommendation_id_recommendations_id_fk",
+          "tableFrom": "recommendation_score_factors",
+          "tableTo": "recommendations",
+          "columnsFrom": [
+            "recommendation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "recommendations": {
+      "name": "recommendations",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rule_key": {
+          "name": "rule_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "generator_version": {
+          "name": "generator_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fingerprint": {
+          "name": "fingerprint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "target_kind": {
+          "name": "target_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "target_url": {
+          "name": "target_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "target_hostname": {
+          "name": "target_hostname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "target_label": {
+          "name": "target_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "target_community": {
+          "name": "target_community",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rationale": {
+          "name": "rationale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'todo'"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "priority_level": {
+          "name": "priority_level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "priority_score": {
+          "name": "priority_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "score_version": {
+          "name": "score_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "evidence_window_start": {
+          "name": "evidence_window_start",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "evidence_window_end": {
+          "name": "evidence_window_end",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "evidence_as_of": {
+          "name": "evidence_as_of",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "occurrence_count": {
+          "name": "occurrence_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "affected_page_count": {
+          "name": "affected_page_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "citation_count": {
+          "name": "citation_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "answer_count": {
+          "name": "answer_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "prompt_count": {
+          "name": "prompt_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "target_brand_citation_count": {
+          "name": "target_brand_citation_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "competitor_count": {
+          "name": "competitor_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "first_observed_at": {
+          "name": "first_observed_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_observed_at": {
+          "name": "last_observed_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
+        },
+        "last_generated_at": {
+          "name": "last_generated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
+        },
+        "done_at": {
+          "name": "done_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "declined_at": {
+          "name": "declined_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "recommendations_project_fingerprint_idx": {
+          "name": "recommendations_project_fingerprint_idx",
+          "columns": [
+            "project_id",
+            "fingerprint"
+          ],
+          "isUnique": true
+        },
+        "recommendations_project_status_priority_idx": {
+          "name": "recommendations_project_status_priority_idx",
+          "columns": [
+            "project_id",
+            "status",
+            "is_active",
+            "priority_score"
+          ],
+          "isUnique": false
+        },
+        "recommendations_project_category_idx": {
+          "name": "recommendations_project_category_idx",
+          "columns": [
+            "project_id",
+            "category"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "recommendations_project_id_projects_id_fk": {
+          "name": "recommendations_project_id_projects_id_fk",
+          "tableFrom": "recommendations",
           "tableTo": "projects",
           "columnsFrom": [
             "project_id"

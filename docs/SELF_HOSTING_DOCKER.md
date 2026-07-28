@@ -39,6 +39,32 @@ ALLOWED_HOST=yourdomain.com docker compose up -d
 
 You can also persist it in `.env`.
 
+## Public report links
+
+Public report links are disabled by default in Docker's
+`AUTH_MODE=local_noauth`. A report token cannot protect an installation when
+the same public origin also gives every visitor local-admin access to the app,
+`/mcp`, agent routes, and server functions.
+
+To share reports externally, configure a separate public hostname or
+reverse-proxy rule that exposes only `/share/*`. Keep every other OpenSEO path
+on a private or authentication-protected origin. Then set:
+
+```bash
+REPORT_PUBLIC_SHARE_MODE=share_only
+REPORT_PUBLIC_ORIGIN=https://reports.example.com
+```
+
+`REPORT_PUBLIC_SHARE_MODE=share_only` is an operator declaration, not a network
+control. OpenSEO cannot verify the proxy boundary for you. Do not set it when
+the complete no-auth origin is publicly reachable.
+
+Weekly report digests additionally require `LOOPS_API_KEY` and
+`LOOPS_TRANSACTIONAL_REPORT_DIGEST_ID`. The transactional template receives
+the project name/domain, report period, visibility, visibility change, answer
+coverage, citations per answer, cited-answer rate, and the seven-day report
+URL.
+
 ## Telemetry
 
 OpenSEO collects anonymized telemetry for core usage events: heartbeats with aggregate counts (installs, users, projects, feature usage) tied to a random install ID, sent every 5 minutes during the first two hours after install, then at most once daily. No URLs, keywords, prompts, emails, or IP-derived location are collected, and idle installs send nothing.

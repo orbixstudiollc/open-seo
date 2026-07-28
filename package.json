@@ -68,6 +68,15 @@
       },
       "OAUTH_KV": {
         "description": "KV namespace used by the Cloudflare Workers OAuth provider for MCP client registrations, grants, and tokens."
+      },
+      "REPORT_PUBLIC_SHARE_MODE": {
+        "description": "Set to `share_only` in local_noauth only after a proxy exposes /share/* alone and protects every other app path."
+      },
+      "REPORT_PUBLIC_ORIGIN": {
+        "description": "Canonical HTTPS origin used in report share links and scheduled digest emails."
+      },
+      "LOOPS_TRANSACTIONAL_REPORT_DIGEST_ID": {
+        "description": "Loops transactional template ID for weekly report digests."
       }
     }
   },
@@ -99,6 +108,7 @@
     "jose": "^6.0.12",
     "lucide-react": "^0.542.0",
     "papaparse": "^5.5.3",
+    "pdf-lib": "^1.17.1",
     "postgres": "^3.4.9",
     "posthog-js": "^1.395.0",
     "posthog-node": "^5.38.6",
