@@ -44,6 +44,7 @@ export function VisibilityOverviewPage({
   if (setupQuery.isPending) {
     return (
       <VisibilityOverviewLoading
+        projectId={projectId}
         windowDays={windowDays}
         onWindowChange={onWindowChange}
       />
@@ -54,7 +55,11 @@ export function VisibilityOverviewPage({
     return (
       <PageFrame
         header={
-          <OverviewHeader windowDays={windowDays} onChange={onWindowChange} />
+          <OverviewHeader
+            projectId={projectId}
+            windowDays={windowDays}
+            onChange={onWindowChange}
+          />
         }
       >
         <div
