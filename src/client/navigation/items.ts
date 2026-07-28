@@ -9,6 +9,7 @@ import {
   LibraryBig,
   Link2,
   MessageSquare,
+  Newspaper,
   Search,
   Sparkles,
   TrendingUp,
@@ -69,6 +70,11 @@ const projectNavItems = [
     to: "/p/$projectId/citations" as const,
     label: "Citation Intelligence",
     icon: LibraryBig,
+  },
+  {
+    to: "/p/$projectId/reports" as const,
+    label: "Reports",
+    icon: Newspaper,
   },
   {
     to: "/p/$projectId/brand-lookup" as const,
@@ -136,6 +142,7 @@ export function getProjectNavGroups(projectId: string) {
       items: [
         byPath("/p/$projectId/visibility"),
         byPath("/p/$projectId/citations"),
+        byPath("/p/$projectId/reports"),
         byPath("/p/$projectId/search-performance"),
         byPath("/p/$projectId/brand-resolution"),
         byPath("/p/$projectId/rank-tracking"),
