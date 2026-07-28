@@ -360,6 +360,10 @@ export const runAiPromptSetInputSchema = z.object({
   promptSetId: trackedEntityIdSchema,
 });
 
+export const runAiTrackedPromptInputSchema = runAiPromptSetInputSchema.extend({
+  trackedPromptId: trackedEntityIdSchema,
+});
+
 export type AiProjectRunSettingsInput = z.infer<
   typeof aiProjectRunSettingsInputSchema
 >;

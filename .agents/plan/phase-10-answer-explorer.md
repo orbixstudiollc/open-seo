@@ -3,6 +3,7 @@
 Gap source: ZeroRank flow comparison, 28 Jul. Exit gate at bottom.
 
 ## Build
+
 1. **Answer viewer**: per-prompt/per-model reading view of stored raw answer
    text (ai_answers.rawAnswerText from Phase 0), with brand mentions highlighted
    (offsets exist from Phase 4), sentiment/position badges, citations listed.
@@ -18,14 +19,17 @@ Gap source: ZeroRank flow comparison, 28 Jul. Exit gate at bottom.
    MCP action. Refusal states surface cap/credit reasons.
 
 ## Audit first
+
 Read: phase-0/1/4 build reports, aiTrackedRunGuards/Execution, visibility
 analytics services, answer schema. Journal tail 0043/0020 — Phase 9 (parallel)
 takes 0044/0021; take the next free and expect renumber on merge.
 
 ## Do not touch
+
 Wizard/suggestions surfaces (Phase 9 agent owns).
 
 ## Exit gate
+
 - [ ] Stored answers readable per prompt/model with highlighted mentions
 - [ ] Brand detail page renders for every leaderboard brand, both themes
 - [ ] Single-prompt run reserves atomically, replays safely, and refuses over cap

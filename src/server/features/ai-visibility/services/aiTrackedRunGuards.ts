@@ -114,6 +114,7 @@ export async function beginAiTrackedRun(input: {
   projectId: string;
   billingCustomer: BillingCustomerContext;
   trigger: "manual" | "scheduled";
+  trackedPromptId?: string;
   now?: Date;
 }): Promise<AiTrackedRunStartResult> {
   const definition =
@@ -131,7 +132,16 @@ export async function beginAiTrackedRun(input: {
       ),
     ),
   );
-  const prompts = definition.prompts.map(({ id, prompt }) => ({ id, prompt }));
+  const runnablePrompts = input.trackedPromptId
+    ? definition.prompts.filter(({ id }) => id === input.trackedPromptId)
+    : definition.prompts;
+  if (input.trackedPromptId && runnablePrompts.length === 0) {
+    throw new AppError(
+      "NOT_FOUND",
+      "Tracked prompt is not active in this prompt set",
+    );
+  }
+  const prompts = runnablePrompts.map(({ id, prompt }) => ({ id, prompt }));
   if (prompts.length === 0 || models.length === 0) {
     throw new AppError(
       "VALIDATION_ERROR",

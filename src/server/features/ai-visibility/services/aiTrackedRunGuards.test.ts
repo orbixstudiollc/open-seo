@@ -194,4 +194,57 @@ describe("beginAiTrackedRun", () => {
     });
     expect(create).not.toHaveBeenCalled();
   });
+
+  it("reserves one prompt across enabled models through the same atomic path", async () => {
+    mocks.reserveProjectAnswerCalls.mockResolvedValue({
+      reserved: true,
+      settings: {
+        projectId: "project_1",
+        cadence: "weekly",
+        answerCallCap: 200,
+        callsReserved: 4,
+        windowStartedAt: "2026-07-27T00:00:00.000Z",
+      },
+    });
+    const { binding, create } = workflow();
+
+    const result = await beginAiTrackedRun({
+      workflow: binding,
+      promptSetId: "set_1",
+      trackedPromptId: "prompt_7",
+      projectId: "project_1",
+      billingCustomer,
+      trigger: "manual",
+      now: new Date("2026-07-27T10:00:00.000Z"),
+    });
+
+    expect(result).toMatchObject({
+      ok: true,
+      answerCallsReserved: 4,
+    });
+    expect(mocks.reserveProjectAnswerCalls).toHaveBeenCalledWith(
+      expect.objectContaining({ calls: 4 }),
+    );
+    expect(create.mock.calls[0]?.[0].params.prompts).toEqual([
+      { id: "prompt_7", prompt: "Prompt 7" },
+    ]);
+  });
+
+  it("rejects a prompt that is not active in the selected set before creating a run", async () => {
+    const { binding, create } = workflow();
+
+    await expect(
+      beginAiTrackedRun({
+        workflow: binding,
+        promptSetId: "set_1",
+        trackedPromptId: "prompt_other",
+        projectId: "project_1",
+        billingCustomer,
+        trigger: "manual",
+      }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+
+    expect(mocks.tryCreateRun).not.toHaveBeenCalled();
+    expect(create).not.toHaveBeenCalled();
+  });
 });

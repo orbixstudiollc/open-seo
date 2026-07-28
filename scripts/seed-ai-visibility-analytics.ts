@@ -146,25 +146,6 @@ async function main() {
           const failed =
             partial && (promptIndex * MODELS.length + modelIndex) % 9 === 0;
           const answerId = crypto.randomUUID();
-          answerRows.push({
-            id: answerId,
-            runId,
-            trackedPromptId: promptRows[promptIndex].id,
-            promptText: promptRows[promptIndex].prompt,
-            model,
-            modelName: modelName(model),
-            status: failed ? "error" : "success",
-            responseText: failed
-              ? null
-              : `Synthetic ${model} answer for analytics verification.`,
-            errorCode: failed ? "SEEDED_MODEL_ERROR" : null,
-            errorMessage: failed ? "Synthetic partial-platform failure" : null,
-            observedAt: dbTimestamp(date),
-            sourceFetchedAt: dbTimestamp(date),
-            webSearch: model !== "claude",
-          });
-          if (failed) continue;
-
           const primaryThreshold =
             34 +
             Math.round((dayIndex / Math.max(days - 1, 1)) * 34) +
@@ -175,19 +156,68 @@ async function main() {
             score(dayIndex, promptIndex, modelIndex, 19) < 42;
           const mentionsSearchSignal =
             score(dayIndex, promptIndex, modelIndex, 41) < 25;
+          const mentionedBrands = [
+            ...(mentionsPrimary ? [brandRows[0]] : []),
+            ...(mentionsRankPilot ? [brandRows[1]] : []),
+            ...(mentionsSearchSignal ? [brandRows[2]] : []),
+          ];
+          const responseText = failed
+            ? null
+            : seededAnswerText(
+                model,
+                mentionedBrands.map(({ name }) => name),
+              );
+          answerRows.push({
+            id: answerId,
+            runId,
+            trackedPromptId: promptRows[promptIndex].id,
+            promptText: promptRows[promptIndex].prompt,
+            model,
+            modelName: modelName(model),
+            status: failed ? "error" : "success",
+            responseText,
+            errorCode: failed ? "SEEDED_MODEL_ERROR" : null,
+            errorMessage: failed ? "Synthetic partial-platform failure" : null,
+            observedAt: dbTimestamp(date),
+            sourceFetchedAt: dbTimestamp(date),
+            webSearch: model !== "claude",
+          });
+          if (failed || responseText == null) continue;
+
           if (mentionsPrimary) {
             mentionRows.push(
-              mention(answerId, brandRows[0].id, brandRows[0].name, 1),
+              mention(
+                answerId,
+                brandRows[0].id,
+                brandRows[0].name,
+                responseText,
+                1,
+                seededSentiment(dayIndex, promptIndex, modelIndex, 3),
+              ),
             );
           }
           if (mentionsRankPilot) {
             mentionRows.push(
-              mention(answerId, brandRows[1].id, brandRows[1].name, 1),
+              mention(
+                answerId,
+                brandRows[1].id,
+                brandRows[1].name,
+                responseText,
+                mentionsPrimary ? 2 : 1,
+                seededSentiment(dayIndex, promptIndex, modelIndex, 19),
+              ),
             );
           }
           if (mentionsSearchSignal) {
             mentionRows.push(
-              mention(answerId, brandRows[2].id, brandRows[2].name, 1),
+              mention(
+                answerId,
+                brandRows[2].id,
+                brandRows[2].name,
+                responseText,
+                1 + Number(mentionsPrimary) + Number(mentionsRankPilot),
+                seededSentiment(dayIndex, promptIndex, modelIndex, 41),
+              ),
             );
           }
 
@@ -360,15 +390,47 @@ function mention(
   answerId: string,
   brandId: string,
   rawName: string,
-  mentionCount: number,
+  responseText: string,
+  position: number,
+  sentiment: "positive" | "neutral" | "negative",
 ): typeof schema.aiBrandMentions.$inferInsert {
+  const firstOccurrenceStart = responseText.indexOf(rawName);
   return {
     answerId,
     brandId,
     rawName,
     normalizedName: rawName.toLowerCase(),
-    mentionCount,
+    mentionCount: 1,
+    sentiment,
+    position,
+    firstOccurrenceStart,
+    firstOccurrenceEnd: firstOccurrenceStart + rawName.length,
+    scoringStatus: "scored",
+    scoredAt: new Date().toISOString(),
   };
+}
+
+function seededAnswerText(model: string, brandNames: string[]): string {
+  const comparison =
+    brandNames.length === 0
+      ? "No tracked brand is recommended in this sample."
+      : `The shortlist includes ${brandNames.join(", ")}.`;
+  return [
+    `Synthetic ${model} answer for answer-explorer verification.`,
+    "",
+    comparison,
+    "This raw text intentionally includes punctuation and line breaks so the reader can verify text-only rendering.",
+  ].join("\n");
+}
+
+function seededSentiment(
+  dayIndex: number,
+  promptIndex: number,
+  modelIndex: number,
+  salt: number,
+): "positive" | "neutral" | "negative" {
+  const value = score(dayIndex, promptIndex, modelIndex, salt) % 3;
+  return value === 0 ? "negative" : value === 1 ? "neutral" : "positive";
 }
 
 function citation(

@@ -18,10 +18,13 @@ export type StoredAnswer = {
   id: string;
   runId: string;
   runStartedAt: Date;
+  promptSetId: string | null;
   trackedPromptId: string;
   promptText: string;
   model: string;
   modelName: string | null;
+  responseText: string | null;
+  observedAt: string;
   status: "success" | "error";
   topicId: string | null;
   topicName: string | null;
@@ -97,29 +100,46 @@ export function buildBreakdowns(
 ): VisibilityBreakdown[] {
   const groups = new Map<
     string,
-    { label: string; detail: string | null; answers: StoredAnswer[] }
+    {
+      label: string;
+      detail: string | null;
+      promptSetId: string | null;
+      trackedPromptId: string | null;
+      answers: StoredAnswer[];
+    }
   >();
   for (const answer of answers) {
     const descriptor = breakdownDescriptor(answer, kind);
     const group = groups.get(descriptor.key) ?? {
       label: descriptor.label,
       detail: descriptor.detail,
+      promptSetId: descriptor.promptSetId,
+      trackedPromptId: descriptor.trackedPromptId,
       answers: [],
     };
     group.answers.push(answer);
     groups.set(descriptor.key, group);
   }
   return sortBy(
-    Array.from(groups.entries()).map(([key, group]) => ({
-      key,
-      label: group.label,
-      detail: group.detail,
-      metric: computeMetric(
-        group.answers,
-        primaryBrandId,
-        group.answers.length,
-      ),
-    })),
+    Array.from(groups.entries()).map(([key, group]) => {
+      const row = {
+        key,
+        label: group.label,
+        detail: group.detail,
+        metric: computeMetric(
+          group.answers,
+          primaryBrandId,
+          group.answers.length,
+        ),
+      };
+      return kind === "prompt"
+        ? {
+            ...row,
+            promptSetId: group.promptSetId,
+            trackedPromptId: group.trackedPromptId,
+          }
+        : row;
+    }),
     [(row) => row.metric.visibilityPct ?? -1, "desc"],
     [(row) => row.metric.successfulAnswers, "desc"],
     [(row) => row.label, "asc"],
@@ -271,6 +291,8 @@ function breakdownDescriptor(answer: StoredAnswer, kind: BreakdownKind) {
       key: answer.model,
       label: formatAiModelLabel(answer.model),
       detail: answer.modelName,
+      promptSetId: null,
+      trackedPromptId: null,
     };
   }
   if (kind === "topic") {
@@ -278,11 +300,15 @@ function breakdownDescriptor(answer: StoredAnswer, kind: BreakdownKind) {
       key: answer.topicId ?? "uncategorized",
       label: answer.topicName ?? "Uncategorized",
       detail: null,
+      promptSetId: null,
+      trackedPromptId: null,
     };
   }
   return {
     key: answer.trackedPromptId,
     label: answer.promptText,
     detail: answer.topicName ?? "Uncategorized",
+    promptSetId: answer.promptSetId,
+    trackedPromptId: answer.trackedPromptId,
   };
 }

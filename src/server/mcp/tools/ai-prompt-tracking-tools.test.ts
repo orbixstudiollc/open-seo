@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   getProjectForOrganization: vi.fn(),
   updateProjectRunSettings: vi.fn(),
   runPromptSet: vi.fn(),
+  runTrackedPrompt: vi.fn(),
 }));
 
 vi.mock("cloudflare:workers", () => ({ env: {} }));
@@ -18,12 +19,14 @@ vi.mock("@/server/features/ai-visibility/services/AiVisibilityService", () => ({
   AiVisibilityService: {
     updateProjectRunSettings: mocks.updateProjectRunSettings,
     runPromptSet: mocks.runPromptSet,
+    runTrackedPrompt: mocks.runTrackedPrompt,
   },
 }));
 
 import {
   manageAiPromptTrackingTool,
   runAiPromptSetTool,
+  runAiTrackedPromptTool,
 } from "./ai-prompt-tracking-tools";
 
 const toolExtra: ToolExtra = {
@@ -127,5 +130,38 @@ describe("AI prompt tracking MCP tools", () => {
       ),
     ).rejects.toMatchObject({ code: "FORBIDDEN" });
     expect(mocks.runPromptSet).not.toHaveBeenCalled();
+  });
+
+  it("runs one tracked prompt with the authenticated billing context", async () => {
+    mocks.runTrackedPrompt.mockResolvedValue({
+      ok: true,
+      runId: "run_single",
+      answerCallsReserved: 4,
+    });
+
+    const result = await runAiTrackedPromptTool.handler(
+      {
+        projectId: "project_1",
+        promptSetId: "set_1",
+        trackedPromptId: "prompt_1",
+      },
+      toolExtra,
+    );
+
+    expect(mocks.runTrackedPrompt).toHaveBeenCalledWith({
+      projectId: "project_1",
+      promptSetId: "set_1",
+      trackedPromptId: "prompt_1",
+      billingCustomer: {
+        userId: "user_123",
+        userEmail: "alice@example.com",
+        organizationId: "org_123",
+        projectId: "project_1",
+      },
+    });
+    expect(result.structuredContent).toMatchObject({
+      result: { runId: "run_single", answerCallsReserved: 4 },
+      meta: { runId: "run_single" },
+    });
   });
 });

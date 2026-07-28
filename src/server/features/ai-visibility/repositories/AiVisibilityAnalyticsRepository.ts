@@ -18,11 +18,14 @@ export type AnalyticsRunRow = {
 export type AnalyticsObservationRow = {
   runId: string;
   runStartedAt: string;
+  promptSetId?: string;
   answerId: string;
   trackedPromptId: string;
   promptText: string;
   model: string;
   modelName: string | null;
+  responseText?: string | null;
+  answerObservedAt?: string;
   answerStatus: "success" | "error";
   topicId: string | null;
   topicName: string | null;
@@ -85,11 +88,14 @@ async function getObservations(runIds: string[]) {
           .select({
             runId: aiRuns.id,
             runStartedAt: aiRuns.startedAt,
+            promptSetId: aiRuns.promptSetId,
             answerId: aiAnswers.id,
             trackedPromptId: aiAnswers.trackedPromptId,
             promptText: aiAnswers.promptText,
             model: aiAnswers.model,
             modelName: aiAnswers.modelName,
+            responseText: aiAnswers.responseText,
+            answerObservedAt: aiAnswers.observedAt,
             answerStatus: aiAnswers.status,
             topicId: aiPromptTopics.id,
             topicName: aiPromptTopics.name,

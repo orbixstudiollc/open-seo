@@ -17,6 +17,7 @@ import {
   createAiTrackedPromptInputSchema,
   promptExplorerInputSchema,
   runAiPromptSetInputSchema,
+  runAiTrackedPromptInputSchema,
   updateAiPromptSetInputSchema,
   updateAiPromptTagInputSchema,
   updateAiPromptTopicInputSchema,
@@ -191,6 +192,23 @@ export const runAiPromptSetNow = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) =>
     AiVisibilityService.runPromptSet({
       promptSetId: data.promptSetId,
+      projectId: context.projectId,
+      billingCustomer: {
+        userId: context.userId,
+        userEmail: context.userEmail,
+        organizationId: context.organizationId,
+        projectId: context.projectId,
+      },
+    }),
+  );
+
+export const runAiTrackedPromptNow = createServerFn({ method: "POST" })
+  .middleware(requireProjectContext)
+  .validator(runAiTrackedPromptInputSchema)
+  .handler(async ({ data, context }) =>
+    AiVisibilityService.runTrackedPrompt({
+      promptSetId: data.promptSetId,
+      trackedPromptId: data.trackedPromptId,
       projectId: context.projectId,
       billingCustomer: {
         userId: context.userId,

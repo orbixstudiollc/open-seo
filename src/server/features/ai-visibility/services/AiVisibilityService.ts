@@ -336,6 +336,23 @@ async function runPromptSet(input: {
   });
 }
 
+async function runTrackedPrompt(input: {
+  promptSetId: string;
+  trackedPromptId: string;
+  projectId: string;
+  billingCustomer: BillingCustomerContext;
+}) {
+  await assertPaidPlan(input.billingCustomer.organizationId);
+  return beginAiTrackedRun({
+    workflow: env.AI_TRACKED_RUN_WORKFLOW,
+    promptSetId: input.promptSetId,
+    projectId: input.projectId,
+    billingCustomer: input.billingCustomer,
+    trigger: "manual",
+    trackedPromptId: input.trackedPromptId,
+  });
+}
+
 export const AiVisibilityService = {
   getProjectRunSettings,
   getPromptSets,
@@ -352,4 +369,5 @@ export const AiVisibilityService = {
   updateTag,
   assignTag,
   runPromptSet,
+  runTrackedPrompt,
 };

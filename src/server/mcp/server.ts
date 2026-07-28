@@ -9,6 +9,7 @@ import { getBrandResolutionStateTool } from "@/server/mcp/tools/get-brand-resolu
 import {
   manageAiPromptTrackingTool,
   runAiPromptSetTool,
+  runAiTrackedPromptTool,
 } from "@/server/mcp/tools/ai-prompt-tracking-tools";
 import { getDomainKeywordSuggestionsTool } from "@/server/mcp/tools/get-domain-keyword-suggestions";
 import { getDomainOverviewTool } from "@/server/mcp/tools/get-domain-overview";
@@ -215,6 +216,15 @@ export function registerOpenSeoMcpTools(server: McpServer) {
       runAiPromptSetTool.name,
       runAiPromptSetTool.config.outputSchema,
       runAiPromptSetTool.handler,
+    ),
+  );
+  server.registerTool(
+    runAiTrackedPromptTool.name,
+    runAiTrackedPromptTool.config,
+    instrumentMcpToolHandler(
+      runAiTrackedPromptTool.name,
+      runAiTrackedPromptTool.config.outputSchema,
+      runAiTrackedPromptTool.handler,
     ),
   );
   server.registerTool(
