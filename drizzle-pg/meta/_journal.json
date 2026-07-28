@@ -134,6 +134,20 @@
       "when": 1785220816578,
       "tag": "0018_rainy_sugar_man",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1785221884522,
+      "tag": "0019_next_luke_cage",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1785225171202,
+      "tag": "0020_tiny_marvel_zombies",
+      "breakpoints": true
     }
   ]
 }

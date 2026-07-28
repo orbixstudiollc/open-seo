@@ -18,10 +18,15 @@ export type CitationIntelligenceAnswerRow = {
   id: string;
   runId: string;
   runStartedAt: string;
+  trackedPromptId: string;
+  promptText: string;
+  model: string;
+  observedAt: string;
   status: "success" | "error";
 };
 
 export type CitationIntelligenceCitationRow = {
+  id: number;
   answerId: string;
   citationOrder: number;
   url: string;
@@ -104,6 +109,10 @@ async function getAnswers(
             id: aiAnswers.id,
             runId: aiAnswers.runId,
             runStartedAt: aiRuns.startedAt,
+            trackedPromptId: aiAnswers.trackedPromptId,
+            promptText: aiAnswers.promptText,
+            model: aiAnswers.model,
+            observedAt: aiAnswers.observedAt,
             status: aiAnswers.status,
           })
           .from(aiAnswers)
@@ -131,6 +140,7 @@ async function getCitations(
     rows.push(
       ...(await db
         .select({
+          id: aiCitations.id,
           answerId: aiCitations.answerId,
           citationOrder: aiCitations.citationOrder,
           url: aiCitations.url,

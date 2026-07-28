@@ -35,16 +35,18 @@ function getHostedAuthEmailConfig() {
   };
 }
 
-async function sendLoopsTransactionalEmail({
+export async function sendLoopsTransactionalEmail({
   apiKey,
   email,
   transactionalId,
   dataVariables,
+  redactErrorDetails = false,
 }: {
   apiKey: string;
   email: string;
   transactionalId: string;
   dataVariables: Record<string, string>;
+  redactErrorDetails?: boolean;
 }) {
   const response = await fetch(LOOPS_TRANSACTIONAL_URL, {
     method: "POST",
@@ -67,9 +69,8 @@ async function sendLoopsTransactionalEmail({
   const errorPayload = await response.json().catch(() => null);
   console.error("Loops transactional email error:", {
     status: response.status,
-    email,
     transactionalId,
-    errorPayload,
+    ...(redactErrorDetails ? {} : { email, errorPayload }),
   });
 
   throw new Error(

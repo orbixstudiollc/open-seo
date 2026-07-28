@@ -6,8 +6,6 @@ import { routeAgentRequest } from "agents";
 import { resolveUserContextFromHeaders } from "@/middleware/ensure-user/resolve";
 import { ProjectRepository } from "@/server/features/projects/repositories/ProjectRepository";
 import { SamSessionRepository } from "@/server/features/sam/SamSessionRepository";
-import { runScheduledRankChecks } from "@/server/features/rank-tracking/services/scheduledRankChecks";
-import { runScheduledAiTrackedRuns } from "@/server/features/ai-visibility/services/scheduledAiRuns";
 import { getOrCreateOrganizationCustomer } from "@/server/billing/subscription";
 import { isHostedServerAuthMode } from "@/server/lib/runtime-env";
 import { getAuthMode, isHostedAuthMode } from "@/lib/auth-mode";
@@ -24,6 +22,8 @@ import {
   handleAutumnWebhookRequest,
 } from "@/server/billing/autumn-webhook";
 import { maybeSendSelfHostHeartbeat } from "@/server/lib/self-host-telemetry";
+import { handlePublicReportRequest } from "@/server/features/reports/handlers/publicReportHandler";
+import { runScheduledDispatchers } from "@/server/scheduledDispatchers";
 
 const appFetch = createStartHandler(defaultStreamHandler);
 const openSeoOAuthProvider = createOpenSeoOAuthProvider(appFetch);
@@ -139,11 +139,16 @@ function handleFetch(
   env: Env,
   ctx: ExecutionContext,
 ): Response | Promise<Response> {
-  ctx.waitUntil(maybeSendSelfHostHeartbeat());
-
   const authMode = getAuthMode(env.AUTH_MODE);
   const publicRequest = requestWithPublicOrigin(request);
   const pathname = new URL(publicRequest.url).pathname;
+
+  if (pathname.startsWith("/share/")) {
+    return handlePublicReportRequest(publicRequest, env);
+  }
+
+  // Anonymous report capabilities must not trigger installation telemetry.
+  ctx.waitUntil(maybeSendSelfHostHeartbeat());
 
   if (pathname.startsWith("/agents/")) {
     return routeChatAgents(publicRequest, env);
@@ -187,18 +192,6 @@ export default {
     env: Env,
     _ctx: ExecutionContext,
   ) {
-    // Scope a per-request Postgres client for the cron run (no-op in D1 mode).
-    await withPgClient(async () => {
-      try {
-        await runScheduledRankChecks(env);
-      } catch (error) {
-        console.error("[cron] Rank tracking dispatcher failed:", error);
-      }
-      try {
-        await runScheduledAiTrackedRuns(env);
-      } catch (error) {
-        console.error("[cron] AI tracked-run dispatcher failed:", error);
-      }
-    });
+    await runScheduledDispatchers(env);
   },
 };

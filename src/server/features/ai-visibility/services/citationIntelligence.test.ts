@@ -8,7 +8,10 @@ import type {
   CitationIntelligenceRunRow,
 } from "@/server/features/ai-visibility/repositories/AiCitationIntelligenceRepository";
 import type { VisibilityWindow } from "@/types/schemas/ai-visibility-analytics";
-import { buildCitationIntelligenceOverview } from "./citationIntelligence";
+import {
+  buildCitationIntelligenceOverview,
+  buildCitationRecommendationGaps,
+} from "./citationIntelligence";
 
 const AS_OF = new Date("2026-07-28T00:00:00.000Z");
 
@@ -192,6 +195,51 @@ describe("citation intelligence rollups", () => {
     expect(result.gapReport.entries).toEqual([]);
     expect(result.gapReport.scopeNote).toContain("Set a primary brand");
   });
+
+  it("resolves Phase 5 gaps to exact citation and competitor evidence", () => {
+    const targets = buildCitationRecommendationGaps({
+      asOf: AS_OF,
+      windowDays: 7,
+      runs: answers.map((row) => ({
+        id: row.runId,
+        startedAt: row.runStartedAt,
+      })),
+      answers,
+      citations,
+      mentions,
+      brands,
+      classifications,
+    });
+
+    expect(targets.map((target) => target.targetUrl)).not.toContain(
+      "https://docs.mixed.com/competitor",
+    );
+    expect(
+      targets.find((target) => target.targetUrl === "https://gap.com/a"),
+    ).toMatchObject({
+      targetHostname: "gap.com",
+      targetDomain: "gap.com",
+      citationCount: 2,
+      answerCount: 2,
+      promptCount: 2,
+      targetBrandCitationCount: 0,
+      competitorBrands: [
+        { id: "competitor-beta", name: "Beta" },
+        { id: "competitor-gamma", name: "Gamma" },
+      ],
+    });
+    const gapEvidence = targets.find(
+      (target) => target.targetUrl === "https://gap.com/a",
+    )!.evidence;
+    expect(new Set(gapEvidence.map((row) => row.citationId))).toHaveLength(2);
+    expect(
+      gapEvidence.map((row) => row.competitorBrandName).toSorted(),
+    ).toEqual(["Beta", "Beta", "Gamma"]);
+    expect(
+      targets.find((target) => target.targetUrl === "https://reddit.com/r/seo")
+        ?.targetCommunity,
+    ).toBe("r/seo");
+  });
 });
 
 function build(windowDays: VisibilityWindow, brandRows = brands) {
@@ -215,7 +263,16 @@ function answer(
   runStartedAt: string,
   status: "success" | "error" = "success",
 ): CitationIntelligenceAnswerRow {
-  return { id, runId: `run-${id}`, runStartedAt, status };
+  return {
+    id,
+    runId: `run-${id}`,
+    runStartedAt,
+    trackedPromptId: `prompt-${id}`,
+    promptText: `Prompt for ${id}`,
+    model: "chat_gpt",
+    observedAt: runStartedAt,
+    status,
+  };
 }
 
 function citation(
@@ -223,7 +280,21 @@ function citation(
   url: string,
   citationOrder: number,
 ): CitationIntelligenceCitationRow {
-  return { answerId, url, citationOrder, title: `Title ${citationOrder}` };
+  return {
+    id: stableFixtureId(answerId, citationOrder),
+    answerId,
+    url,
+    citationOrder,
+    title: `Title ${citationOrder}`,
+  };
+}
+
+function stableFixtureId(answerId: string, order: number): number {
+  let value = 7;
+  for (let index = 0; index < answerId.length; index += 1) {
+    value = value * 31 + answerId.charCodeAt(index);
+  }
+  return value + order;
 }
 
 function mention(

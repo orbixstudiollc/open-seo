@@ -76,6 +76,37 @@ export type CompetitorSourceGap = {
   totalCitations: number;
 };
 
+export type CitationRecommendationGap = {
+  targetUrl: string;
+  targetHostname: string;
+  targetDomain: string;
+  targetTitle: string | null;
+  targetCommunity: string | null;
+  classification: CitationDomainClassification;
+  competitorBrands: Array<{ id: string; name: string }>;
+  citationCount: number;
+  answerCount: number;
+  promptCount: number;
+  targetBrandCitationCount: 0;
+  firstObservedAt: string;
+  lastObservedAt: string;
+  evidenceWindowStart: string;
+  evidenceWindowEnd: string;
+  modelDistribution: Array<{ model: string; answers: number }>;
+  evidence: Array<{
+    citationId: number;
+    answerId: string;
+    competitorBrandId: string;
+    competitorBrandName: string;
+    sourceUrl: string;
+    sourceHostname: string;
+    sourceTitle: string | null;
+    promptText: string;
+    model: string;
+    observedAt: string;
+  }>;
+};
+
 export type CitationIntelligenceOverview = {
   asOf: string;
   windowDays: z.infer<typeof visibilityWindowSchema>;

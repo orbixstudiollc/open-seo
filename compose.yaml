@@ -17,6 +17,12 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-}
+      # Optional report sharing/digests. Public sharing remains disabled unless
+      # the operator explicitly declares a share-only proxy/origin.
+      - REPORT_PUBLIC_SHARE_MODE=${REPORT_PUBLIC_SHARE_MODE:-}
+      - REPORT_PUBLIC_ORIGIN=${REPORT_PUBLIC_ORIGIN:-}
+      - LOOPS_API_KEY=${LOOPS_API_KEY:-}
+      - LOOPS_TRANSACTIONAL_REPORT_DIGEST_ID=${LOOPS_TRANSACTIONAL_REPORT_DIGEST_ID:-}
       # Optional: AI provider for the in-app chat agents (SAM + onboarding).
       # Either OpenRouter:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}

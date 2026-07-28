@@ -2,20 +2,24 @@ import { getDatabaseProvider } from "./provider";
 import * as sqliteApp from "./app.schema";
 import * as sqliteAiVisibility from "./ai-visibility.schema";
 import * as sqliteAudit from "./audit.schema";
+import * as sqliteRecommendations from "./recommendations.schema";
 import * as sqliteSam from "./sam.schema";
 import * as sqliteAuth from "./better-auth-schema";
 import * as sqliteBilling from "./billing.schema";
 import * as sqliteGsc from "./gsc.schema";
 import * as sqliteReddit from "./reddit-attribution.schema";
+import * as sqliteReports from "./reports.schema";
 import * as sqliteTelemetry from "./telemetry.schema";
 import * as pgApp from "./pg/app.schema";
 import * as pgAiVisibility from "./pg/ai-visibility.schema";
 import * as pgAudit from "./pg/audit.schema";
+import * as pgRecommendations from "./pg/recommendations.schema";
 import * as pgSam from "./pg/sam.schema";
 import * as pgAuth from "./pg/better-auth-schema";
 import * as pgBilling from "./pg/billing.schema";
 import * as pgGsc from "./pg/gsc.schema";
 import * as pgReddit from "./pg/reddit-attribution.schema";
+import * as pgReports from "./pg/reports.schema";
 import * as pgTelemetry from "./pg/telemetry.schema";
 
 // Canonical schema barrel. Repositories import their tables from here and the
@@ -31,11 +35,13 @@ import * as pgTelemetry from "./pg/telemetry.schema";
 type AppSchema = typeof sqliteApp &
   typeof sqliteAiVisibility &
   typeof sqliteAudit &
+  typeof sqliteRecommendations &
   typeof sqliteSam &
   typeof sqliteAuth &
   typeof sqliteBilling &
   typeof sqliteGsc &
   typeof sqliteReddit &
+  typeof sqliteReports &
   typeof sqliteTelemetry;
 
 const runtimeSchema =
@@ -44,22 +50,26 @@ const runtimeSchema =
         ...pgApp,
         ...pgAiVisibility,
         ...pgAudit,
+        ...pgRecommendations,
         ...pgSam,
         ...pgAuth,
         ...pgBilling,
         ...pgGsc,
         ...pgReddit,
+        ...pgReports,
         ...pgTelemetry,
       }
     : {
         ...sqliteApp,
         ...sqliteAiVisibility,
         ...sqliteAudit,
+        ...sqliteRecommendations,
         ...sqliteSam,
         ...sqliteAuth,
         ...sqliteBilling,
         ...sqliteGsc,
         ...sqliteReddit,
+        ...sqliteReports,
         ...sqliteTelemetry,
       };
 
@@ -102,6 +112,10 @@ export const {
   auditLinks,
   auditIssues,
   auditLighthouseResults,
+  recommendations,
+  recommendationAuditIssueEvidence,
+  recommendationCitationEvidence,
+  recommendationScoreFactors,
   samSessions,
   samProjectMemory,
   user,
@@ -114,5 +128,7 @@ export const {
   billingCustomerStatus,
   gscConnections,
   redditAttributions,
+  reportShares,
+  reportDigestSchedules,
   telemetryState,
 } = schema;

@@ -8,7 +8,9 @@ import {
   LayoutDashboard,
   LibraryBig,
   Link2,
+  ListTodo,
   MessageSquare,
+  Newspaper,
   Search,
   Sparkles,
   TrendingUp,
@@ -69,6 +71,16 @@ const projectNavItems = [
     to: "/p/$projectId/citations" as const,
     label: "Citation Intelligence",
     icon: LibraryBig,
+  },
+  {
+    to: "/p/$projectId/recommendations" as const,
+    label: "Recommendations",
+    icon: ListTodo,
+  },
+  {
+    to: "/p/$projectId/reports" as const,
+    label: "Reports",
+    icon: Newspaper,
   },
   {
     to: "/p/$projectId/brand-lookup" as const,
@@ -136,6 +148,8 @@ export function getProjectNavGroups(projectId: string) {
       items: [
         byPath("/p/$projectId/visibility"),
         byPath("/p/$projectId/citations"),
+        byPath("/p/$projectId/recommendations"),
+        byPath("/p/$projectId/reports"),
         byPath("/p/$projectId/search-performance"),
         byPath("/p/$projectId/brand-resolution"),
         byPath("/p/$projectId/rank-tracking"),
