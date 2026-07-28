@@ -11,7 +11,10 @@ import type {
   VisibilityOverview,
   VisibilityWindow,
 } from "@/types/schemas/ai-visibility-analytics";
-import { formatVisibilityModel } from "./modelLabels";
+import {
+  formatAiModelLabel,
+  visibilityDeltaHeading,
+} from "@/shared/aiVisibilityLabels";
 
 const WINDOWS: VisibilityWindow[] = [7, 30, 90];
 
@@ -50,7 +53,7 @@ export function VisibilityOverviewPage({
       >
         <div
           role="alert"
-          className="ai-visibility-card flex items-start gap-3 border-red-500/30 px-5 py-4 text-sm text-red-700 dark:text-red-300"
+          className="ai-visibility-card flex items-start gap-3 border-[var(--visibility-negative)]/30 px-5 py-4 text-sm text-[var(--visibility-negative)]"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
           {getStandardErrorMessage(
@@ -215,7 +218,7 @@ function HeadlineSection({ overview }: { overview: VisibilityOverview }) {
           </p>
           <p className="mt-1 truncate">
             {overview.successfulModels.length > 0
-              ? overview.successfulModels.map(formatVisibilityModel).join(", ")
+              ? overview.successfulModels.map(formatAiModelLabel).join(", ")
               : "No successful platform cohort"}
           </p>
         </div>
@@ -230,7 +233,8 @@ function DeltaLabel({ overview }: { overview: VisibilityOverview }) {
     return (
       <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-[var(--visibility-canvas-soft)] px-3 py-1.5 text-xs font-medium text-[var(--visibility-muted)]">
         <Minus className="size-3.5" />
-        Insufficient history
+        {visibilityDeltaHeading(overview.comparison.status)?.badge ??
+          "No comparison"}
       </span>
     );
   }
@@ -240,9 +244,9 @@ function DeltaLabel({ overview }: { overview: VisibilityOverview }) {
     <span
       className={`mb-1 inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold ${
         positive
-          ? "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300"
+          ? "bg-[var(--visibility-positive-soft)] text-[var(--visibility-positive)]"
           : delta < 0
-            ? "bg-red-600/10 text-red-700 dark:text-red-300"
+            ? "bg-[var(--visibility-negative-soft)] text-[var(--visibility-negative)]"
             : "bg-[var(--visibility-canvas-soft)] text-[var(--visibility-muted)]"
       }`}
     >

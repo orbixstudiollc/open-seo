@@ -370,7 +370,6 @@ function answer(input: {
   const base: AnalyticsObservationRow = {
     runId: input.runId,
     runStartedAt: input.runStartedAt,
-    answersExpected: 1,
     answerId: input.answerId,
     trackedPromptId: input.promptId,
     promptText:

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { visibilityDeltaHeading } from "@/shared/aiVisibilityLabels";
 import {
   CartesianGrid,
   Line,
@@ -119,7 +120,8 @@ export function VisibilityTrendCard({ overview }: Props) {
           <Info className="mt-0.5 size-4 shrink-0 text-[var(--visibility-accent)]" />
           <span>
             <strong className="font-semibold text-[var(--visibility-ink)]">
-              Insufficient history.
+              {visibilityDeltaHeading(overview.comparison.status)?.heading ??
+                "Comparison unavailable."}
             </strong>{" "}
             {overview.comparison.message}
           </span>

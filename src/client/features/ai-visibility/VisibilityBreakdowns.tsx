@@ -2,7 +2,7 @@ import type {
   VisibilityBreakdown,
   VisibilityOverview,
 } from "@/types/schemas/ai-visibility-analytics";
-import { formatVisibilityModel } from "./modelLabels";
+import { formatAiModelLabel } from "@/shared/aiVisibilityLabels";
 
 export function VisibilityBreakdownCard({
   title,
@@ -124,7 +124,7 @@ export function ShareOfVoiceCard({
           </ul>
           <p className="border-t border-[var(--visibility-hairline)] px-5 py-3 text-[11px] text-[var(--visibility-muted)]">
             Successful answers from{" "}
-            {shareOfVoice.platforms.map(formatVisibilityModel).join(", ")} only.
+            {shareOfVoice.platforms.map(formatAiModelLabel).join(", ")} only.
           </p>
         </>
       ) : (
