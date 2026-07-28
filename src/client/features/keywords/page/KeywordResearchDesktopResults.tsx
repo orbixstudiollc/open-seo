@@ -198,7 +198,7 @@ function DesktopTableCard({ controller }: Props) {
           </div>
           <ul
             tabIndex={0}
-            className="dropdown-content z-10 menu p-2 shadow-lg bg-base-100 border border-base-300 rounded-box w-56"
+            className="dropdown-content z-10 menu p-2 bg-base-100 border border-base-300 rounded-box w-56"
           >
             <li>
               <button onClick={handleExportToSheets} disabled={!canExport}>

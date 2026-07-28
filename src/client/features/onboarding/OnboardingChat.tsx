@@ -89,13 +89,13 @@ function SiteForm({ projectId }: { projectId: string }) {
             alt="OpenSEO"
             className="mx-auto size-10 rounded-lg"
           />
-          <h1 className="text-xl font-semibold">Tell us about your website.</h1>
+          <h1 className="text-xl font-normal">Tell us about your website.</h1>
           <p className="text-sm text-base-content/60">
             If you have multiple websites, you can set that up later.
           </p>
         </div>
 
-        <div className="space-y-4 rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm">
+        <div className="space-y-4 rounded-lg border border-base-300 bg-base-100 p-5">
           <label className="block space-y-1">
             <span className="text-sm font-medium">Your website</span>
             <input

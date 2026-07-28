@@ -135,7 +135,7 @@ function SubscribePage() {
           alt="OpenSEO"
           className="mx-auto size-10 rounded-lg"
         />
-        <h1 className="text-xl font-semibold">
+        <h1 className="text-xl font-normal">
           Finalizing your subscription&hellip;
         </h1>
         <span className="loading loading-spinner loading-md" />
@@ -162,7 +162,7 @@ function SubscribePage() {
             alt="OpenSEO"
             className="mx-auto size-10 rounded-lg"
           />
-          <h1 className="text-xl font-semibold">Billing unavailable</h1>
+          <h1 className="text-xl font-normal">Billing unavailable</h1>
         </div>
 
         <p className="text-sm text-center text-base-content/70">
@@ -221,7 +221,7 @@ function SubscribePage() {
           alt="OpenSEO"
           className="mx-auto size-10 rounded-lg"
         />
-        <h1 className="text-xl font-semibold">
+        <h1 className="text-xl font-normal">
           {isUpgradeFlow
             ? "Upgrade your plan"
             : firstName
@@ -328,7 +328,7 @@ function SubscribePageAccountMenu({ email }: { email: string | undefined }) {
         </button>
         <ul
           tabIndex={0}
-          className="dropdown-content z-20 menu mt-3 min-w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+          className="dropdown-content z-20 menu mt-3 min-w-56 rounded-box border border-base-300 bg-base-100 p-2"
         >
           <li className="menu-title max-w-full">
             <span className="truncate text-base-content" data-ph-mask>

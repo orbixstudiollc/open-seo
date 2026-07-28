@@ -116,7 +116,7 @@ export function LocationSelect({
       </button>
 
       {open ? (
-        <div className="fixed z-30 mt-2 w-full max-w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
+        <div className="fixed z-30 mt-2 w-full max-w-56 rounded-box border border-base-300 bg-base-100 p-2">
           <label className="flex items-center gap-2 rounded-lg border border-base-300 px-3 py-2 focus-within:border-primary">
             <Search className="size-4 shrink-0 text-base-content/50" />
             <input
@@ -159,7 +159,7 @@ export function LocationSelect({
                     >
                       <span className="flex-1 truncate">{option.label}</span>
                       {isSelected ? (
-                        <Check className="size-4 shrink-0 text-primary" />
+                        <Check className="size-4 shrink-0 text-base-content" />
                       ) : null}
                     </button>
                   </li>

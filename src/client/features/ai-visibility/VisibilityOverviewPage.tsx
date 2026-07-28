@@ -65,7 +65,7 @@ export function VisibilityOverviewPage({
       >
         <div
           role="alert"
-          className="ai-visibility-card flex items-start gap-3 border-[var(--visibility-negative)]/30 px-5 py-4 text-sm text-[var(--visibility-negative)]"
+          className="ai-visibility-card flex items-start gap-3 border-[var(--app-negative)]/30 px-5 py-4 text-sm text-[var(--app-negative)]"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
           {getStandardErrorMessage(
@@ -141,13 +141,13 @@ function OverviewHeader({
   return (
     <header className="flex flex-col justify-between gap-5 pb-2 sm:flex-row sm:items-end">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
           Tracked answers
         </p>
         <h1 className="ai-visibility-display mt-2 text-[30px] leading-tight sm:text-4xl">
           AI Visibility
         </h1>
-        <p className="mt-2 max-w-xl text-sm text-[var(--visibility-body)]">
+        <p className="mt-2 max-w-xl text-sm text-[var(--app-body)]">
           How often your brand appears across stored prompt answers, with
           coverage-aware movement.
         </p>
@@ -155,7 +155,7 @@ function OverviewHeader({
       <div
         role="group"
         aria-label="Visibility period"
-        className="inline-flex self-start rounded-lg border border-[var(--visibility-hairline-strong)] bg-[var(--visibility-surface)] p-1 sm:self-auto"
+        className="inline-flex self-start rounded-lg border border-[var(--app-hairline-strong)] bg-[var(--app-surface)] p-1 sm:self-auto"
       >
         {WINDOWS.map((days) => (
           <button
@@ -164,8 +164,8 @@ function OverviewHeader({
             aria-pressed={windowDays === days}
             className={`h-10 min-w-14 rounded-md px-3 text-sm font-medium transition-colors ${
               windowDays === days
-                ? "bg-[var(--visibility-accent)] text-white"
-                : "text-[var(--visibility-body)] hover:bg-[var(--visibility-canvas-soft)]"
+                ? "bg-[var(--app-ink)] text-[var(--app-canvas)]"
+                : "text-[var(--app-body)] hover:bg-[var(--app-canvas-soft)]"
             }`}
             onClick={() => onChange(days)}
           >
@@ -181,7 +181,7 @@ function HeadlineSection({ overview }: { overview: VisibilityOverview }) {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.55fr)]">
       <section className="ai-visibility-card p-5 sm:p-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
           Visibility
         </p>
         <div className="mt-3 flex flex-wrap items-end gap-x-5 gap-y-3">
@@ -192,14 +192,14 @@ function HeadlineSection({ overview }: { overview: VisibilityOverview }) {
           </p>
           <DeltaLabel overview={overview} />
         </div>
-        <p className="mt-5 text-sm text-[var(--visibility-body)]">
+        <p className="mt-5 text-sm text-[var(--app-body)]">
           {overview.primaryBrand ? (
             <>
-              <strong className="font-semibold text-[var(--visibility-ink)]">
+              <strong className="font-semibold text-[var(--app-ink)]">
                 {overview.metric.mentionedAnswers}
               </strong>{" "}
               of {overview.metric.successfulAnswers} successful answers mention{" "}
-              <strong className="font-semibold text-[var(--visibility-ink)]">
+              <strong className="font-semibold text-[var(--app-ink)]">
                 {overview.primaryBrand.name}
               </strong>
               .
@@ -211,7 +211,7 @@ function HeadlineSection({ overview }: { overview: VisibilityOverview }) {
       </section>
 
       <section className="ai-visibility-card p-5 sm:p-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
           Answer coverage
         </p>
         <p className="ai-visibility-display mt-3 text-4xl tabular-nums">
@@ -219,11 +219,11 @@ function HeadlineSection({ overview }: { overview: VisibilityOverview }) {
             ? "—"
             : formatPercent(overview.metric.coveragePct)}
         </p>
-        <p className="mt-3 text-sm text-[var(--visibility-body)]">
+        <p className="mt-3 text-sm text-[var(--app-body)]">
           {overview.metric.successfulAnswers} successful of{" "}
           {overview.metric.expectedAnswers} expected
         </p>
-        <div className="mt-4 border-t border-[var(--visibility-hairline)] pt-3 text-xs text-[var(--visibility-muted)]">
+        <div className="mt-4 border-t border-[var(--app-hairline)] pt-3 text-xs text-[var(--app-muted)]">
           <p>
             {overview.metric.failedAnswers} failed ·{" "}
             {overview.successfulModels.length} successful{" "}
@@ -244,7 +244,7 @@ function DeltaLabel({ overview }: { overview: VisibilityOverview }) {
   const delta = overview.comparison.deltaPctPoints;
   if (delta == null) {
     return (
-      <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-[var(--visibility-canvas-soft)] px-3 py-1.5 text-xs font-medium text-[var(--visibility-muted)]">
+      <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-[var(--app-canvas-soft)] px-3 py-1.5 text-xs font-medium text-[var(--app-muted)]">
         <Minus className="size-3.5" />
         {visibilityDeltaHeading(overview.comparison.status)?.badge ??
           "No comparison"}
@@ -257,10 +257,10 @@ function DeltaLabel({ overview }: { overview: VisibilityOverview }) {
     <span
       className={`mb-1 inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold ${
         positive
-          ? "bg-[var(--visibility-positive-soft)] text-[var(--visibility-positive)]"
+          ? "bg-[var(--app-positive-soft)] text-[var(--app-positive)]"
           : delta < 0
-            ? "bg-[var(--visibility-negative-soft)] text-[var(--visibility-negative)]"
-            : "bg-[var(--visibility-canvas-soft)] text-[var(--visibility-muted)]"
+            ? "bg-[var(--app-negative-soft)] text-[var(--app-negative)]"
+            : "bg-[var(--app-canvas-soft)] text-[var(--app-muted)]"
       }`}
     >
       <Icon className="size-3.5" />
@@ -285,10 +285,10 @@ function VisibilityOverviewLoading({
       }
     >
       <div className="grid gap-4 lg:grid-cols-2" aria-busy>
-        <div className="ai-visibility-card h-48 animate-pulse bg-[var(--visibility-surface)]" />
-        <div className="ai-visibility-card h-48 animate-pulse bg-[var(--visibility-surface)]" />
+        <div className="ai-visibility-card h-48 animate-pulse bg-[var(--app-surface)]" />
+        <div className="ai-visibility-card h-48 animate-pulse bg-[var(--app-surface)]" />
       </div>
-      <div className="ai-visibility-card h-80 animate-pulse bg-[var(--visibility-surface)]" />
+      <div className="ai-visibility-card h-80 animate-pulse bg-[var(--app-surface)]" />
     </PageFrame>
   );
 }

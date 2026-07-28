@@ -92,7 +92,7 @@ export function SitePicker({
         <button
           type="button"
           onClick={onReconnect}
-          className="inline-flex items-center gap-2.5 rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:bg-base-200"
+          className="inline-flex items-center gap-2.5 rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm font-semibold transition hover:bg-base-200"
         >
           <GoogleGlyph className="size-[18px]" />
           Reconnect with Google

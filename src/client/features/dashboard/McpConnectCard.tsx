@@ -41,7 +41,7 @@ export function McpConnectCard({
   const connected = activation.mcp.authorizedAt !== null;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-base-300 bg-base-100">
       <div className="flex items-center justify-between gap-4 px-5 py-4">
         <h2 className="text-base font-semibold leading-tight">
           Connect your AI agent

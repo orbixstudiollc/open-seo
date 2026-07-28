@@ -272,7 +272,7 @@ export function ChatMessage({
     return (
       <div className="group flex flex-col gap-1">
         <div className="flex justify-end pl-8 sm:pl-16">
-          <div className="rounded-box rounded-br-sm bg-primary px-4 py-2.5 text-sm text-primary-content">
+          <div className="rounded-box rounded-br-sm bg-base-content px-4 py-2.5 text-sm text-base-200">
             {message.parts.map((part, index) =>
               part.type === "text" ? (
                 <span key={index} className="whitespace-pre-wrap">

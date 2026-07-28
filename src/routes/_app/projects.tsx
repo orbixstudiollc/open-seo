@@ -32,11 +32,11 @@ function ProjectsPage() {
   const projects = projectsQuery.data ?? [];
 
   return (
-    <div className="h-full overflow-auto bg-base-100 px-4 py-8 pb-24 md:px-6 md:py-12 md:pb-8">
+    <div className="h-full overflow-auto bg-base-200 px-4 py-8 pb-24 md:px-6 md:py-12 md:pb-8">
       <div className="mx-auto w-full max-w-2xl space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
+            <h1 className="text-2xl font-normal tracking-tight">Projects</h1>
             <p className="mt-1 text-sm text-base-content/60">
               Each project is a separate workspace with its own Search Console,
               rank tracking, and audits.

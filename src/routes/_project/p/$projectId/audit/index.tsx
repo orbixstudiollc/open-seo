@@ -129,7 +129,7 @@ function AuditDetail({
             &larr; All audits
           </button>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <h1 className="text-2xl font-semibold">
+            <h1 className="text-2xl font-normal">
               {status ? extractHostname(status.startUrl) : "Site Audit"}
             </h1>
             {status?.status !== "running" && status && (
@@ -242,7 +242,7 @@ function ProgressCard({
         <div className="card-body gap-3">
           <div className="flex items-center justify-between">
             <h2 className="font-medium flex items-center gap-2">
-              <Loader2 className="size-4 animate-spin text-primary" />
+              <Loader2 className="size-4 animate-spin text-base-content" />
               {isLighthousePhase
                 ? "Running Lighthouse checks"
                 : "Crawling pages"}
@@ -317,7 +317,7 @@ function ProgressRow({
     <div
       className={`flex items-center justify-between gap-3 px-2 py-1.5 rounded text-sm ${
         index === 0
-          ? "bg-primary/5 animate-in fade-in slide-in-from-top-1 duration-300"
+          ? "bg-base-300/30 animate-in fade-in slide-in-from-top-1 duration-300"
           : ""
       }`}
     >

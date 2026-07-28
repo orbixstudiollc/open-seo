@@ -84,7 +84,7 @@ export function RankTrackingTableToolbar({
 
       {isRunning && latestRun ? (
         <div className="flex items-center gap-2 text-sm text-base-content/70">
-          <Loader2 className="size-3.5 animate-spin text-primary" />
+          <Loader2 className="size-3.5 animate-spin text-base-content" />
           <span>
             {latestRun.status === "pending"
               ? "Preparing..."

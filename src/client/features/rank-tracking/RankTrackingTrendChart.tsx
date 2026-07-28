@@ -98,7 +98,7 @@ export function RankTrendChart({
               scale="time"
               domain={["dataMin", "dataMax"]}
               tickFormatter={formatDateTick}
-              tick={{ fontSize: 10, fill: "#888" }}
+              tick={{ fontSize: 10, fill: "var(--app-muted)" }}
               tickLine={false}
               axisLine={false}
               minTickGap={32}
@@ -107,7 +107,7 @@ export function RankTrendChart({
               reversed
               domain={[1, serpDepth]}
               allowDecimals={false}
-              tick={{ fontSize: 10, fill: "#888" }}
+              tick={{ fontSize: 10, fill: "var(--app-muted)" }}
               tickLine={false}
               axisLine={false}
               width={32}

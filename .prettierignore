@@ -8,6 +8,9 @@ routeTree.gen.ts
 
 # vendored skills are hash-pinned in skills-lock.json; don't reformat them
 .agents/skills/
+
+# gitignored Conductor workspace scratch dir; attachments break `prettier --check .`
+.context/
 dist/
 drizzle/
 drizzle-pg/

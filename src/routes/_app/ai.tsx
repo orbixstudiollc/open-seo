@@ -46,9 +46,9 @@ function AiPage() {
       : `${window.location.origin}/mcp`;
 
   return (
-    <div className="h-full overflow-auto bg-base-100 px-4 py-12 md:px-6 md:py-16 pb-24 md:pb-12">
+    <div className="h-full overflow-auto bg-base-200 px-4 py-12 md:px-6 md:py-16 pb-24 md:pb-12">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-2xl font-semibold">AI & MCP</h1>
+        <h1 className="text-2xl font-normal">AI & MCP</h1>
         <p className="mt-2 text-sm text-base-content/70 leading-relaxed">
           Connect your AI agent to OpenSEO. Run keyword research, SERP analysis,
           domain lookups, and backlink reviews from your editor or chat.

@@ -199,7 +199,7 @@ function PromptExplorerPageInner({
     <div className="px-4 py-4 pb-24 overflow-auto md:px-6 md:py-6 md:pb-8">
       <div className="mx-auto max-w-7xl space-y-4">
         <div>
-          <h1 className="text-2xl font-semibold">Prompt Explorer</h1>
+          <h1 className="text-2xl font-normal">Prompt Explorer</h1>
           <p className="text-sm text-base-content/70">
             Ask any prompt across ChatGPT, Claude, Gemini, and Perplexity
             side-by-side.

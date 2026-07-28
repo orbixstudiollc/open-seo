@@ -80,14 +80,14 @@ export function BillingUsageChart() {
             <XAxis
               dataKey="date"
               tickFormatter={formatShortDate}
-              tick={{ fontSize: 10, fill: "#888" }}
+              tick={{ fontSize: 10, fill: "var(--app-muted)" }}
               tickLine={false}
               axisLine={false}
               minTickGap={40}
             />
             <YAxis
               tickFormatter={formatUsdAxis}
-              tick={{ fontSize: 10, fill: "#888" }}
+              tick={{ fontSize: 10, fill: "var(--app-muted)" }}
               tickLine={false}
               axisLine={false}
               width={44}
@@ -98,7 +98,7 @@ export function BillingUsageChart() {
             />
             <Bar
               dataKey="credits"
-              fill="#7c3aed"
+              fill="var(--app-ink)"
               radius={[2, 2, 0, 0]}
               maxBarSize={12}
             />
@@ -121,7 +121,7 @@ function UsageTooltip({
   if (!active || !payload?.length || label == null) return null;
 
   return (
-    <div className="rounded-md border border-base-300 bg-base-100 px-3 py-2 shadow-sm">
+    <div className="rounded-md border border-base-300 bg-base-100 px-3 py-2">
       <p className="text-xs text-base-content/60">
         {new Date(label).toLocaleDateString("en-US", {
           month: "short",

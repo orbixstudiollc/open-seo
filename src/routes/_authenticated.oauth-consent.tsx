@@ -70,14 +70,14 @@ function OAuthConsentPage() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-base-300 bg-base-100 p-8 shadow-sm">
+    <div className="w-full max-w-md rounded-2xl border border-base-300 bg-base-100 p-8">
       <div className="flex flex-col items-center text-center">
         <img
           src="/transparent-logo.png"
           alt="OpenSEO"
           className="size-10 rounded-lg"
         />
-        <h1 className="mt-5 text-xl font-semibold">Authorize MCP access</h1>
+        <h1 className="mt-5 text-xl font-normal">Authorize MCP access</h1>
         <p className="mt-2 text-sm text-base-content/70">
           An MCP client is requesting access to your OpenSEO workspace.
         </p>
@@ -102,7 +102,7 @@ function OAuthConsentPage() {
         <ul className="mt-3 space-y-3">
           {SCOPES.map((scope) => (
             <li key={scope.label} className="flex gap-3">
-              <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+              <Check className="mt-0.5 size-4 shrink-0 text-success" />
               <div>
                 <div className="text-sm font-medium">{scope.label}</div>
                 <div className="text-xs text-base-content/60">

@@ -1,5 +1,5 @@
 // Shared building blocks for the dashboard cards. Same visual language as
-// the GSC IntegrationCard (rounded-xl, shadow-sm, header row + divider) so
+// the GSC IntegrationCard (rounded-xl, header row + divider) so
 // the embedded SearchConsoleConnectionCard doesn't read as a different
 // design system.
 export function CardShell({
@@ -14,7 +14,7 @@ export function CardShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-base-300 bg-base-100">
       <div className="flex items-center justify-between gap-4 px-5 py-4">
         <h2 className="text-base font-semibold leading-tight">{title}</h2>
         {action}

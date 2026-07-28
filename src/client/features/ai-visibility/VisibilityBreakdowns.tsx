@@ -19,20 +19,20 @@ export function VisibilityBreakdownCard({
   const visibleRows = limit ? rows.slice(0, limit) : rows;
   return (
     <section className="ai-visibility-card overflow-hidden">
-      <div className="border-b border-[var(--visibility-hairline)] px-5 py-4">
+      <div className="border-b border-[var(--app-hairline)] px-5 py-4">
         <h2 className="text-base font-semibold">{title}</h2>
-        <p className="mt-0.5 text-[13px] text-[var(--visibility-muted)]">
+        <p className="mt-0.5 text-[13px] text-[var(--app-muted)]">
           {description}
         </p>
       </div>
       {visibleRows.length > 0 ? (
-        <ul className="divide-y divide-[var(--visibility-hairline)]">
+        <ul className="divide-y divide-[var(--app-hairline)]">
           {visibleRows.map((row) => (
             <BreakdownRow key={row.key} row={row} />
           ))}
         </ul>
       ) : (
-        <p className="px-5 py-10 text-center text-sm text-[var(--visibility-muted)]">
+        <p className="px-5 py-10 text-center text-sm text-[var(--app-muted)]">
           No stored answers in this period.
         </p>
       )}
@@ -49,7 +49,7 @@ function BreakdownRow({ row }: { row: VisibilityBreakdown }) {
           <p className="truncate text-sm font-medium" title={row.label}>
             {row.label}
           </p>
-          <p className="mt-0.5 truncate text-xs text-[var(--visibility-muted)]">
+          <p className="mt-0.5 truncate text-xs text-[var(--app-muted)]">
             {row.detail ? `${row.detail} · ` : ""}
             {row.metric.mentionedAnswers} of {row.metric.successfulAnswers}{" "}
             successful
@@ -62,9 +62,9 @@ function BreakdownRow({ row }: { row: VisibilityBreakdown }) {
           {pct == null ? "—" : formatPercent(pct)}
         </span>
       </div>
-      <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--visibility-hairline)]">
+      <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--app-hairline)]">
         <div
-          className="h-full rounded-full bg-[var(--visibility-ink)] opacity-70"
+          className="h-full rounded-full bg-[var(--app-ink)] opacity-70"
           style={{ width: `${pct ?? 0}%` }}
         />
       </div>
@@ -83,19 +83,19 @@ export function ShareOfVoiceCard({
 }) {
   return (
     <section className="ai-visibility-card overflow-hidden">
-      <div className="flex flex-col gap-3 border-b border-[var(--visibility-hairline)] px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-[var(--app-hairline)] px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-base font-semibold">Brand leaderboard</h2>
-          <p className="mt-0.5 text-[13px] text-[var(--visibility-muted)]">
+          <p className="mt-0.5 text-[13px] text-[var(--app-muted)]">
             Mention volume, estimated sentiment, and first-mention position.
           </p>
         </div>
         {shareOfVoice ? (
-          <label className="flex items-center gap-2 text-xs text-[var(--visibility-muted)]">
+          <label className="flex items-center gap-2 text-xs text-[var(--app-muted)]">
             Sort by
             <select
               aria-label="Sort brand leaderboard"
-              className="h-9 rounded-md border border-[var(--visibility-hairline-strong)] bg-[var(--visibility-surface)] px-2 text-xs font-medium text-[var(--visibility-ink)]"
+              className="h-9 rounded-md border border-[var(--app-hairline-strong)] bg-[var(--app-surface)] px-2 text-xs font-medium text-[var(--app-ink)]"
               value={shareOfVoice.sortBy}
               onChange={(event) => {
                 const sort = leaderboardSort(event.target.value);
@@ -111,7 +111,7 @@ export function ShareOfVoiceCard({
       </div>
       {shareOfVoice ? (
         <>
-          <ul className="divide-y divide-[var(--visibility-hairline)]">
+          <ul className="divide-y divide-[var(--app-hairline)]">
             {shareOfVoice.entries.map((entry) => (
               <li key={entry.brandId} className="px-5 py-3.5">
                 <div className="flex items-center gap-2">
@@ -119,11 +119,11 @@ export function ShareOfVoiceCard({
                     {entry.label}
                   </span>
                   {entry.isTarget ? (
-                    <span className="rounded-full bg-[var(--visibility-accent)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white">
+                    <span className="rounded-full bg-[var(--app-ink)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--app-canvas)]">
                       You
                     </span>
                   ) : null}
-                  <span className="ml-auto text-xs tabular-nums text-[var(--visibility-muted)]">
+                  <span className="ml-auto text-xs tabular-nums text-[var(--app-muted)]">
                     {entry.mentions} mentions
                   </span>
                   <span className="w-12 text-right text-sm font-semibold tabular-nums">
@@ -132,7 +132,7 @@ export function ShareOfVoiceCard({
                       : formatPercent(entry.sharePct)}
                   </span>
                 </div>
-                <div className="mt-1.5 flex gap-3 text-[11px] tabular-nums text-[var(--visibility-muted)]">
+                <div className="mt-1.5 flex gap-3 text-[11px] tabular-nums text-[var(--app-muted)]">
                   <span>
                     Sentiment estimate{" "}
                     {entry.sentimentEstimate == null
@@ -146,12 +146,12 @@ export function ShareOfVoiceCard({
                       : `#${entry.averagePosition.toLocaleString(undefined, { maximumFractionDigits: 1 })}`}
                   </span>
                 </div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--visibility-hairline)]">
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--app-hairline)]">
                   <div
                     className={
                       entry.isTarget
-                        ? "h-full rounded-full bg-[var(--visibility-accent)]"
-                        : "h-full rounded-full bg-[var(--visibility-ink)] opacity-30"
+                        ? "h-full rounded-full bg-[var(--app-ink)]"
+                        : "h-full rounded-full bg-[var(--app-ink)] opacity-30"
                     }
                     style={{ width: `${entry.sharePct ?? 0}%` }}
                   />
@@ -159,7 +159,7 @@ export function ShareOfVoiceCard({
               </li>
             ))}
           </ul>
-          <p className="border-t border-[var(--visibility-hairline)] px-5 py-3 text-[11px] text-[var(--visibility-muted)]">
+          <p className="border-t border-[var(--app-hairline)] px-5 py-3 text-[11px] text-[var(--app-muted)]">
             Successful answers from{" "}
             {shareOfVoice.platforms.map(formatAiModelLabel).join(", ")} only.
           </p>
@@ -167,7 +167,7 @@ export function ShareOfVoiceCard({
       ) : (
         <div className="px-5 py-10 text-center">
           <p className="text-sm font-medium">No competitor comparison yet</p>
-          <p className="mt-1 text-xs text-[var(--visibility-muted)]">
+          <p className="mt-1 text-xs text-[var(--app-muted)]">
             {primaryBrandName
               ? "Add another active brand to the registry to calculate Share of Voice."
               : "Set a primary brand and competitors to calculate Share of Voice."}

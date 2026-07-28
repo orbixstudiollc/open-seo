@@ -54,7 +54,7 @@ export function SearchTabStrip({
               data-search-tab-id={tab.id}
               className={`group flex shrink-0 items-stretch overflow-hidden rounded-md text-sm transition ${
                 active
-                  ? "bg-base-300 text-base-content shadow-sm"
+                  ? "bg-base-300 text-base-content"
                   : "text-base-content/80 hover:bg-base-200"
               }`}
             >
@@ -159,7 +159,7 @@ function SearchTabStatusIndicator({
       ) : status === "error" ? (
         <span className="size-2 rounded-full bg-error" />
       ) : status === "unviewed" ? (
-        <span className="size-2 rounded-full bg-primary" />
+        <span className="size-2 rounded-full bg-base-content" />
       ) : null}
     </span>
   );

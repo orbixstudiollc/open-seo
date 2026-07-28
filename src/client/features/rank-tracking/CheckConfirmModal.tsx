@@ -52,12 +52,12 @@ export function CheckConfirmModal({
       </div>
 
       <button
-        className="flex w-full items-center gap-4 rounded-xl border-2 border-base-300 p-4 text-left transition-colors hover:border-primary hover:bg-primary/5"
+        className="flex w-full items-center gap-4 rounded-xl border-2 border-base-300 p-4 text-left transition-colors hover:border-base-content/40 hover:bg-base-300/30"
         onClick={onRunNow}
         disabled={isPending}
       >
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-          <Zap className="size-5 text-primary" />
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-base-300">
+          <Zap className="size-5 text-base-content" />
         </div>
         <div className="flex-1">
           <p className="font-medium">Run Now</p>

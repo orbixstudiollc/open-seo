@@ -47,12 +47,12 @@ export function BrandLookupMentionTrendCard({ result }: Props) {
           />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: "#888" }}
+            tick={{ fontSize: 11, fill: "var(--app-muted)" }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            tick={{ fontSize: 11, fill: "#888" }}
+            tick={{ fontSize: 11, fill: "var(--app-muted)" }}
             tickLine={false}
             axisLine={false}
             allowDecimals={false}
@@ -85,7 +85,7 @@ function MentionTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-md border border-base-300 bg-base-100 px-3 py-2 shadow-sm">
+    <div className="rounded-md border border-base-300 bg-base-100 px-3 py-2">
       <p className="text-xs text-base-content/60">{label}</p>
       <p className="text-sm font-medium tabular-nums">
         {formatCount(payload[0].value)} mentions

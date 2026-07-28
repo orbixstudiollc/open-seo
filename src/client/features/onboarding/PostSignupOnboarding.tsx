@@ -67,7 +67,7 @@ export function PostSignupOnboarding({
         <p className="text-xs font-medium uppercase tracking-wide text-base-content/50">
           Step {step + 1} of {ONBOARDING_LAST_STEP + 1}
         </p>
-        <h1 className="text-xl font-semibold">
+        <h1 className="text-xl font-normal">
           {title ??
             (firstName
               ? `Welcome to OpenSEO, ${firstName}!`
@@ -78,7 +78,7 @@ export function PostSignupOnboarding({
         </p>
       </div>
 
-      <div className="rounded-lg border border-base-300 bg-base-100 p-5 shadow-sm">
+      <div className="rounded-lg border border-base-300 bg-base-100 p-5">
         {step === 0 ? (
           <OnboardingChoiceGroup
             title="What tasks matter to you most?"

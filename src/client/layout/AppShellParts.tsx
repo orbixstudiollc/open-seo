@@ -77,7 +77,7 @@ function MobileSidebarDrawer({
         className="absolute inset-0 bg-black/45"
         onClick={onClose}
       />
-      <div className="absolute left-0 top-0 h-full shadow-xl">
+      <div className="absolute left-0 top-0 h-full">
         <Sidebar projectId={projectId} onNavigate={onClose} onClose={onClose} />
       </div>
     </div>
@@ -102,7 +102,7 @@ const MissingSeoSetupModal = React.forwardRef<
         aria-labelledby="dataforseo-setup-title"
         aria-describedby="dataforseo-setup-description"
         tabIndex={-1}
-        className="w-full max-w-lg rounded-xl border border-base-300 bg-base-100 p-5 shadow-2xl"
+        className="w-full max-w-lg rounded-xl border border-base-300 bg-base-100 p-5"
       >
         <div className="flex items-start gap-3">
           <div className="rounded-full bg-warning/20 p-2 text-warning">

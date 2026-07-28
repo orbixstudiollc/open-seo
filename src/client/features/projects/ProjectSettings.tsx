@@ -44,7 +44,7 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
           Projects
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-2xl font-normal tracking-tight">
             Project settings
           </h1>
           <p className="text-sm text-base-content/60">{project.name}</p>

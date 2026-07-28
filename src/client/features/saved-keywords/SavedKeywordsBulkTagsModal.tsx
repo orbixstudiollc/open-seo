@@ -179,7 +179,7 @@ export function SavedKeywordsBulkTagsModal({
                   onClick={handleCreate}
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-base-200"
                 >
-                  <Plus className="size-3.5 text-primary" />
+                  <Plus className="size-3.5 text-base-content" />
                   <span className="text-base-content/70">Create</span>
                   <span className="font-medium">
                     &ldquo;{trimmedQuery}&rdquo;
@@ -208,7 +208,7 @@ export function SavedKeywordsBulkTagsModal({
                     <span
                       className={`flex size-4 shrink-0 items-center justify-center rounded border ${
                         checked
-                          ? "border-primary bg-primary text-primary-content"
+                          ? "border-base-content bg-base-content text-base-200"
                           : "border-base-300"
                       }`}
                     >
@@ -307,13 +307,13 @@ function SegmentButton({
       disabled={disabled}
       className={`inline-flex items-center gap-1.5 rounded px-3 py-1 text-sm transition ${
         active
-          ? "bg-base-100 font-medium shadow-sm"
+          ? "bg-base-100 font-medium"
           : "text-base-content/65 hover:text-base-content"
       } disabled:opacity-40`}
     >
       {label}
       {count > 0 ? (
-        <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-content">
+        <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-base-content px-1 text-[10px] font-semibold text-base-200">
           {count}
         </span>
       ) : null}

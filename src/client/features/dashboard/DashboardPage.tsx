@@ -136,9 +136,9 @@ function OnboardingChecklist({
   };
 
   return (
-    <div className="rounded-xl border border-primary/25 bg-primary/5 shadow-sm">
+    <div className="rounded-xl border border-base-300 bg-base-100">
       <div className="flex items-center justify-between gap-4 px-5 pt-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">
+        <p className="text-xs font-medium uppercase tracking-wide text-base-content">
           Onboarding checklist
         </p>
         <div className="flex items-center gap-1">
@@ -301,7 +301,7 @@ export function DashboardPage({ projectId }: { projectId: string }) {
   return (
     <div className="px-4 py-4 pb-24 md:px-6 md:py-6 md:pb-8">
       <div className="mx-auto flex max-w-5xl flex-col gap-5">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <h1 className="text-2xl font-normal">Dashboard</h1>
 
         <OnboardingChecklist projectId={projectId} activation={activation} />
 

@@ -54,7 +54,7 @@ export function BacklinksExportMenu({
       <ul
         tabIndex={0}
         role="menu"
-        className="dropdown-content z-10 menu p-2 shadow-lg bg-base-100 border border-base-300 rounded-box w-56"
+        className="dropdown-content z-10 menu p-2 bg-base-100 border border-base-300 rounded-box w-56"
       >
         <li>
           <button
@@ -115,7 +115,7 @@ export function BacklinksActionsMenu({
       <ul
         tabIndex={0}
         role="menu"
-        className="dropdown-content z-10 menu p-2 shadow-lg bg-base-100 border border-base-300 rounded-box w-52"
+        className="dropdown-content z-10 menu p-2 bg-base-100 border border-base-300 rounded-box w-52"
       >
         <li>
           <button

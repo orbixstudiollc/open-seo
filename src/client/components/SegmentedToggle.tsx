@@ -22,7 +22,7 @@ export function SegmentedToggle<T extends string>({
       {items.map((item) => (
         <button
           key={item.value}
-          className={`btn btn-xs gap-1.5 px-2 ${value === item.value ? "bg-primary/20 text-primary shadow-sm" : "btn-ghost text-base-content/40"}`}
+          className={`btn btn-xs gap-1.5 px-2 ${value === item.value ? "border-base-content/30 bg-base-300 text-base-content" : "btn-ghost text-base-content/40"}`}
           onClick={() => onChange(item.value)}
           title={item.label}
         >

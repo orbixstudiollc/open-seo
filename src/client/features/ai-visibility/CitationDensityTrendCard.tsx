@@ -27,14 +27,14 @@ export function CitationDensityTrendCard({
 
   return (
     <section className="ai-visibility-card overflow-hidden">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--visibility-hairline)] px-5 py-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--app-hairline)] px-5 py-4">
         <div>
           <h2 className="text-base font-semibold">Citation density trend</h2>
-          <p className="mt-0.5 text-[13px] text-[var(--visibility-muted)]">
+          <p className="mt-0.5 text-[13px] text-[var(--app-muted)]">
             Daily citations per successful stored answer.
           </p>
         </div>
-        <span className="rounded-full bg-[var(--visibility-canvas-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--visibility-muted)]">
+        <span className="rounded-full bg-[var(--app-canvas-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--app-muted)]">
           {overview.metric.successfulAnswers} observations
         </span>
       </div>
@@ -52,17 +52,14 @@ export function CitationDensityTrendCard({
                 data={chartData}
                 margin={{ top: 8, right: 24, bottom: 4, left: 0 }}
               >
-                <CartesianGrid
-                  vertical={false}
-                  stroke="var(--visibility-hairline)"
-                />
+                <CartesianGrid vertical={false} stroke="var(--app-hairline)" />
                 <XAxis
                   dataKey="date"
                   tickFormatter={formatAxisDate}
                   interval={axisInterval(overview.windowDays)}
                   tick={{
                     fontSize: 11,
-                    fill: "var(--visibility-muted)",
+                    fill: "var(--app-muted)",
                   }}
                   tickLine={false}
                   axisLine={false}
@@ -73,7 +70,7 @@ export function CitationDensityTrendCard({
                   width={44}
                   tick={{
                     fontSize: 11,
-                    fill: "var(--visibility-muted)",
+                    fill: "var(--app-muted)",
                   }}
                   tickLine={false}
                   axisLine={false}
@@ -82,12 +79,12 @@ export function CitationDensityTrendCard({
                 <Line
                   type="linear"
                   dataKey="avgCitationsPerAnswer"
-                  stroke="var(--visibility-accent)"
+                  stroke="var(--app-ink)"
                   strokeWidth={2}
                   dot={{
                     r: 2.5,
-                    fill: "var(--visibility-surface)",
-                    stroke: "var(--visibility-accent)",
+                    fill: "var(--app-surface)",
+                    stroke: "var(--app-ink)",
                     strokeWidth: 2,
                   }}
                   activeDot={{ r: 4 }}
@@ -96,7 +93,7 @@ export function CitationDensityTrendCard({
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <p className="flex items-center gap-1.5 px-2 pb-2 text-[11px] text-[var(--visibility-muted)]">
+          <p className="flex items-center gap-1.5 px-2 pb-2 text-[11px] text-[var(--app-muted)]">
             <Info className="size-3.5 shrink-0" />
             Missing dates remain gaps; successful answers with no citations
             render as an observed zero.
@@ -105,7 +102,7 @@ export function CitationDensityTrendCard({
       ) : (
         <div className="flex min-h-64 flex-col items-center justify-center px-6 py-12 text-center">
           <p className="text-base font-medium">No citation observations yet</p>
-          <p className="mt-2 max-w-md text-sm text-[var(--visibility-muted)]">
+          <p className="mt-2 max-w-md text-sm text-[var(--app-muted)]">
             The trend begins when a tracked run stores its first successful
             answer.
           </p>
@@ -147,9 +144,9 @@ function DensityTooltip({
   const point = payload?.[0]?.payload;
   if (!active || !point || point.avgCitationsPerAnswer == null) return null;
   return (
-    <div className="rounded-lg border border-[var(--visibility-hairline-strong)] bg-[var(--visibility-surface)] px-3 py-2 text-xs text-[var(--visibility-body)]">
+    <div className="rounded-lg border border-[var(--app-hairline-strong)] bg-[var(--app-surface)] px-3 py-2 text-xs text-[var(--app-body)]">
       <p>{formatLongDate(point.date)}</p>
-      <p className="mt-1 text-sm font-semibold tabular-nums text-[var(--visibility-ink)]">
+      <p className="mt-1 text-sm font-semibold tabular-nums text-[var(--app-ink)]">
         {formatNumber(point.avgCitationsPerAnswer)} citations / answer
       </p>
       <p className="mt-0.5">

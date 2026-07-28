@@ -163,7 +163,7 @@ export function SamConversation({
                 <button
                   key={question}
                   type="button"
-                  className="rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-medium text-base-content/70 transition-colors hover:border-primary/50 hover:text-base-content"
+                  className="rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs font-medium text-base-content/70 transition-colors hover:border-base-content/30 hover:text-base-content"
                   onClick={() => sendText(question)}
                 >
                   {question}

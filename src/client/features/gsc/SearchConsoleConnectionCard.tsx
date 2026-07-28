@@ -197,7 +197,7 @@ export function SearchConsoleConnectionCard({
           <button
             type="button"
             onClick={handleConnect}
-            className="inline-flex items-center gap-2.5 rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm font-semibold text-base-content shadow-sm transition hover:bg-base-200 hover:shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="inline-flex items-center gap-2.5 rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm font-semibold text-base-content transition hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <GoogleGlyph className="size-[18px]" />
             Connect with Google
@@ -220,7 +220,7 @@ function IntegrationCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-base-300 bg-base-100">
       <div className="flex items-start justify-between gap-4 p-5 sm:p-6">
         <h2 className="text-base font-semibold leading-tight">
           Google Search Console

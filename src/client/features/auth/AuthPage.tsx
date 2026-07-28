@@ -43,7 +43,7 @@ export function AuthMethodChooser({
     <div className="space-y-3">
       <button
         type="button"
-        className="btn w-full border border-black/10 bg-white text-neutral-900 hover:border-black/20 hover:bg-neutral-50 disabled:bg-white disabled:text-neutral-500 disabled:opacity-70"
+        className="btn w-full border border-base-300 bg-base-100 text-base-content hover:border-base-content/25 hover:bg-base-100 disabled:bg-base-100 disabled:text-base-content/60 disabled:opacity-70"
         onClick={onContinueWithGoogle}
         disabled={disabled || isBusy}
       >
@@ -106,7 +106,7 @@ export function AuthPageCard({
           className="mx-auto size-10 rounded-lg"
         />
         <div>
-          <h1 className="text-xl font-semibold">{title}</h1>
+          <h1 className="text-xl font-normal">{title}</h1>
           {helperText ? (
             <p className="text-sm text-base-content/60 mt-1">{helperText}</p>
           ) : null}
